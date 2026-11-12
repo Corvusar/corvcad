@@ -25,6 +25,7 @@ permissions:
 env:
   HOMEBREW_NO_AUTO_UPDATE: 1
   HOMEBREW_NO_INSTALL_CLEANUP: 1
+  SIM_ARCH: arm64  # KiCad's iOS scripts default to an x86_64 simulator
 
 jobs:
   kicad:
@@ -62,7 +63,7 @@ jobs:
             build/ngspice
             build/wx-ios
             build/ios-deps/installed
-          key: showcase-kicad-${{ hashFiles('integrations/kicad_core/upstream.json', 'integrations/kicad_core/patches/*.patch', 'integrations/kicad_core/*.sh', 'integrations/kicad_core/triplets/*', 'integrations/kicad_core/fetch.py') }}
+          key: showcase-kicad-arm64-${{ hashFiles('integrations/kicad_core/upstream.json', 'integrations/kicad_core/patches/*.patch', 'integrations/kicad_core/*.sh', 'integrations/kicad_core/triplets/*', 'integrations/kicad_core/fetch.py') }}
 
       - name: KiCad 10.0.6 source with the patch series, checked against the gate 1 inventory
         run: |
@@ -92,7 +93,7 @@ jobs:
             build/ngspice
             build/wx-ios
             build/ios-deps/installed
-          key: showcase-kicad-${{ hashFiles('integrations/kicad_core/upstream.json', 'integrations/kicad_core/patches/*.patch', 'integrations/kicad_core/*.sh', 'integrations/kicad_core/triplets/*', 'integrations/kicad_core/fetch.py') }}
+          key: showcase-kicad-arm64-${{ hashFiles('integrations/kicad_core/upstream.json', 'integrations/kicad_core/patches/*.patch', 'integrations/kicad_core/*.sh', 'integrations/kicad_core/triplets/*', 'integrations/kicad_core/fetch.py') }}
 
       - name: Compile and package KiCad's closures, build the app for the simulator
         run: |
