@@ -55,6 +55,7 @@ targets:
         # The FreeCAD package's OCCT headers, next to the package (integrations/freecad_core/ios).
         OCCT_INCLUDE: $(FREECAD_PACKAGE)/../occt/$(PLATFORM_NAME)/stage/include/opencascade
         CORVCAD_OCCT_INCLUDE_YES: $(OCCT_INCLUDE)
+        ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
         GENERATE_INFOPLIST_FILE: YES
         INFOPLIST_KEY_CFBundleDisplayName: CorvCAD
         INFOPLIST_KEY_UIApplicationSceneManifest_Generation: YES

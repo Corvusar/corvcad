@@ -21,7 +21,13 @@ struct LicensesView: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 18) {
-            HStack {
+            HStack(spacing: 16) {
+                Image("Emblem")
+                    .resizable()
+                    .scaledToFit()
+                    .frame(width: 64, height: 64)
+                    .clipShape(RoundedRectangle(cornerRadius: 14, style: .continuous))
+                    .accessibilityHidden(true)
                 VStack(alignment: .leading, spacing: 6) {
                     MonoLabel("Licences", color: Corv.gold)
                     Text(MechanicalSession.enabled ? "FreeCAD edition" : Self.nativeEdition ? "KiCad core edition" : "CorvCAD")
