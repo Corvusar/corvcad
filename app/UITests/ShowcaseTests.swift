@@ -235,7 +235,7 @@ final class ShowcaseTests: XCTestCase {
     // MARK: D. The toolbox: Gerber viewer, calculator
 
     func testD_Toolbox() throws {
-        app.launchEnvironment = ["CORVCAD_GERBERS": "Gerbers"]
+        app.launchEnvironment = ["CORVCAD_GERBERS": "Gerbers", "CORVCAD_NO_KEYBOARD": "1"]
         app.launch()
         XCTAssertTrue(app.descendants(matching: .any)["gerberCanvas"].waitForExistence(timeout: 60))
         pause(4)
@@ -418,7 +418,7 @@ final class ShowcaseTests: XCTestCase {
     private var canvas: XCUIElement { app.otherElements["canvas"].firstMatch }
 
     private func launch(project: String, mode: String) {
-        app.launchEnvironment = ["CORVCAD_OPEN": project, "CORVCAD_MODE": mode]
+        app.launchEnvironment = ["CORVCAD_OPEN": project, "CORVCAD_MODE": mode, "CORVCAD_NO_KEYBOARD": "1"]
         app.launch()
     }
 
