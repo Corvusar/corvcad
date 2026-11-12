@@ -383,8 +383,8 @@ def main():
         from PIL import Image
     else:
         enc = subprocess.Popen(["ffmpeg", "-y", "-loglevel", "error", "-f", "rawvideo", "-pix_fmt", "rgba", "-s", f"{W}x{H}",
-                                "-r", str(FPS), "-i", "-", "-i", str(music_dir / "Discovery.mp3"),
-                                "-ss", f"{start:.3f}", "-t", f"{stop - start:.3f}", "-map", "0:v", "-map", "1:a",
+                                "-r", str(FPS), "-i", "-", "-ss", f"{start:.3f}", "-t", f"{stop - start:.3f}",
+                                "-i", str(music_dir / "Discovery.mp3"), "-map", "0:v", "-map", "1:a",  # the offset is the music's
                                 "-c:v", "libx264", "-preset", "slow", "-crf", "15", "-pix_fmt", "yuv420p",
                                 "-c:a", "aac", "-b:a", "320k", "-movflags", "+faststart", str(out_path)], stdin=subprocess.PIPE)
     reader, current, last_frame = None, None, None
