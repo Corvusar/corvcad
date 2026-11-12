@@ -2561,7 +2561,7 @@
       }
     },
     "corvcad/integrations/kicad_core/release_native.sh": {
-      "sha256_lf": "6f5dc9785e3bc53f19fdcb9ac3f96c46858c22ba8aee9c8b85b7d9c89abd178c",
+      "sha256_lf": "f6380508aa6092ea8297519deadedadbe0f29ff39670a96865ae3289478b1c47",
       "license": {
         "expression": "MIT",
         "evidence": [
