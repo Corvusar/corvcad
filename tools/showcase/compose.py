@@ -11,7 +11,7 @@ from pathlib import Path
 import numpy as np
 import skia
 
-from layout import W, H, FPS, SCREEN, frame_bezel, INTRO_END, beats_of
+from layout import W, H, FPS, SCREEN, frame_bezel, INTRO_END, beats_of, envelope
 
 music_dir, takes_dir, intro_path, out_path = map(Path, sys.argv[1:5])
 args = sys.argv[5:]
@@ -21,7 +21,8 @@ DUR = music["duration"]
 _beats, _down = beats_of(music)
 BEATS = np.array(_beats)
 DOWN = np.array(_down)
-snap = lambda t: float(DOWN[np.argmin(abs(DOWN - t))])
+snap = lambda t: float(DOWN[np.argmin(abs(DOWN - t))])  # cuts land on bars
+HIT, LOW = envelope(music, "hit"), envelope(music, "low")  # the music's attacks and bass, 0..1.5
 SIM_W, SIM_H = 2388, 1668  # landscape simulator pixels; window points are half
 
 def marks(take):
@@ -36,57 +37,57 @@ def cap(act, title, sub):
 
 S = snap
 EDL = [
-    (INTRO_END, S(31.6), "testA_SchematicToBoard", "root", "sheet",
+    (INTRO_END, S(31.2), "testA_SchematicToBoard", "root", "sheet",
      cap("01 — SCHEMATIC", "KiCad's own schematic engine.", "KiCad 10.0.6 · hierarchical sheets"), None),
-    (S(31.6), S(43.0), "testA_SchematicToBoard", "sheet", "opamp",
-     cap("01 — SCHEMATIC", "Parts from KiCad's libraries.", "Symbol picker · footprint chooser"), "stage"),
-    (S(43.0), S(55.0), "testA_SchematicToBoard", "opamp", "power",
+    (S(31.2), S(41.2), "testA_SchematicToBoard", "sheet", "opamp",
+     cap("01 — SCHEMATIC", "Parts from KiCad's libraries.", "Symbol picker · footprint chooser"), None),
+    (S(41.2), S(49.2), "testA_SchematicToBoard", "opamp", "power",
      cap("01 — SCHEMATIC", "An input buffer, in place.", "Op-amp · gain network · decoupling"), "stage"),
-    (S(55.0), S(64.0), "testA_SchematicToBoard", "power", "labels",
+    (S(49.2), S(55.2), "testA_SchematicToBoard", "power", "labels",
      cap("01 — SCHEMATIC", "Wires that route themselves.", "Right angles · junctions · net labels"), "stage"),
-    (S(64.0), S(70.0), "testA_SchematicToBoard", "labels", "annotated",
+    (S(55.2), S(61.2), "testA_SchematicToBoard", "labels", "annotated",
      cap("01 — SCHEMATIC", "Connectivity, live.", "Net highlight · annotation by KiCad"), None),
-    (S(70.0), S(76.0), "testA_SchematicToBoard", "annotated", "erc",
+    (S(61.2), S(67.2), "testA_SchematicToBoard", "annotated", "erc",
      cap("01 — SCHEMATIC", "Checked by KiCad's ERC.", "Electrical rules, on the device"), None),
-    (S(76.0), S(82.6), "testA_SchematicToBoard", "erc", "pcb",
+    (S(67.2), S(73.2), "testA_SchematicToBoard", "erc", "pcb",
      cap("02 — BOARD", "Same project. Same files.", "One tap from schematic to board"), None),
-    (S(82.6), S(88.5), "testA_SchematicToBoard", "pcb", "updateReport",
+    (S(73.2), S(79.2), "testA_SchematicToBoard", "pcb", "updateReport",
      cap("02 — BOARD", "Update PCB from Schematic.", "KiCad's own netlist transfer"), None),
-    (S(88.5), S(94.4), "testA_SchematicToBoard", "updateReport", "placed",
+    (S(79.2), S(89.2), "testA_SchematicToBoard", "updateReport", "placed",
      cap("02 — BOARD", "Placed by hand.", "Hold, move, drop"), "strip"),
-    (S(94.4), S(104.0), "testA_SchematicToBoard", "placed", "routed",
+    (S(89.2), S(97.2), "testA_SchematicToBoard", "placed", "routed",
      cap("02 — BOARD", "KiCad's interactive router.", "Walk-around · shove · vias"), "strip"),
-    (S(104.0), S(112.6), "testA_SchematicToBoard", "routed", "end",
+    (S(97.2), S(103.2), "testA_SchematicToBoard", "routed", "end",
      cap("02 — BOARD", "DRC and zone fill, by KiCad.", "Design rules on the device"), None),
-    (S(112.6), S(118.6), "testE_Parts3D", "generating", "generated",
+    (S(103.2), S(109.2), "testE_Parts3D", "generating", "generated",
      cap("03 — 3D", "Every part, generated.", "KiCad's 3D model generator, ported to C++"), None),
-    (S(118.6), S(124.5), "testE_Parts3D", "generated", "end",
+    (S(109.2), S(117.2), "testE_Parts3D", "generated", "end",
      cap("03 — 3D", "1,058 packages. No model files.", "Exact solids on Open CASCADE"), None),
-    (S(124.5), S(133.4), "testB_Simulation", "schematic", "plotFull",
+    (S(117.2), S(125.2), "testB_Simulation", "schematic", "plotFull",
      cap("04 — SIMULATION", "ngspice, inside.", "Transient · AC · DC · operating point"), None),
-    (S(133.4), S(143.6), "testB_Simulation", "electrify", "end",
+    (S(125.2), S(137.2), "testB_Simulation", "electrify", "end",
      cap("04 — SIMULATION", "Current, made visible.", "Simulated voltages on the copper"), None),
-    (S(143.6), S(155.5), "testF_Enclosure", "ready", "cutouts",
+    (S(137.2), S(147.2), "testF_Enclosure", "ready", "cutouts",
      cap("05 — ENCLOSURE", "FreeCAD's own modeller.", "FreeCAD 1.1.4 · PartDesign timeline"), None),
-    (S(155.5), S(163.0), "testF_Enclosure", "cutouts", "screws",
+    (S(147.2), S(155.2), "testF_Enclosure", "cutouts", "screws",
      cap("05 — ENCLOSURE", "Shaped around the board.", "Connector cutouts · vents · screw posts"), None),
-    (S(163.0), S(170.4), "testF_Enclosure", "screws", "sketch",
+    (S(155.2), S(163.2), "testF_Enclosure", "screws", "sketch",
      cap("05 — ENCLOSURE", "Nothing collides.", "Part heights against the lid"), None),
-    (S(170.4), S(182.3), "testF_Enclosure", "sketch", "sketchCut",
+    (S(163.2), S(175.2), "testF_Enclosure", "sketch", "sketchCut",
      cap("05 — ENCLOSURE", "Sketches, solved by FreeCAD.", "Sketcher constraints · arcs · pockets"), None),
-    (S(182.3), S(191.5), "testF_Enclosure", "sketchCut", "end",
+    (S(175.2), S(183.2), "testF_Enclosure", "sketchCut", "end",
      cap("05 — ENCLOSURE", "A true parametric body.", "Every step editable · undo included"), None),
-    (S(191.5), S(196.5), "testD_Toolbox", "gerbers", "gerbersZoom",
+    (S(183.2), S(189.2), "testD_Toolbox", "gerbers", "gerbersZoom",
      cap("06 — BENCH", "The bench comes along.", "Gerber viewer"), None),
-    (S(196.5), S(201.7), "testD_Toolbox", "calculator", "end",
+    (S(189.2), S(195.2), "testD_Toolbox", "calculator", "end",
      cap("06 — BENCH", "The bench comes along.", "PCB calculator · KiCad's formulas"), None),
-    (S(201.7), S(209.2), "testC_FabricateKiCad", "fabricate", "end",
+    (S(195.2), S(201.2), "testC_FabricateKiCad", "fabricate", "end",
      cap("07 — FABRICATE", "Ready for the fab.", "Gerbers · drill · placement · PDF · BOM"), None),
-    (S(209.2), S(215.0), "testG_FabricateFreeCAD", "fabricate", "end",
+    (S(201.2), S(207.2), "testG_FabricateFreeCAD", "fabricate", "end",
      cap("07 — FABRICATE", "Ready for the shop.", "Exact STEP · STL · the FreeCAD document"), None),
-    (S(215.0), S(222.0), "testH_Finale", "open", "end", None, None),
+    (S(207.2), S(215.2), "testH_Finale", "open", "end", None, None),
 ]
-FINALE = S(222.0)
+FINALE = S(215.2)
 
 # --- Fonts and colours ------------------------------------------------------------------------
 def font(name, size, weight=None):
@@ -123,8 +124,8 @@ def ease(u):
     return u * u * (3 - 2 * u)
 
 def kick(t):
-    k = np.searchsorted(BEATS, t) - 1
-    return 0.0 if k < 0 else math.exp(-(t - BEATS[k]) / 0.14)
+    """The music's pulse at t, 0..1: its attacks, held up a little by the bass."""
+    return min(1.0, 0.7 * HIT(t) + 0.4 * LOW(t))
 
 # --- Background: void, faint grid, slow ember glow --------------------------------------------
 bg_surface = skia.Surface(W, H)
@@ -138,14 +139,30 @@ for y in range(0, H, 48):
 BACKGROUND = bg_surface.makeImageSnapshot()
 
 # --- Sources -------------------------------------------------------------------------------------
+_frame_times = {}
+def frame_times(path):
+    """The take's frame timestamps. The simulator records a frame only when the screen changes, so
+    a still screen leaves a gap of seconds; a seek has to start at the frame on screen at that
+    moment, not at the next one stored."""
+    if path not in _frame_times:
+        out = subprocess.check_output(["ffprobe", "-v", "error", "-select_streams", "v:0", "-show_entries",
+                                       "packet=pts_time", "-of", "csv=p=0", str(path)], text=True)
+        _frame_times[path] = np.sort(np.array([float(v) for v in out.replace(",", " ").split() if v != "N/A"]))
+    return _frame_times[path]
+
 class Reader:
     """Frames of one segment at 60 fps, scaled to the screen size. A focus push-in eases from its first
-    to its second rect over the segment; `done` is how far into it the reader starts (stills).
-    The push-in is cropped here, per frame: ffmpeg's crop evaluates its size only once."""
-    def __init__(self, path, start, length, speed, focus, done=0.0):
+    to its second rect over the first `push` of the segment; `done` is how far into the segment the
+    reader starts (stills). The push-in is cropped here, per frame: ffmpeg's crop evaluates its
+    size only once."""
+    def __init__(self, path, start, length, speed, focus, done=0.0, push=1.0):
         sx, sy, sw, sh = SCREEN
         self.size = (sw, sh)
-        self.focus, self.done, self.i = focus, done, 0
+        self.focus, self.done, self.push, self.i = focus, done, push, 0
+        times = frame_times(path)
+        held = float(times[max(0, np.searchsorted(times, start, side="right") - 1)])  # on screen at `start`
+        seek = max(0.0, held - 0.002)
+        lead = start - seek
         probe = json.loads(subprocess.check_output(["ffprobe", "-v", "error", "-select_streams", "v:0", "-show_entries",
                                                      "stream=width,height", "-of", "json", str(path)]))["streams"][0]
         rotate = "transpose=2," if probe["height"] > probe["width"] else ""
@@ -154,9 +171,10 @@ class Reader:
         self.decoded = (SIM_W, SIM_H) if focus else (sw, sh)
         if focus:
             self.surface = skia.Surface(sw, sh)
-        vf = f"{rotate}scale={size},setpts=(PTS-STARTPTS)/{speed:.5f},fps={FPS}"
-        self.proc = subprocess.Popen(["ffmpeg", "-loglevel", "error", "-ss", f"{max(0, start):.3f}", "-i", str(path),
-                                      "-t", f"{length:.3f}", "-vf", vf, "-frames:v", str(n), "-f", "rawvideo",
+        # The held frame is clamped to time 0, the rest follow at the segment's speed; fps fills the gaps.
+        vf = f"{rotate}scale={size},setpts='max((T-{lead:.4f})/{speed:.5f},0)/TB',fps={FPS}"
+        self.proc = subprocess.Popen(["ffmpeg", "-loglevel", "error", "-ss", f"{seek:.4f}", "-t", f"{lead + length + 1:.3f}",
+                                      "-i", str(path), "-vf", vf, "-frames:v", str(n), "-f", "rawvideo",
                                       "-pix_fmt", "rgba", "-"], stdout=subprocess.PIPE)
         self.last = None
     def frame(self):
@@ -166,7 +184,7 @@ class Reader:
             img = np.frombuffer(raw, np.uint8).reshape(dh, dw, 4)
             if self.focus:
                 (ax, ay, aw, ah), (bx, by, bw, bh) = self.focus
-                e = ease(self.done + (1 - self.done) * self.i / self.n)
+                e = ease((self.done + (1 - self.done) * self.i / self.n) / self.push)
                 src = skia.Rect.MakeXYWH(ax + (bx - ax) * e, ay + (by - ay) * e, aw + (bw - aw) * e, ah + (bh - ah) * e)
                 image = skia.Image.fromarray(np.ascontiguousarray(img), colorType=skia.kRGBA_8888_ColorType)
                 sw, sh = self.size
@@ -179,7 +197,6 @@ class Reader:
 
 def focus_rect(name, take, vports):
     """Push-in targets in simulator pixels: the input buffer on the root sheet, the board corner."""
-    full = (0, 0, SIM_W, SIM_H)
     def box(view, x0, y0, x1, y1, pad=1.25):
         if not view:
             return None
@@ -194,7 +211,7 @@ def focus_rect(name, take, vports):
         target = box(vports.get("placed") or vports.get("pcb"), 185, 126, 205, 146)
     else:
         target = None
-    return (full, target) if target else None
+    return target
 
 # --- Captions --------------------------------------------------------------------------------------
 def caption(c, cap_, t, t0, t1):
@@ -219,9 +236,17 @@ def caption(c, cap_, t, t0, t1):
     for i, ln in enumerate(lines):
         text(c, ln, x, 186 + i * 38, f, WHITE, a)
     y = 186 + len(lines) * 38 + 14
+    mono, room = MONO(11), sx - 14 - x - 12   # up to the bezel
     for part in cap_["sub"].split(" · "):
-        text(c, part.upper(), x, y, MONO(11), STEEL, a * 0.9, tracking=1.6)
-        y += 22
+        line = ""
+        for wd in part.upper().split() + [None]:   # wrapped to the margin, like the title
+            trial = (line + " " + wd).strip() if wd else None
+            if wd is None or (line and sum(mono.measureText(ch) + 1.6 for ch in trial) > room):
+                text(c, line, x, y, mono, STEEL, a * 0.9, tracking=1.6)
+                y += 18 if wd else 22
+                line = wd or ""
+            else:
+                line = trial
 
 def badge(c, speed, t, t0, t1):
     if speed < 1.5:
@@ -297,25 +322,26 @@ def finale(c, t, last_frame):
         frame_bezel(c, fade)
     hit = float(BEATS[np.searchsorted(BEATS, FINALE + 1.0)])
     ox, oy = sx + sw * 0.52, sy + sh * 0.46
+    # The title holds for six seconds, then the next card for seven: both long enough to read.
+    draw_t = DUR - 9.2
     if t > hit:
         v = ease((t - hit) / 2.6)
         x, y = ox + (W / 2 - ox) * v, oy + (H * 0.42 - oy) * v
-        drift = 0 if t < DUR - 6.5 else ease((t - (DUR - 6.5)) / 1.6)
-        size = (0.55 + 0.35 * v) * (1 + 0.2 * kick(t)) * (1 - drift)
-        orb(c, x + 0 * drift, y - 260 * drift, max(size, 0.0001), 1 - drift)
-    title_t = hit + 2.8
+        drift = ease((t - (draw_t - 1.2)) / 1.4)
+        size = (0.55 + 0.35 * v) * (1 + 0.25 * kick(t)) * (1 - drift)
+        orb(c, x, y - 260 * drift, max(size, 0.0001), 1 - drift)
+    title_t = hit + 2.0
     if t > title_t:
-        a = ease((t - title_t) / 0.8) * (1 - ease((t - (DUR - 7.4)) / 0.8))
+        a = ease((t - title_t) / 0.8) * (1 - ease((t - (draw_t - 1.0)) / 0.8))
         text(c, "CorvCAD", W / 2, H * 0.62, DISPLAY(78, skia.FontStyle.kExtraLight_Weight), WHITE, a, tracking=2, align="center")
         text(c, "FROM THE FIRST WIRE TO THE BOX THAT HOLDS IT", W / 2, H * 0.62 + 48, MONO(14), STEEL, a, tracking=4,
              align="center")
-    draw_t = DUR - 6.6
     if t > draw_t:
-        v = (t - draw_t) / 3.2
-        a = 1 - ease((t - (DUR - 1.6)) / 1.4)
+        v = (t - draw_t) / 2.4
+        a = 1 - ease((t - (DUR - 1.4)) / 1.2)
         drawing(c, min(v, 1.0), a)
-        if v > 0.8:
-            b = ease((v - 0.8) / 0.4) * a
+        if v > 0.3:
+            b = ease((v - 0.3) / 0.4) * a
             text(c, "NEXT", W / 2, 300, MONO(14), GOLD, b, tracking=6, align="center")
             text(c, "Drawings. Slicing. Beyond the iPad.", W / 2, 352, DISPLAY(34), WHITE, b, align="center")
             text(c, "GITHUB.COM/CORVUSAR/CORVCAD", W / 2, H - 120, MONO(14), STEEL, b, tracking=3, align="center")
@@ -370,15 +396,20 @@ def main():
                 length = max(0.5, src_b - src_a)
                 speed = length / (t1 - t0)
                 if current is not seg or stills:
-                    focus = focus_rect(focus_name, take_name, vports) if focus_name else None
+                    target = focus_rect(focus_name, take_name, vports) if focus_name else None
+                    # One push-in per run of segments with the same focus: the next ones start zoomed.
+                    before = EDL[EDL.index(seg) - 1] if EDL.index(seg) else None
+                    zoomed = before is not None and before[2] == take_name and before[6] == focus_name
+                    focus = ((target if zoomed else (0, 0, SIM_W, SIM_H)), target) if target else None
                     off = (t - t0) * speed if stills else 0
-                    reader = Reader(takes_dir / f"{take_name}.mp4", src_a + off, length - off, speed, focus, off / length)
+                    reader = Reader(takes_dir / f"{take_name}.mp4", src_a + off, length - off, speed, focus, off / length,
+                                    push=min(1.0, 2.0 / (t1 - t0)))  # the push-in takes one bar
                     current = seg
                 img = reader.frame()
                 last_frame = img if img is not None else last_frame
                 # Section flash on the cut, and a gentle pulse on the beat.
                 draw_screen(c, img)
-                frame_bezel(c, 1.0)
+                frame_bezel(c, 1.0, 1 + 1.6 * kick(t))  # the glow breathes with the music
                 cut = t - t0
                 if cut < 0.25 and (EDL.index(seg) == 0 or seg[5] and EDL[EDL.index(seg) - 1][5] and
                                     seg[5]["act"] != EDL[EDL.index(seg) - 1][5]["act"]):

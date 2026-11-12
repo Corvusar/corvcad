@@ -7,8 +7,9 @@ takes** GitHub workflow (`.github/workflows/showcase.yml`) records the same take
 On the iMac, in a work folder with a Python venv (`numpy<2`, `scipy`, `librosa` with
 `llvmlite==0.42.0 numba==0.59.1` on Intel, `pillow`, `skia-python`) and FFmpeg:
 
-1. `analyze.py music/<track>.mp3` writes `music/analysis.json`: beats, downbeats, loudness,
-   sections.
+1. `analyze.py music/<track>.mp3` writes `music/analysis.json`: the beat, bar and phrase grid
+   fitted to the track's attacks, and its attack and bass envelopes per video frame. Cuts land on
+   bars; the intro's light, lens and camera and the frame's glow follow the envelopes.
 2. `board.py <board>.kicad_pcb board.json` flattens the board and picks the orb's route: current
    through a chain of parts along their real copper.
 3. `intro.py board.json music/analysis.json out/intro.mp4` renders the intro (`--stills t1,t2` for
