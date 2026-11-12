@@ -258,4 +258,10 @@ jobs:
           The IPAs are unsigned: install them with your own signing, for example through LiveContainer or
           AltStore/SideStore (see the README). CorvCAD is not affiliated with the KiCad or FreeCAD projects.
           EOF
-          gh release create "v$VERSION" assets/* --draft --target "$GITHUB_SHA" --title "CorvCAD $VERSION" --notes-file notes.md
+          if [ "$(gh release view "v$VERSION" --json isDraft -q .isDraft 2>/dev/null)" = true ]; then
+            # A rerun refreshes its own unpublished draft; a published release is never touched.
+            gh release upload "v$VERSION" assets/* --clobber
+            gh release edit "v$VERSION" --target "$GITHUB_SHA" --notes-file notes.md
+          else
+            gh release create "v$VERSION" assets/* --draft --target "$GITHUB_SHA" --title "CorvCAD $VERSION" --notes-file notes.md
+          fi
