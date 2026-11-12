@@ -13,8 +13,8 @@ from pathlib import Path
 
 take, derived, out = sys.argv[1], Path(sys.argv[2]).expanduser(), Path(sys.argv[3]).expanduser()
 out.mkdir(parents=True, exist_ok=True)
-repo = Path.home() / "corvcad"
-demos = Path.home() / "kicad-core/kicad/demos"
+repo = Path(os.environ.get("CORVCAD_REPO", Path.home() / "corvcad"))
+demos = Path(os.environ.get("KICAD_DEMOS", Path.home() / "kicad-core/kicad/demos"))
 sim = re.search(r"CorvCAD iPad Pro 11 \(([0-9A-F-]{36})\)",
                 subprocess.check_output(["xcrun", "simctl", "list", "devices"], text=True)).group(1)
 subprocess.run(["xcrun", "simctl", "boot", sim], stderr=subprocess.DEVNULL)

@@ -1,7 +1,8 @@
 # Showcase video
 
 The feature video is cut to a piece of music: a rendered intro on a real KiCad board, then takes
-recorded from the iPad simulator on the iMac, captioned and timed to the beat.
+recorded from the iPad simulator on the iMac, captioned and timed to the beat. The manual **Showcase
+takes** GitHub workflow (`.github/workflows/showcase.yml`) records the same takes on an arm64 runner.
 
 On the iMac, in a work folder with a Python venv (`numpy<2`, `scipy`, `librosa` with
 `llvmlite==0.42.0 numba==0.59.1` on Intel, `pillow`, `skia-python`) and FFmpeg:

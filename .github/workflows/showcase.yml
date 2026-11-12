@@ -1,0 +1,238 @@
+name: Showcase takes
+
+# The showcase video's takes (app/UITests/ShowcaseTests.swift), recorded in an arm64 iPad simulator
+# with tools/showcase/record.py: A-D in the NATIVE_KICAD edition, E-H in the NATIVE_FREECAD one.
+# Manual only. The first run builds KiCad's and FreeCAD's iOS closures from source (hours); the
+# dependency builds are cached after. The takes' taps are tuned on an iPad Pro 11-inch (4th
+# generation, 2388 x 1668) with iOS 26.2. Composing the video (tools/showcase/compose.py) needs the
+# music and stays local.
+on:
+  workflow_dispatch:
+    inputs:
+      runner:
+        description: macOS runner label (arm64)
+        default: macos-26
+      xcode:
+        description: Xcode version to select (falls back to the newest 26.x)
+        default: "26.2"
+
+permissions:
+  contents: read
+
+env:
+  HOMEBREW_NO_AUTO_UPDATE: 1
+  HOMEBREW_NO_INSTALL_CLEANUP: 1
+
+jobs:
+  kicad:
+    name: Takes A-D (KiCad edition)
+    runs-on: ${{ inputs.runner }}
+    timeout-minutes: 360
+    steps:
+      - uses: actions/checkout@v4
+
+      - &xcode
+        name: Xcode, simulator and host tools
+        run: |
+          X=$(ls -d /Applications/Xcode_${{ inputs.xcode }}*.app 2>/dev/null | head -1)
+          [ -n "$X" ] || X=$(ls -d /Applications/Xcode_26*.app | sort -V | tail -1)
+          sudo xcode-select -s "$X"; xcodebuild -version; uname -m; sysctl -n hw.ncpu hw.memsize
+          rm -rf ~/Library/Android; df -h .
+          brew install cmake ninja xcodegen pkgconf autoconf autoconf-archive automake libtool bison flex ccache swig \
+            wxwidgets boost glm zstd freetype harfbuzz fontconfig libgit2 protobuf unixodbc cairo pixman || true
+          echo "$(brew --prefix bison)/bin" >> "$GITHUB_PATH"; echo "$(brew --prefix flex)/bin" >> "$GITHUB_PATH"
+          V=$(xcrun --sdk iphonesimulator --show-sdk-version); RT="com.apple.CoreSimulator.SimRuntime.iOS-${V//./-}"
+          xcrun simctl list runtimes available | grep -q "$RT" || xcodebuild -downloadPlatform iOS
+          xcrun simctl list runtimes available | grep -q "$RT" \
+            || RT=$(xcrun simctl list runtimes available | grep -oE 'com\.apple\.CoreSimulator\.SimRuntime\.iOS-[0-9-]+' | tail -1)
+          TYPE=$(xcrun simctl list devicetypes | grep -E 'iPad Pro \(11-inch\) \((4th|3rd) generation\)' | head -1 | grep -oE 'com\.apple\.[^)]+')
+          SIM=$(xcrun simctl create "CorvCAD iPad Pro 11" "$TYPE" "$RT"); echo "SIM=$SIM" >> "$GITHUB_ENV"
+          echo "simulator $SIM: $TYPE on $RT"
+          git clone -q --filter=blob:none --depth 1 --branch 10.0.6 --sparse https://gitlab.com/kicad/code/kicad.git build/kicad-demos
+          git -C build/kicad-demos sparse-checkout set demos/kit-dev-coldfire-xilinx_5213 demos/simulation/rectifier
+
+      - uses: actions/cache/restore@v4
+        with:
+          path: |
+            build/kicad-core
+            build/ngspice
+            build/wx-ios
+            build/ios-deps/installed
+          key: showcase-kicad-${{ hashFiles('integrations/kicad_core/upstream.json', 'integrations/kicad_core/patches/*.patch', 'integrations/kicad_core/*.sh', 'integrations/kicad_core/triplets/*', 'integrations/kicad_core/fetch.py') }}
+
+      - name: KiCad 10.0.6 source with the patch series, checked against the gate 1 inventory
+        run: |
+          [ -d build/kicad-core/kicad ] && python3 integrations/kicad_core/audit.py verify --kicad build/kicad-core/kicad \
+            || { rm -rf build/kicad-core/kicad; python3 integrations/kicad_core/fetch.py --output build/kicad-core --source-only;
+                 python3 integrations/kicad_core/audit.py verify --kicad build/kicad-core/kicad; }
+
+      - name: ngspice, wxWidgets, vcpkg dependencies and KiCad's libraries (cached)
+        run: |
+          [ -f build/ngspice/build-mac/libngspice.a ] || bash integrations/kicad_core/ngspice_ios.sh build/ngspice mac
+          [ -f build/ngspice/build-sim/libngspice.a ] || bash integrations/kicad_core/ngspice_ios.sh build/ngspice sim
+          [ -x build/wx-ios/build-sim/wx-config ] || bash integrations/kicad_core/wx_ios.sh build/wx-ios sim
+          # GitHub's source archives can fail with 504; vcpkg keeps what it has built, so try again.
+          for attempt in 1 2 3 4 5; do
+            bash integrations/kicad_core/ios_deps.sh build/ios-deps arm64-ios-simulator && break
+            [ $attempt = 5 ] && exit 1; echo "attempt $attempt failed"; sleep 60
+          done
+          [ -f build/kicad-core/footprints-packed/index.json ] && [ -f build/kicad-core/symbols-packed/index.json ] \
+            && [ -f build/kicad-core/symbols-packed/Simulation_SPICE.sp ] \
+            || python3 integrations/kicad_core/fetch.py --output build/kicad-core --libraries-only
+
+      - uses: actions/cache/save@v4
+        if: always()
+        with:
+          path: |
+            build/kicad-core
+            build/ngspice
+            build/wx-ios
+            build/ios-deps/installed
+          key: showcase-kicad-${{ hashFiles('integrations/kicad_core/upstream.json', 'integrations/kicad_core/patches/*.patch', 'integrations/kicad_core/*.sh', 'integrations/kicad_core/triplets/*', 'integrations/kicad_core/fetch.py') }}
+
+      - name: Compile and package KiCad's closures, build the app for the simulator
+        run: |
+          cmake -G Ninja -S integrations/kicad_core/probe -B build/kicad-probe -DNGSPICE_BUILD="$PWD/build/ngspice" \
+            -DKICAD_SOURCE="$PWD/build/kicad-core/kicad" -DCMAKE_BUILD_TYPE=Release > build/configure.log 2>&1 \
+            || { tail -40 build/configure.log; exit 1; }
+          python3 - "$PWD" <<'EOF'
+          import json, sys
+          repo = sys.argv[1].lstrip("/")
+          profiles = json.load(open("integrations/kicad_core/audit/sources.json"))["profiles"]
+          def unit(path):
+              head, _, rest = path.partition("/")
+              return {"kicad": rest, "generated": path, "corvcad": f"{repo}/{rest}"}[head]
+          for profile, name in (("schematic", "probe_headless"), ("session", "session"), ("board", "pcb_probe_headless"), ("native", "native")):
+              with open(f"build/kicad-probe/{name}.closure.txt", "w") as out:
+                  out.write("\n".join(sorted(unit(p) for p in profiles[profile]["closure"])) + "\n")
+          EOF
+          IOS_TARGET=sim bash integrations/kicad_core/probe/ios_sweep.sh build/kicad-probe \
+            build/wx-ios/build-sim "$(sysctl -n hw.ncpu)" build/ios-deps/installed/arm64-ios-simulator
+          [ ! -f build/kicad-probe/ios_sweep/failed.txt ] || { cat build/kicad-probe/ios_sweep/first_errors.txt; exit 1; }
+          TARGETS=sim bash integrations/kicad_core/probe/ios_package.sh build/kicad-probe build/wx-ios build/ios-deps/installed
+          (cd app && xcodegen generate -q)
+          xcodebuild build-for-testing -project app/CorvCAD.xcodeproj -scheme CorvCAD -destination "id=$SIM" \
+            -derivedDataPath build/DerivedData NATIVE_KICAD=YES KICAD_PACKAGE="$PWD/build/kicad-probe/package" \
+            KICAD_SYMBOLS="$PWD/build/kicad-core/symbols-packed" KICAD_FOOTPRINTS="$PWD/build/kicad-core/footprints-packed" \
+            ENABLE_DEBUG_DYLIB=NO ENABLE_TESTABILITY=NO CODE_SIGNING_ALLOWED=NO \
+            > build/app-build.log 2>&1 || { grep -E 'error:' build/app-build.log | sort -u | head -40; exit 1; }
+
+      - name: Record takes A-D
+        run: |
+          export CORVCAD_REPO="$PWD" KICAD_DEMOS="$PWD/build/kicad-demos/demos"
+          R="python3 tools/showcase/record.py"
+          $R testA_SchematicToBoard build/DerivedData build/takes --seed
+          $R testB_Simulation build/DerivedData build/takes
+          $R testC_FabricateKiCad build/DerivedData build/takes
+          DATA=$(xcrun simctl get_app_container "$SIM" org.corvcad.CorvCAD data)
+          cp -R "$DATA/tmp/kit-dev-coldfire-xilinx_5213-fab" build/gerbers && echo "gerbers: $(ls build/gerbers | wc -l) files"
+          SHOWCASE_GERBERS="$PWD/build/gerbers" $R testD_Toolbox build/DerivedData build/takes
+
+      - &check
+        name: All takes passed
+        run: |
+          python3 - <<'EOF'
+          import json, glob, sys
+          takes = sorted(glob.glob("build/takes/*.json"))
+          bad = [t for t in takes if not json.load(open(t))["passed"]]
+          print(len(takes), "takes;", "failed:", bad or "none")
+          sys.exit(1 if bad or not takes else 0)
+          EOF
+
+      - &upload
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: showcase-takes-${{ github.job }}
+          path: |
+            build/takes
+            build/*.log
+
+  freecad:
+    name: Takes E-H (FreeCAD edition)
+    runs-on: ${{ inputs.runner }}
+    timeout-minutes: 360
+    env:
+      CCACHE_MAXSIZE: 2G
+    steps:
+      - uses: actions/checkout@v4
+
+      - *xcode
+
+      - name: Build caches and target
+        run: |
+          echo "CCACHE_DIR=$PWD/build/freecad-ios/ccache-ios" >> "$GITHUB_ENV"
+          echo "CCACHE_BASEDIR=$PWD" >> "$GITHUB_ENV"
+          echo "VCPKG_BINARY_SOURCES=clear;files,$PWD/build/freecad-ios/binary-cache,readwrite" >> "$GITHUB_ENV"
+          mkdir -p build/freecad-ios/binary-cache build/freecad-ios/ccache-ios
+
+      - uses: actions/cache/restore@v4
+        with:
+          path: |
+            build/freecad-ios/binary-cache
+            build/freecad-ios/ccache-ios
+            build/freecad-ios/python/Python-3.13.7
+            build/freecad-ios/python/Python-3.13.7.tar.xz
+            build/freecad-ios/python/host
+            build/freecad-ios/occt/OCCT-V7_8_1.tar.gz
+            build/freecad-ios/occt/OCCT-7_8_1
+            build/freecad-ios/occt/iphonesimulator
+          key: showcase-freecad-${{ github.run_id }}
+          restore-keys: showcase-freecad-
+
+      - name: FreeCAD's static iOS dependencies, CPython and OCCT
+        run: |
+          for attempt in 1 2 3; do
+            bash integrations/freecad_core/ios/deps.sh build/freecad-ios/deps arm64-ios-simulator > build/dependencies-build.log 2>&1 && break
+            [ $attempt = 3 ] && { tail -100 build/dependencies-build.log; exit 1; }; echo "attempt $attempt failed"; sleep 60
+          done
+          python3 integrations/freecad_core/ios/build_python.py --sdk iphonesimulator \
+            --deps build/freecad-ios/deps/installed/arm64-ios-simulator --jobs 3 > build/python-build.log 2>&1 \
+            || { tail -100 build/python-build.log; exit 1; }
+          python3 integrations/freecad_core/ios/build_occt.py --sdk iphonesimulator --jobs 3 > build/occt-build.log 2>&1 \
+            || { tail -100 build/occt-build.log; exit 1; }
+
+      - uses: actions/cache/save@v4
+        if: always()
+        with:
+          path: |
+            build/freecad-ios/binary-cache
+            build/freecad-ios/ccache-ios
+            build/freecad-ios/python/Python-3.13.7
+            build/freecad-ios/python/Python-3.13.7.tar.xz
+            build/freecad-ios/python/host
+            build/freecad-ios/occt/OCCT-V7_8_1.tar.gz
+            build/freecad-ios/occt/OCCT-7_8_1
+            build/freecad-ios/occt/iphonesimulator
+          key: showcase-freecad-${{ github.run_id }}
+
+      - name: FreeCAD session, runtime and package; build the app for the simulator
+        run: |
+          python3 integrations/freecad_core/session/build.py --sdk iphonesimulator --jobs 3 > build/freecad-ios-build.log 2>&1 \
+            || { tail -120 build/freecad-ios-build.log; exit 1; }
+          python3 integrations/freecad_core/ios/stage_runtime.py \
+            --source build/freecad-ios/source-ios/FreeCAD \
+            --build build/freecad-ios/freecad-iphonesimulator \
+            --python-stage build/freecad-ios/python/iphonesimulator/stage \
+            --host-python build/freecad-ios/python/host/python.exe \
+            --output build/freecad-ios/runtime-iphonesimulator \
+            --dependency-notices build/freecad-ios/deps/installed/arm64-ios-simulator/share \
+            --dependency-notices build/freecad-ios/occt/iphonesimulator/stage/share/occt
+          python3 integrations/freecad_core/session/package.py --sdk iphonesimulator --output build/freecad-ios/package/sim
+          (cd app && xcodegen generate -q)
+          xcodebuild build-for-testing -project app/CorvCAD.xcodeproj -scheme CorvCAD -destination "id=$SIM" \
+            -derivedDataPath build/DerivedData NATIVE_FREECAD=YES FREECAD_PACKAGE="$PWD/build/freecad-ios/package" \
+            CODE_SIGNING_ALLOWED=NO > build/app-build.log 2>&1 || { grep -E 'error:' build/app-build.log | sort -u | head -40; exit 1; }
+
+      - name: Record takes E-H
+        run: |
+          export CORVCAD_REPO="$PWD" KICAD_DEMOS="$PWD/build/kicad-demos/demos"
+          R="python3 tools/showcase/record.py"
+          $R testE_Parts3D build/DerivedData build/takes --seed
+          $R testF_Enclosure build/DerivedData build/takes --seed
+          $R testG_FabricateFreeCAD build/DerivedData build/takes --seed
+          $R testH_Finale build/DerivedData build/takes
+
+      - *check
+
+      - *upload
