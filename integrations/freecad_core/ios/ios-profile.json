@@ -1,0 +1,32 @@
+{
+  "schema": 1,
+  "status": "Experimental iOS runtime source adaptation; native validation pending",
+  "static_profile_sha256_lf": "6d8d82d3485db6c1472e8d5bf622a885d1cc7693ef509c6583b2a15adf3d7f5f",
+  "python_version": "3.13.7",
+  "patch": {
+    "path": "patches/0002-ios-runtime.patch",
+    "sha256": "49ad09959acd4322226e894652bea380c57c27525fc9b72520c2d53964873874",
+    "files": {
+      "cMake/FreeCAD_Helpers/SetupPython.cmake": {
+        "before_sha256_lf": "17c83340b301c28b7ac6865c0a30fa6c8a24d4b075fc7cf3af786866d578d231",
+        "after_sha256_lf": "0087edc2416306aacf811760f0dd4a4c5fda89ffb15d1ee380675544c7d469f6"
+      },
+      "src/FCConfig.h": {
+        "before_sha256_lf": "1231483ed80809e3b301546c3db33f77c3030ece55a1ce2d238819848bea1c1c",
+        "after_sha256_lf": "0216dd5f47f9e0d7c5b864d7ea86c54d6fafbef71d33b649bb19de1b59766934"
+      },
+      "src/Base/Interpreter.cpp": {
+        "before_sha256_lf": "b4a1013015d1d61440bd056dada08561f0b2aec08ca61f2e6e269e6e441e8584",
+        "after_sha256_lf": "fabd43cc09982ce0b7f5b093ed64d5f7ce83df6e359b406e916b42643c48c9ce"
+      },
+      "src/Main/CMakeLists.txt": {
+        "before_sha256_lf": "d2c61c70142e171b9db71bf28abc039750aad16a382772bcb9b16f0ad899af8d",
+        "after_sha256_lf": "95107886e8db3bd1f4b9baa2512c6050a6f892ee2f1852509d592e345d43bdb6"
+      },
+      "src/Mod/Mesh/App/WildMagic4/Wm4System.cpp": {
+        "before_sha256_lf": "cf4a2d408c597da572a47f13600979d04041597519604d6fdfb217e9d85cf33c",
+        "after_sha256_lf": "609af4d14d621cee14df8a64d4809149fb8a6d7fcccc54840535fdac7ad7f63c"
+      }
+    }
+  }
+}

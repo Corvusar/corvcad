@@ -1,0 +1,51 @@
+{
+  "homebrew_version": "6.0.10",
+  "used_options": [],
+  "unused_options": [],
+  "built_as_bottle": true,
+  "poured_from_bottle": true,
+  "loaded_from_api": true,
+  "loaded_from_internal_api": true,
+  "installed_on_request": false,
+  "changed_files": [
+    "lib/cmake/TBB/TBBTargets.cmake",
+    "lib/pkgconfig/tbb.pc"
+  ],
+  "time": 1792926854,
+  "source_modified_time": 1783706837,
+  "compiler": "clang",
+  "aliases": [
+    "onetbb"
+  ],
+  "runtime_dependencies": [
+    {
+      "full_name": "hwloc",
+      "version": "2.14.0",
+      "revision": 0,
+      "bottle_rebuild": 0,
+      "pkg_version": "2.14.0",
+      "declared_directly": true
+    }
+  ],
+  "source": {
+    "spec": "stable",
+    "versions": {
+      "stable": "2023.1.0",
+      "head": null,
+      "version_scheme": 0,
+      "compatibility_version": null
+    },
+    "path": "/Users/runner/Library/Caches/Homebrew/api/internal/packages.arm64_sequoia.jws.json",
+    "tap_git_head": "a7496e08a4f47d93bf30ba518e3dfae9f1dbab3b",
+    "tap": "homebrew/core"
+  },
+  "arch": "arm64",
+  "built_on": {
+    "os": "Macintosh",
+    "os_version": "macOS 15.7",
+    "cpu_family": "dunno",
+    "xcode": "26.3",
+    "clt": "26.3.0.0.1.1771626560",
+    "preferred_perl": "5.34"
+  }
+}

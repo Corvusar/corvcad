@@ -1,0 +1,83 @@
+diff --git a/FBSimulatorVideo/Encoding/VideoToolboxFramePusher.swift b/FBSimulatorVideo/Encoding/VideoToolboxFramePusher.swift
+index 90c6d10..511a4a8 100644
+--- a/FBSimulatorVideo/Encoding/VideoToolboxFramePusher.swift
++++ b/FBSimulatorVideo/Encoding/VideoToolboxFramePusher.swift
+@@ -67,6 +67,8 @@ final class VideoToolboxFramePusher: FramePusher, @unchecked Sendable {
+   var compressionSession: VTCompressionSession?
+   /// BGRA→NV12 at the encoded output size; nil until `setup`.
+   private var converter: PixelBufferConverter?
++  // Confined to the owning stream actor; encoder callbacks never read this value.
++  private var capturedElapsedTime: TimeInterval = 0
+   let statsRecorder: EncoderStatsRecorder
+ 
+   init(
+@@ -193,6 +195,11 @@ final class VideoToolboxFramePusher: FramePusher, @unchecked Sendable {
+       throw VideoToolboxFramePusherError.missingCompressionSession
+     }
+ 
++    // frameDuration is measured between acquisition starts in SimulatorVideoStream.
++    // Accumulating those actual intervals keeps conversion latency out of presentation times
++    // while preserving genuine acquisition gaps (this is not frame-counter retiming).
++    capturedElapsedTime = frameNumber == 0 ? 0 : capturedElapsedTime + frameDuration
++
+     var bufferToWrite = pixelBuffer
+ 
+     let encodeStart = ContinuousClock.now
+@@ -211,7 +218,7 @@ final class VideoToolboxFramePusher: FramePusher, @unchecked Sendable {
+       }
+     }
+ 
+-    let time = CMTimeMakeWithSeconds(ProcessInfo.processInfo.systemUptime - timeAtFirstFrame, preferredTimescale: Int32(NSEC_PER_SEC))
++    let time = CMTimeMakeWithSeconds(capturedElapsedTime, preferredTimescale: Int32(NSEC_PER_SEC))
+     let duration = frameDuration > 0 ? CMTimeMakeWithSeconds(frameDuration, preferredTimescale: Int32(NSEC_PER_SEC)) : CMTime.invalid
+     var frameProperties: [String: Any]?
+     if frameNumber == 0 || forceKeyFrame {
+diff --git a/PrivateHeaders/AccessibilityPlatformTranslation/AccessibilityPlatformTranslation.tbd b/PrivateHeaders/AccessibilityPlatformTranslation/AccessibilityPlatformTranslation.tbd
+index 66d23fe..2554fe6 100644
+--- a/PrivateHeaders/AccessibilityPlatformTranslation/AccessibilityPlatformTranslation.tbd
++++ b/PrivateHeaders/AccessibilityPlatformTranslation/AccessibilityPlatformTranslation.tbd
+@@ -1,11 +1,11 @@
+ --- !tapi-tbd
+ tbd-version: 4
+-targets: [ arm64-macos ]
++targets: [ arm64-macos, x86_64-macos ]
+ install-name: '/System/Library/PrivateFrameworks/AccessibilityPlatformTranslation.framework/Versions/A/AccessibilityPlatformTranslation'
+ current-version: 0
+ compatibility-version: 0
+ exports:
+-  - targets: [ arm64-macos ]
++  - targets: [ arm64-macos, x86_64-macos ]
+     objc-classes:
+       - AXPMacPlatformElement
+       - AXPTranslationObject
+diff --git a/PrivateHeaders/CoreSimulator/CoreSimulator.tbd b/PrivateHeaders/CoreSimulator/CoreSimulator.tbd
+index 9091276..3658d7e 100644
+--- a/PrivateHeaders/CoreSimulator/CoreSimulator.tbd
++++ b/PrivateHeaders/CoreSimulator/CoreSimulator.tbd
+@@ -1,11 +1,11 @@
+ --- !tapi-tbd
+ tbd-version: 4
+-targets: [ arm64-macos ]
++targets: [ arm64-macos, x86_64-macos ]
+ install-name: '/Library/Developer/PrivateFrameworks/CoreSimulator.framework/Versions/A/CoreSimulator'
+ current-version: 0
+ compatibility-version: 0
+ exports:
+-  - targets: [ arm64-macos ]
++  - targets: [ arm64-macos, x86_64-macos ]
+     objc-classes:
+       - SimDevice
+       - SimDeviceDarwinNotificationToken
+diff --git a/build.sh b/build.sh
+index 7e5a1a5..c2f068c 100755
+--- a/build.sh
++++ b/build.sh
+@@ -649,7 +649,7 @@ function invoke_xcodebuild() {
+     -disableAutomaticPackageResolution
+     ENABLE_USER_SCRIPT_SANDBOXING=NO
+     CLANG_ENABLE_EXPLICIT_MODULES=NO
+-    ARCHS=arm64
++    ARCHS=x86_64
+   )
+   # Every invocation keeps its complete, unformatted output. A formatter only
+   # shows what it recognises, so the raw log is the record, and on failure its

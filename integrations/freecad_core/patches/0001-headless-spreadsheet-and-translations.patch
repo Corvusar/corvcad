@@ -1,0 +1,27 @@
+--- a/cMake/FreeCAD_Helpers/CheckInterModuleDependencies.cmake
++++ b/cMake/FreeCAD_Helpers/CheckInterModuleDependencies.cmake
+@@ -38,7 +38,10 @@
+     REQUIRES_MODS(BUILD_ROBOT              BUILD_PART)
+     REQUIRES_MODS(BUILD_SANDBOX            BUILD_PART BUILD_MESH)
+     REQUIRES_MODS(BUILD_SKETCHER           BUILD_PART)
+-    REQUIRES_MODS(BUILD_SPREADSHEET        BUILD_DRAFT)
++    # Draft is used by Spreadsheet GUI tools, not by the App target.
++    if(BUILD_GUI)
++        REQUIRES_MODS(BUILD_SPREADSHEET    BUILD_DRAFT)
++    endif()
+     REQUIRES_MODS(BUILD_SURFACE            BUILD_PART)
+     REQUIRES_MODS(BUILD_TECHDRAW           BUILD_PART BUILD_PART_DESIGN BUILD_SPREADSHEET BUILD_MEASURE BUILD_IMPORT)
+ endmacro(CheckInterModuleDependencies)
+--- a/cMake/FreeCAD_Helpers/SetupQt.cmake
++++ b/cMake/FreeCAD_Helpers/SetupQt.cmake
+@@ -1,6 +1,10 @@
+ # -------------------------------- Qt --------------------------------
+ 
+ set(FREECAD_QT_COMPONENTS Core Concurrent Network Xml)
++# FreeCADApp embeds translations even without FreeCADGui.
++if(NOT BUILD_GUI)
++    list(APPEND FREECAD_QT_COMPONENTS LinguistTools)
++endif()
+ if (FREECAD_QT_MAJOR_VERSION EQUAL 6)
+     set (Qt6Core_MOC_EXECUTABLE Qt6::moc)
+ endif()

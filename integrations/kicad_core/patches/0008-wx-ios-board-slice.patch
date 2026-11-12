@@ -1,0 +1,355 @@
+CorvCAD patch series for KiCad 10.0.6 (caf7377), on top of 0007: let the headless board slice
+compile against the wxWidgets iOS port (osx_iphone), as 0002 does for the schematic slice.
+
+Applied by integrations/kicad_core/fetch.py. Desktop behaviour is unchanged.
+
+1. Layer-name matching in pcbexpr_evaluator.cpp, pcbexpr_functions.cpp and drc_rule_parser.cpp
+   reads wxPGChoices through GetLabel(i)/GetValue(i) instead of wxPGChoiceEntry, which the
+   property-grid-less fallback (properties/pg_choices_fallback.h) does not have.
+2. board_item.cpp and pcbnew_settings.cpp drop an unused <pybind11/pybind11.h> include.
+3. ogl_attr_list.h declares OGL_ATT_LIST only when wx has a GL canvas; the 3D viewer settings
+   only need ANTIALIASING_MODE.
+4. PCB_EDIT_FRAME::ExportSpecctraFile() and ::ImportSpecctraSession() move from
+   specctra_export.cpp and specctra_import.cpp to a new specctra_frame.cpp (listed in
+   pcbnew/CMakeLists.txt), so the DSN exporter and SES importer build without the editor.
+diff --git a/pcbnew/pcbexpr_evaluator.cpp b/pcbnew/pcbexpr_evaluator.cpp
+--- a/pcbnew/pcbexpr_evaluator.cpp
++++ b/pcbnew/pcbexpr_evaluator.cpp
+@@ -83,10 +83,8 @@
+ 
+         for( unsigned ii = 0; ii < layerMap.GetCount(); ++ii )
+         {
+-            wxPGChoiceEntry& entry = layerMap[ii];
+-
+-            if( entry.GetText().Matches( layerName ) )
+-                mask.set( ToLAYER_ID( entry.GetValue() ) );
++            if( layerMap.GetLabel( ii ).Matches( layerName ) )
++                mask.set( ToLAYER_ID( layerMap.GetValue( ii ) ) );
+         }
+ 
+         {
+diff --git a/pcbnew/pcbexpr_functions.cpp b/pcbnew/pcbexpr_functions.cpp
+--- a/pcbnew/pcbexpr_functions.cpp
++++ b/pcbnew/pcbexpr_functions.cpp
+@@ -119,13 +119,11 @@
+ 
+                     for( unsigned ii = 0; ii < layerMap.GetCount(); ++ii )
+                     {
+-                        wxPGChoiceEntry& entry = layerMap[ ii ];
+-
+-                        if( entry.GetText().Matches( layerName ))
++                        if( layerMap.GetLabel( ii ).Matches( layerName ))
+                         {
+                             anyMatch = true;
+ 
+-                            if( item->IsOnLayer( ToLAYER_ID( entry.GetValue() ) ) )
++                            if( item->IsOnLayer( ToLAYER_ID( layerMap.GetValue( ii ) ) ) )
+                                 return 1.0;
+                         }
+                     }
+@@ -159,10 +157,8 @@
+ 
+                     for( unsigned ii = 0; ii < layerMap.GetCount(); ++ii )
+                     {
+-                        wxPGChoiceEntry& entry = layerMap[ ii ];
+-
+-                        if( entry.GetText().Matches( layerName ) )
+-                            mask.set( ToLAYER_ID( entry.GetValue() ) );
++                        if( layerMap.GetLabel( ii ).Matches( layerName ) )
++                            mask.set( ToLAYER_ID( layerMap.GetValue( ii ) ) );
+                     }
+ 
+                     {
+diff --git a/pcbnew/drc/drc_rule_parser.cpp b/pcbnew/drc/drc_rule_parser.cpp
+--- a/pcbnew/drc/drc_rule_parser.cpp
++++ b/pcbnew/drc/drc_rule_parser.cpp
+@@ -868,12 +868,10 @@
+ 
+         for( unsigned ii = 0; ii < layerMap.GetCount(); ++ii )
+         {
+-            wxPGChoiceEntry& entry = layerMap[ii];
+-
+-            if( entry.GetText().Matches( layerName ) )
++            if( layerMap.GetLabel( ii ).Matches( layerName ) )
+             {
+                 *aSource = layerName;
+-                retVal.set( ToLAYER_ID( entry.GetValue() ) );
++                retVal.set( ToLAYER_ID( layerMap.GetValue( ii ) ) );
+             }
+         }
+ 
+diff --git a/pcbnew/board_item.cpp b/pcbnew/board_item.cpp
+--- a/pcbnew/board_item.cpp
++++ b/pcbnew/board_item.cpp
+@@ -23,7 +23,6 @@
+  * 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA
+  */
+ 
+-#include <pybind11/pybind11.h>
+ 
+ #include <wx/debug.h>
+ #include <wx/msgdlg.h>
+diff --git a/pcbnew/pcbnew_settings.cpp b/pcbnew/pcbnew_settings.cpp
+--- a/pcbnew/pcbnew_settings.cpp
++++ b/pcbnew/pcbnew_settings.cpp
+@@ -21,7 +21,6 @@
+ * 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA
+ */
+ 
+-#include <pybind11/pybind11.h>
+ 
+ #include <common.h>
+ #include <settings/color_settings.h>
+diff --git a/3d-viewer/common_ogl/ogl_attr_list.h b/3d-viewer/common_ogl/ogl_attr_list.h
+--- a/3d-viewer/common_ogl/ogl_attr_list.h
++++ b/3d-viewer/common_ogl/ogl_attr_list.h
+@@ -31,7 +31,11 @@
+ #define _OGL_ATT_LIST_H
+ 
+ #include <kicad_gl/kiglad.h> // Must be included first
++#include <wx/defs.h>
++
++#if wxUSE_GLCANVAS
+ #include <wx/glcanvas.h>
++#endif
+ 
+ /// Anti-aliasing options
+ enum class ANTIALIASING_MODE
+@@ -43,6 +47,7 @@
+     AA_8X   = 3
+ };
+ 
++#if wxUSE_GLCANVAS
+ /**
+  *  Helper class to create an attribute list.
+  */
+@@ -61,5 +66,6 @@
+     static const wxGLAttributes GetAttributesList( ANTIALIASING_MODE aAntiAliasingMode,
+                                                    bool              aAlpha = false );
+ };
++#endif // wxUSE_GLCANVAS
+ 
+ #endif // _OGL_ATT_LIST_H
+diff --git a/pcbnew/specctra_import_export/specctra_export.cpp b/pcbnew/specctra_import_export/specctra_export.cpp
+--- a/pcbnew/specctra_import_export/specctra_export.cpp
++++ b/pcbnew/specctra_import_export/specctra_export.cpp
+@@ -73,38 +73,6 @@
+ // I am guessing non convex polygons with holes linked could create issues with any Router.
+ #define EXPORT_CUSTOM_PADS_CONVEX_HULL
+ 
+-
+-bool PCB_EDIT_FRAME::ExportSpecctraFile( const wxString& aFullFilename )
+-{
+-    BASE_SCREEN* screen = GetScreen();
+-    bool         wasModified = screen->IsContentModified();
+-    wxString     errorText;
+-    bool         ok = true;
+-
+-    try
+-    {
+-        DSN::ExportBoardToSpecctraFile( GetBoard(), aFullFilename );
+-    }
+-    catch( const IO_ERROR& ioe )
+-    {
+-        ok = false;
+-
+-        // copy the error string to safe place, ioe is in this scope only.
+-        errorText = ioe.What();
+-    }
+-
+-    // The two calls to FOOTPRINT::Flip() in ExportBoardToSpecctraFile both set the modified flag,
+-    // yet their actions cancel each other out, so it should be ok to clear the flag.
+-    if( !wasModified )
+-        screen->SetContentModified( false );
+-
+-    if( ok )
+-        SetStatusText( wxString( _( "BOARD exported OK." ) ) );
+-    else
+-        DisplayErrorMessage( this, _( "Unable to export, please fix and try again" ), errorText );
+-
+-    return ok;
+-}
+ 
+ namespace DSN
+ {
+diff --git a/pcbnew/specctra_import_export/specctra_import.cpp b/pcbnew/specctra_import_export/specctra_import.cpp
+--- a/pcbnew/specctra_import_export/specctra_import.cpp
++++ b/pcbnew/specctra_import_export/specctra_import.cpp
+@@ -53,50 +53,6 @@
+ 
+ using namespace DSN;
+ 
+-bool PCB_EDIT_FRAME::ImportSpecctraSession( const wxString& fullFileName )
+-{
+-    // To avoid issues with undo/redo lists (dangling pointers) clear the lists
+-    // todo: use undo/redo feature
+-    ClearUndoRedoList();
+-
+-    if( GetCanvas() )    // clear view:
+-    {
+-        for( PCB_TRACK* track : GetBoard()->Tracks() )
+-            GetCanvas()->GetView()->Remove( track );
+-    }
+-
+-    try
+-    {
+-        DSN::ImportSpecctraSession( GetBoard(), fullFileName );
+-    }
+-    catch( const IO_ERROR& ioe )
+-    {
+-        wxString msg = _( "Board may be corrupted, do not save it.\n Fix problem and try again" );
+-
+-        wxString extra = ioe.What();
+-
+-        DisplayErrorMessage( this, msg, extra );
+-        return false;
+-    }
+-
+-    OnModify();
+-
+-    if( GetCanvas() )    // Update view:
+-    {
+-        // Update footprint positions
+-
+-        // add imported tracks (previous tracks are removed, therefore all are new)
+-        for( PCB_TRACK* track : GetBoard()->Tracks() )
+-            GetCanvas()->GetView()->Add( track );
+-    }
+-
+-    SetStatusText( wxString( _( "Session file imported and merged OK." ) ) );
+-
+-    Refresh();
+-
+-    return true;
+-}
+-
+ 
+ namespace DSN {
+ 
+diff --git a/pcbnew/specctra_import_export/specctra_frame.cpp b/pcbnew/specctra_import_export/specctra_frame.cpp
+new file mode 100644
+--- /dev/null
++++ b/pcbnew/specctra_import_export/specctra_frame.cpp
+@@ -0,0 +1,111 @@
++/*
++ * This program source code file is part of KiCad, a free EDA CAD application.
++ *
++ * Copyright (C) 2007-2013 SoftPLC Corporation, Dick Hollenbeck <dick@softplc.com>
++ * Copyright The KiCad Developers, see AUTHORS.txt for contributors.
++ *
++ * This program is free software; you can redistribute it and/or
++ * modify it under the terms of the GNU General Public License
++ * as published by the Free Software Foundation; either version 2
++ * of the License, or (at your option) any later version.
++ *
++ * This program is distributed in the hope that it will be useful,
++ * but WITHOUT ANY WARRANTY; without even the implied warranty of
++ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
++ * GNU General Public License for more details.
++ *
++ * You should have received a copy of the GNU General Public License
++ * along with this program; if not, you may find one here:
++ * http://www.gnu.org/licenses/old-licenses/gpl-2.0.html
++ * or you may search the http://www.gnu.org website for the version 2 license,
++ * or you may write to the Free Software Foundation, Inc.,
++ * 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA
++ */
++
++// The editor's Specctra menu commands, moved out of specctra_export.cpp and specctra_import.cpp
++// so the DSN exporter and SES importer link without the board editor.
++
++#include "specctra.h"
++
++#include <board.h>
++#include <confirm.h>
++#include <pcb_edit_frame.h>
++#include <pcb_track.h>
++#include <view/view.h>
++
++
++bool PCB_EDIT_FRAME::ExportSpecctraFile( const wxString& aFullFilename )
++{
++    BASE_SCREEN* screen = GetScreen();
++    bool         wasModified = screen->IsContentModified();
++    wxString     errorText;
++    bool         ok = true;
++
++    try
++    {
++        DSN::ExportBoardToSpecctraFile( GetBoard(), aFullFilename );
++    }
++    catch( const IO_ERROR& ioe )
++    {
++        ok = false;
++
++        // copy the error string to safe place, ioe is in this scope only.
++        errorText = ioe.What();
++    }
++
++    // The two calls to FOOTPRINT::Flip() in ExportBoardToSpecctraFile both set the modified flag,
++    // yet their actions cancel each other out, so it should be ok to clear the flag.
++    if( !wasModified )
++        screen->SetContentModified( false );
++
++    if( ok )
++        SetStatusText( wxString( _( "BOARD exported OK." ) ) );
++    else
++        DisplayErrorMessage( this, _( "Unable to export, please fix and try again" ), errorText );
++
++    return ok;
++}
++
++bool PCB_EDIT_FRAME::ImportSpecctraSession( const wxString& fullFileName )
++{
++    // To avoid issues with undo/redo lists (dangling pointers) clear the lists
++    // todo: use undo/redo feature
++    ClearUndoRedoList();
++
++    if( GetCanvas() )    // clear view:
++    {
++        for( PCB_TRACK* track : GetBoard()->Tracks() )
++            GetCanvas()->GetView()->Remove( track );
++    }
++
++    try
++    {
++        DSN::ImportSpecctraSession( GetBoard(), fullFileName );
++    }
++    catch( const IO_ERROR& ioe )
++    {
++        wxString msg = _( "Board may be corrupted, do not save it.\n Fix problem and try again" );
++
++        wxString extra = ioe.What();
++
++        DisplayErrorMessage( this, msg, extra );
++        return false;
++    }
++
++    OnModify();
++
++    if( GetCanvas() )    // Update view:
++    {
++        // Update footprint positions
++
++        // add imported tracks (previous tracks are removed, therefore all are new)
++        for( PCB_TRACK* track : GetBoard()->Tracks() )
++            GetCanvas()->GetView()->Add( track );
++    }
++
++    SetStatusText( wxString( _( "Session file imported and merged OK." ) ) );
++
++    Refresh();
++
++    return true;
++}
+diff --git a/pcbnew/CMakeLists.txt b/pcbnew/CMakeLists.txt
+--- a/pcbnew/CMakeLists.txt
++++ b/pcbnew/CMakeLists.txt
+@@ -435,6 +435,7 @@
+     specctra_import_export/specctra.cpp
+     specctra_import_export/specctra_export.cpp
+     specctra_import_export/specctra_import.cpp
++    specctra_import_export/specctra_frame.cpp
+     pcb_fields_grid_table.cpp
+     toolbars_footprint_editor.cpp
+     toolbars_footprint_viewer.cpp

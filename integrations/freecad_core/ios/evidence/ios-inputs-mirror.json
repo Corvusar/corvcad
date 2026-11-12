@@ -1,0 +1,1465 @@
+{
+  "schema": 1,
+  "repository": "temporary private CI mirror",
+  "run": 40215029789,
+  "commit": "876fb1ccc4c769c96d380a3db94d50c79fced3ba",
+  "run_url": "private CI mirror run 40215029789",
+  "scope": "Both static OCCT SDK builds and Python with shared archives passed; FreeCAD configure stopped at missing host SWIG; no full FreeCAD iOS result",
+  "targets": {
+    "simulator": {
+      "artifact_id": 12607527535,
+      "zip_sha256": "5ba2304369aa7da26244dd3bbaf04a3f5195e4fd592873fc754d86fbb8b6da48",
+      "occt_report_sha256": "1975d3517c2a86bb91fe66e767d762f0c47476b6d6636f9e18aa55a558197105",
+      "python_report_sha256": "99a847197236ec13ca83bd54e8ff576ca1fa4873ef311b6bc2cd8ea4ddf35ab0",
+      "python_binary_report_sha256": "fd7265ca508b3d248085bf1f1beafc1be5853e5802bfbbc3dd226a93f95b0583",
+      "occt": {
+        "schema": 1,
+        "source": {
+          "version": "7.8.1",
+          "directory": "OCCT-7_8_1",
+          "url": "https://github.com/Open-Cascade-SAS/OCCT/archive/refs/tags/V7_8_1.tar.gz",
+          "sha256": "7321af48c34dc253bf8aae3f0430e8cb10976961d534d8509e72516978aa82f5"
+        },
+        "sdk": "iphonesimulator",
+        "minimum_ios": "17.0",
+        "architecture": "arm64",
+        "patches": [],
+        "toolkit_roots": [
+          "TKFillet",
+          "TKMesh",
+          "TKernel",
+          "TKG2d",
+          "TKG3d",
+          "TKMath",
+          "TKShHealing",
+          "TKXSBase",
+          "TKBool",
+          "TKBO",
+          "TKBRep",
+          "TKTopAlgo",
+          "TKGeomAlgo",
+          "TKGeomBase",
+          "TKOffset",
+          "TKPrim",
+          "TKHLR",
+          "TKFeat",
+          "TKDESTEP",
+          "TKDEIGES",
+          "TKDEGLTF",
+          "TKDESTL",
+          "TKBin",
+          "TKBinL",
+          "TKCAF",
+          "TKXCAF",
+          "TKLCAF",
+          "TKVCAF",
+          "TKCDF",
+          "TKMeshVS",
+          "TKService",
+          "TKV3d",
+          "TKRWMesh",
+          "TKBinXCAF"
+        ],
+        "toolkit_dependencies": {
+          "TKBO": [
+            "TKBRep",
+            "TKG2d",
+            "TKG3d",
+            "TKGeomAlgo",
+            "TKGeomBase",
+            "TKMath",
+            "TKPrim",
+            "TKShHealing",
+            "TKTopAlgo",
+            "TKernel"
+          ],
+          "TKBRep": [
+            "TKG2d",
+            "TKG3d",
+            "TKGeomBase",
+            "TKMath",
+            "TKernel"
+          ],
+          "TKBin": [
+            "TKBRep",
+            "TKBinL",
+            "TKCAF",
+            "TKCDF",
+            "TKG2d",
+            "TKG3d",
+            "TKLCAF",
+            "TKMath",
+            "TKernel"
+          ],
+          "TKBinL": [
+            "TKCDF",
+            "TKLCAF",
+            "TKernel"
+          ],
+          "TKBinXCAF": [
+            "TKBRep",
+            "TKBin",
+            "TKBinL",
+            "TKCAF",
+            "TKCDF",
+            "TKG2d",
+            "TKG3d",
+            "TKLCAF",
+            "TKMath",
+            "TKService",
+            "TKXCAF",
+            "TKernel"
+          ],
+          "TKBool": [
+            "TKBO",
+            "TKBRep",
+            "TKG2d",
+            "TKG3d",
+            "TKGeomAlgo",
+            "TKGeomBase",
+            "TKMath",
+            "TKPrim",
+            "TKShHealing",
+            "TKTopAlgo",
+            "TKernel"
+          ],
+          "TKCAF": [
+            "TKBO",
+            "TKBRep",
+            "TKCDF",
+            "TKG2d",
+            "TKG3d",
+            "TKGeomBase",
+            "TKLCAF",
+            "TKMath",
+            "TKTopAlgo",
+            "TKernel"
+          ],
+          "TKCDF": [
+            "TKernel"
+          ],
+          "TKDE": [
+            "TKernel"
+          ],
+          "TKDEGLTF": [
+            "TKBRep",
+            "TKDE",
+            "TKG3d",
+            "TKLCAF",
+            "TKMath",
+            "TKMesh",
+            "TKRWMesh",
+            "TKService",
+            "TKV3d",
+            "TKXCAF",
+            "TKernel"
+          ],
+          "TKDEIGES": [
+            "TKBRep",
+            "TKBool",
+            "TKCDF",
+            "TKDE",
+            "TKG2d",
+            "TKG3d",
+            "TKGeomAlgo",
+            "TKGeomBase",
+            "TKLCAF",
+            "TKMath",
+            "TKPrim",
+            "TKShHealing",
+            "TKTopAlgo",
+            "TKXCAF",
+            "TKXSBase",
+            "TKernel"
+          ],
+          "TKDESTEP": [
+            "TKBRep",
+            "TKCAF",
+            "TKCDF",
+            "TKDE",
+            "TKG2d",
+            "TKG3d",
+            "TKGeomAlgo",
+            "TKGeomBase",
+            "TKLCAF",
+            "TKMath",
+            "TKShHealing",
+            "TKTopAlgo",
+            "TKXCAF",
+            "TKXSBase",
+            "TKernel"
+          ],
+          "TKDESTL": [
+            "TKBRep",
+            "TKDE",
+            "TKG2d",
+            "TKG3d",
+            "TKLCAF",
+            "TKMath",
+            "TKTopAlgo",
+            "TKXCAF",
+            "TKernel"
+          ],
+          "TKFeat": [
+            "TKBO",
+            "TKBRep",
+            "TKBool",
+            "TKG2d",
+            "TKG3d",
+            "TKGeomAlgo",
+            "TKGeomBase",
+            "TKMath",
+            "TKPrim",
+            "TKShHealing",
+            "TKTopAlgo",
+            "TKernel"
+          ],
+          "TKFillet": [
+            "TKBO",
+            "TKBRep",
+            "TKBool",
+            "TKG2d",
+            "TKG3d",
+            "TKGeomAlgo",
+            "TKGeomBase",
+            "TKMath",
+            "TKShHealing",
+            "TKTopAlgo",
+            "TKernel"
+          ],
+          "TKG2d": [
+            "TKMath",
+            "TKernel"
+          ],
+          "TKG3d": [
+            "TKG2d",
+            "TKMath",
+            "TKernel"
+          ],
+          "TKGeomAlgo": [
+            "TKBRep",
+            "TKG2d",
+            "TKG3d",
+            "TKGeomBase",
+            "TKMath",
+            "TKernel"
+          ],
+          "TKGeomBase": [
+            "TKG2d",
+            "TKG3d",
+            "TKMath",
+            "TKernel"
+          ],
+          "TKHLR": [
+            "TKBRep",
+            "TKG2d",
+            "TKG3d",
+            "TKGeomAlgo",
+            "TKGeomBase",
+            "TKMath",
+            "TKTopAlgo",
+            "TKernel"
+          ],
+          "TKLCAF": [
+            "TKCDF",
+            "TKernel"
+          ],
+          "TKMath": [
+            "TKernel"
+          ],
+          "TKMesh": [
+            "TKBRep",
+            "TKG2d",
+            "TKG3d",
+            "TKGeomBase",
+            "TKMath",
+            "TKShHealing",
+            "TKTopAlgo",
+            "TKernel"
+          ],
+          "TKMeshVS": [
+            "TKG2d",
+            "TKG3d",
+            "TKMath",
+            "TKService",
+            "TKV3d",
+            "TKernel"
+          ],
+          "TKOffset": [
+            "TKBO",
+            "TKBRep",
+            "TKBool",
+            "TKFillet",
+            "TKG2d",
+            "TKG3d",
+            "TKGeomAlgo",
+            "TKGeomBase",
+            "TKMath",
+            "TKPrim",
+            "TKShHealing",
+            "TKTopAlgo",
+            "TKernel"
+          ],
+          "TKPrim": [
+            "TKBRep",
+            "TKG2d",
+            "TKG3d",
+            "TKGeomBase",
+            "TKMath",
+            "TKTopAlgo",
+            "TKernel"
+          ],
+          "TKRWMesh": [
+            "TKBRep",
+            "TKDE",
+            "TKG3d",
+            "TKLCAF",
+            "TKMath",
+            "TKMesh",
+            "TKService",
+            "TKV3d",
+            "TKXCAF",
+            "TKernel"
+          ],
+          "TKService": [
+            "TKMath",
+            "TKernel"
+          ],
+          "TKShHealing": [
+            "TKBRep",
+            "TKG2d",
+            "TKG3d",
+            "TKGeomAlgo",
+            "TKGeomBase",
+            "TKMath",
+            "TKTopAlgo",
+            "TKernel"
+          ],
+          "TKTopAlgo": [
+            "TKBRep",
+            "TKG2d",
+            "TKG3d",
+            "TKGeomAlgo",
+            "TKGeomBase",
+            "TKMath",
+            "TKernel"
+          ],
+          "TKV3d": [
+            "TKBRep",
+            "TKG2d",
+            "TKG3d",
+            "TKGeomAlgo",
+            "TKGeomBase",
+            "TKHLR",
+            "TKMath",
+            "TKMesh",
+            "TKService",
+            "TKShHealing",
+            "TKTopAlgo",
+            "TKernel"
+          ],
+          "TKVCAF": [
+            "TKBO",
+            "TKBRep",
+            "TKCAF",
+            "TKCDF",
+            "TKG2d",
+            "TKG3d",
+            "TKGeomBase",
+            "TKLCAF",
+            "TKMath",
+            "TKService",
+            "TKTopAlgo",
+            "TKV3d",
+            "TKernel"
+          ],
+          "TKXCAF": [
+            "TKBRep",
+            "TKCAF",
+            "TKCDF",
+            "TKG2d",
+            "TKG3d",
+            "TKLCAF",
+            "TKMath",
+            "TKService",
+            "TKTopAlgo",
+            "TKV3d",
+            "TKVCAF",
+            "TKernel"
+          ],
+          "TKXSBase": [
+            "TKBRep",
+            "TKG2d",
+            "TKG3d",
+            "TKGeomBase",
+            "TKMath",
+            "TKShHealing",
+            "TKTopAlgo",
+            "TKernel"
+          ],
+          "TKernel": []
+        },
+        "archives": {
+          "lib/libTKBO.a": {
+            "sha256": "93b0eb32a1ac765f236652997f3109f5a5768c3ecb050fedb666e71159d04ca7",
+            "bytes": 6067120,
+            "verified_build_versions": 88
+          },
+          "lib/libTKBRep.a": {
+            "sha256": "e059bf2ebf002fe875d45c6b9bef4be03ec8a98ff3ac38fc37a69ad690fd01d1",
+            "bytes": 2602456,
+            "verified_build_versions": 77
+          },
+          "lib/libTKBin.a": {
+            "sha256": "3b073b2365d57ffb22da1e17be94753dec4f0b0fd83432c8c5663dd5470c4e40",
+            "bytes": 281808,
+            "verified_build_versions": 13
+          },
+          "lib/libTKBinL.a": {
+            "sha256": "f4e132be9a663792f591e433e2ce745406c4d6f5c16bc2ee41be58f2eafc9a64",
+            "bytes": 738352,
+            "verified_build_versions": 42
+          },
+          "lib/libTKBinXCAF.a": {
+            "sha256": "23e233c61a7ba32c474893a7de089876f6f53a5bbcdab359a4fce515270be699",
+            "bytes": 306464,
+            "verified_build_versions": 18
+          },
+          "lib/libTKBool.a": {
+            "sha256": "2bca4254c76ca9e44522ca8014c76bc6838242975f4a24312500a701b4221ae6",
+            "bytes": 10167984,
+            "verified_build_versions": 243
+          },
+          "lib/libTKCAF.a": {
+            "sha256": "e3c3a7ed16d514dd9f634c6b0893a468727218308b56aeceb682b982caffdbe7",
+            "bytes": 1325864,
+            "verified_build_versions": 31
+          },
+          "lib/libTKCDF.a": {
+            "sha256": "2effba3082f775d1784ff6cc2a9e3c65be2799f6e6eeebcb2d9ba6ba303a5217",
+            "bytes": 694280,
+            "verified_build_versions": 45
+          },
+          "lib/libTKDE.a": {
+            "sha256": "17a0774e46671aa1873f1140f68d69c072885bd2a24cebdeacba2069d2cd696c",
+            "bytes": 161256,
+            "verified_build_versions": 4
+          },
+          "lib/libTKDEGLTF.a": {
+            "sha256": "b292b0605046f7acef7789f5bafb5c16f8a467d4b8fc0c568d4ae215cfe78c63",
+            "bytes": 384320,
+            "verified_build_versions": 8
+          },
+          "lib/libTKDEIGES.a": {
+            "sha256": "fbe46fc358d93de135b3bd0e94294fdb19e448dd0ffdbefaedbfd83069b0aeb7",
+            "bytes": 11210800,
+            "verified_build_versions": 459
+          },
+          "lib/libTKDESTEP.a": {
+            "sha256": "ccbf1dbbee3f3a1071a800c3dac6f5557c1065d8c0ae1e1fca14cf87331f2ec2",
+            "bytes": 25916584,
+            "verified_build_versions": 1712
+          },
+          "lib/libTKDESTL.a": {
+            "sha256": "267d1895c9539504d1ef1b534c6fddb98659ec7be873da44a9ba9a0deb3176dc",
+            "bytes": 151368,
+            "verified_build_versions": 7
+          },
+          "lib/libTKFeat.a": {
+            "sha256": "458712aac401bfa8b0dd7703b49e7c1344cd47f53ab165c8523e333419113cf6",
+            "bytes": 2869176,
+            "verified_build_versions": 35
+          },
+          "lib/libTKFillet.a": {
+            "sha256": "1f113c8a252a47bfb3afa2f4c4e85986b6cc66f2e07a55922f13fb7b67fd3ec1",
+            "bytes": 4521672,
+            "verified_build_versions": 114
+          },
+          "lib/libTKG2d.a": {
+            "sha256": "480d71c9827db3d02e02f64c3e464c4f73c81eebdce9c016efa71b71712e0f28",
+            "bytes": 808344,
+            "verified_build_versions": 36
+          },
+          "lib/libTKG3d.a": {
+            "sha256": "6e12c166eb7794d447a80f9128a3c6a2fb5a1e63c947d44d480a953a49b55cc7",
+            "bytes": 2330488,
+            "verified_build_versions": 81
+          },
+          "lib/libTKGeomAlgo.a": {
+            "sha256": "61c920a4d309574f5ef9d0575737359cf6fd372eefaedb19aef434621324a55f",
+            "bytes": 10174192,
+            "verified_build_versions": 365
+          },
+          "lib/libTKGeomBase.a": {
+            "sha256": "7564d80010eec87c59c09f435344e19fd00162d26f63f437cb35ab686863853b",
+            "bytes": 8811640,
+            "verified_build_versions": 288
+          },
+          "lib/libTKHLR.a": {
+            "sha256": "6ff66c2e5858dd2ec8f1c1873ef0384d66ef17f741c55db8c16417cc8a8f5dde",
+            "bytes": 2121032,
+            "verified_build_versions": 91
+          },
+          "lib/libTKLCAF.a": {
+            "sha256": "0c2b7eebb79078fdc4f220b86dd186f801c4b9b5cf82a2fb20dfc6c44e5d4aed",
+            "bytes": 2491600,
+            "verified_build_versions": 95
+          },
+          "lib/libTKMath.a": {
+            "sha256": "e3304edd597a30b8e93a39f42066858ce89670b64c74187bf339b4ef5a731b67",
+            "bytes": 4717808,
+            "verified_build_versions": 211
+          },
+          "lib/libTKMesh.a": {
+            "sha256": "09c1770a049f5f04c80cda4a76ba2c69f497fc0547749506b9635e943efc4b40",
+            "bytes": 2174856,
+            "verified_build_versions": 65
+          },
+          "lib/libTKMeshVS.a": {
+            "sha256": "41ba5075f8541e26a7bba455ec2f0da7e78cbd0e1e010e039ec0d7f7336d78ac",
+            "bytes": 731416,
+            "verified_build_versions": 22
+          },
+          "lib/libTKOffset.a": {
+            "sha256": "f59c870dfa55372d98631357cf2209f8903a05f809a1e0921899a0466bb59884",
+            "bytes": 4154104,
+            "verified_build_versions": 34
+          },
+          "lib/libTKPrim.a": {
+            "sha256": "af9554c772c0468ca75fb09cb2f062f44b2bb9bf2b67e8f1dc1af3cd01ee4b35",
+            "bytes": 730840,
+            "verified_build_versions": 34
+          },
+          "lib/libTKRWMesh.a": {
+            "sha256": "fa51891c126a6b27a29ee3aff6b8989aac0b090b036f21603240037bffd63e9d",
+            "bytes": 204616,
+            "verified_build_versions": 7
+          },
+          "lib/libTKService.a": {
+            "sha256": "2868c9a6d2171e02ddde91168211c1450ab82e60b7e83dd3b9afd394e7461aac",
+            "bytes": 2551528,
+            "verified_build_versions": 104
+          },
+          "lib/libTKShHealing.a": {
+            "sha256": "300003d00775dbb13b24ba97a13db3e4ea93623769dc39976bb834800e7deee1",
+            "bytes": 5901208,
+            "verified_build_versions": 112
+          },
+          "lib/libTKTopAlgo.a": {
+            "sha256": "ae2f560759d73747b52d57fdf6471ca1f07548b4933a5b34272a1b3808505cf9",
+            "bytes": 6253192,
+            "verified_build_versions": 156
+          },
+          "lib/libTKV3d.a": {
+            "sha256": "ea19e6faa8275a336a51e1aa165c459eedf0cbed93acdbf6ebf3942e9ccf3979",
+            "bytes": 7222456,
+            "verified_build_versions": 203
+          },
+          "lib/libTKVCAF.a": {
+            "sha256": "c11b605decde3f03370ac37b692371c87753f29f245c440f414edec91fa8c199",
+            "bytes": 368752,
+            "verified_build_versions": 11
+          },
+          "lib/libTKXCAF.a": {
+            "sha256": "baeff63531ad28392cfa9aaabf557054efff613bdd6df252123038a5e6652f17",
+            "bytes": 2078808,
+            "verified_build_versions": 48
+          },
+          "lib/libTKXSBase.a": {
+            "sha256": "80b15cad13ac0cd67d12525fa29694f702c6653c9331f9760c2e9c13491663d4",
+            "bytes": 5363512,
+            "verified_build_versions": 199
+          },
+          "lib/libTKernel.a": {
+            "sha256": "e34b7c5a8befbc04057bbf77c34737317882102df7da7cd85de1afd3a74dafff",
+            "bytes": 3349592,
+            "verified_build_versions": 131
+          }
+        },
+        "notices": {
+          "LICENSE_LGPL_21.txt": {
+            "sha256": "e237fa56668030e928551ddd60f05df5fe957f75eab874bbd017e085ed722e7c",
+            "bytes": 26434
+          },
+          "OCCT_LGPL_EXCEPTION.txt": {
+            "sha256": "04580a884ea6cea294402649ff7b5cbb167d47462d1340a4ed33e550db10a81b",
+            "bytes": 663
+          }
+        },
+        "provider_header_dependencies": {
+          "TKDE": [
+            "TKernel"
+          ],
+          "TKDEGLTF": [
+            "TKBinXCAF",
+            "TKLCAF",
+            "TKXCAF",
+            "TKernel"
+          ],
+          "TKDEIGES": [
+            "TKBinXCAF",
+            "TKXCAF",
+            "TKXSBase",
+            "TKernel"
+          ],
+          "TKDESTEP": [
+            "TKBinXCAF",
+            "TKXCAF",
+            "TKXSBase",
+            "TKernel"
+          ],
+          "TKDESTL": [
+            "TKBRep",
+            "TKBinXCAF",
+            "TKLCAF",
+            "TKXCAF",
+            "TKernel"
+          ]
+        },
+        "configure_command": [
+          "cmake",
+          "-S",
+          "/Users/runner/work/corvcad/corvcad/build/freecad-ios/occt/OCCT-7_8_1",
+          "-B",
+          "/Users/runner/work/corvcad/corvcad/build/freecad-ios/occt/iphonesimulator/build",
+          "-G",
+          "Ninja",
+          "-DCMAKE_BUILD_TYPE=Release",
+          "-DCMAKE_SYSTEM_NAME=iOS",
+          "-DCMAKE_POLICY_VERSION_MINIMUM=3.5",
+          "-DCMAKE_OSX_SYSROOT=iphonesimulator",
+          "-DCMAKE_OSX_ARCHITECTURES=arm64",
+          "-DCMAKE_OSX_DEPLOYMENT_TARGET=17.0",
+          "-DCMAKE_TRY_COMPILE_TARGET_TYPE=STATIC_LIBRARY",
+          "-DCMAKE_INTERPROCEDURAL_OPTIMIZATION=OFF",
+          "-DCMAKE_EXPORT_COMPILE_COMMANDS=ON",
+          "-DBUILD_LIBRARY_TYPE=Static",
+          "-DBUILD_DOC_Overview=OFF",
+          "-DBUILD_USE_PCH=OFF",
+          "-DINSTALL_DIR_LAYOUT=Unix",
+          "-DCMAKE_INSTALL_PREFIX=/Users/runner/work/corvcad/corvcad/build/freecad-ios/occt/iphonesimulator/stage",
+          "-DINSTALL_DIR=/Users/runner/work/corvcad/corvcad/build/freecad-ios/occt/iphonesimulator/stage",
+          "-DBUILD_ADDITIONAL_TOOLKITS=TKFillet TKMesh TKernel TKG2d TKG3d TKMath TKShHealing TKXSBase TKBool TKBO TKBRep TKTopAlgo TKGeomAlgo TKGeomBase TKOffset TKPrim TKHLR TKFeat TKDESTEP TKDEIGES TKDEGLTF TKDESTL TKBin TKBinL TKCAF TKXCAF TKLCAF TKVCAF TKCDF TKMeshVS TKService TKV3d TKRWMesh TKBinXCAF",
+          "-DBUILD_MODULE_FoundationClasses=OFF",
+          "-DBUILD_MODULE_ModelingData=OFF",
+          "-DBUILD_MODULE_ModelingAlgorithms=OFF",
+          "-DBUILD_MODULE_Visualization=OFF",
+          "-DBUILD_MODULE_ApplicationFramework=OFF",
+          "-DBUILD_MODULE_DataExchange=OFF",
+          "-DBUILD_MODULE_DETools=OFF",
+          "-DBUILD_MODULE_Draw=OFF",
+          "-DUSE_TCL=OFF",
+          "-DUSE_TK=OFF",
+          "-DUSE_FREETYPE=OFF",
+          "-DUSE_FREEIMAGE=OFF",
+          "-DUSE_FFMPEG=OFF",
+          "-DUSE_OPENVR=OFF",
+          "-DUSE_RAPIDJSON=OFF",
+          "-DUSE_DRACO=OFF",
+          "-DUSE_TBB=OFF",
+          "-DUSE_EIGEN=OFF",
+          "-DUSE_XLIB=OFF",
+          "-DUSE_OPENGL=OFF",
+          "-DUSE_GLES2=OFF",
+          "-DUSE_D3D=OFF",
+          "-DCMAKE_CXX_COMPILER_LAUNCHER=ccache",
+          "-DCMAKE_C_COMPILER_LAUNCHER=ccache"
+        ],
+        "presentation_toolkits": [
+          "TKMeshVS",
+          "TKService",
+          "TKV3d",
+          "TKVCAF"
+        ],
+        "viewer_driver_toolkits": [],
+        "xcode": "Xcode 16.4\nBuild version 16F6",
+        "sdk_version": "18.5",
+        "source_file_count": 35999,
+        "source_files_canonical_sha256": "3dcee48881229f330b4b7ddf82f3d37f4f8a7a979c0d2fdbe4bf027c4c18a095"
+      },
+      "python": {
+        "schema": 1,
+        "sdk": "iphonesimulator",
+        "target": "arm64-apple-ios17.0-simulator",
+        "source": {
+          "version": "3.13.7",
+          "url": "https://www.python.org/ftp/python/3.13.7/Python-3.13.7.tar.xz",
+          "sha256": "5462f9099dfd30e238def83c71d91897d8caa5ff6ebc7a50f14d4802cdaaa79a",
+          "license": "PSF-2.0 and bundled component notices in LICENSE"
+        },
+        "archive_bytes": 46944488,
+        "archive_sha256": "2f3a37a9d7e791b7e536baaeb45a367a6085a5bf6118db4673ace7a695279823",
+        "libffi_sha256": "d2ff607c6b5e15296303d79f234b17ec8789d436d900e4eb4a1710c701efe034",
+        "dependency_archives": {
+          "libffi.a": "d2ff607c6b5e15296303d79f234b17ec8789d436d900e4eb4a1710c701efe034",
+          "libz.a": "69e1047da120283522b98594db5257da5bdb58f1301148ccb8950589f7585211",
+          "libbz2.a": "eea2909bb3bfddb21bd41b8b98b8ffe4a2658e435ac09889652c43df7b4f6bd5"
+        },
+        "stdlib_bytes": 22676587,
+        "static_archives": [
+          "libpython3.13.a",
+          "Modules/_decimal/libmpdec/libmpdec.a",
+          "Modules/_hacl/libHacl_Hash_SHA2.a",
+          "Modules/expat/libexpat.a"
+        ],
+        "xcode": "Xcode 16.4\nBuild version 16F6",
+        "sdk_version": "18.5"
+      },
+      "python_binary": {
+        "schema": 1,
+        "sdk": "iphonesimulator",
+        "architecture": "arm64",
+        "executable_file_bytes": 8886384,
+        "sha256": "8bbfd18a986ac001437ad9fd3162ca37171a4405e9f97c2a12541d006d295b02",
+        "dynamic_system_links": [
+          "/usr/lib/libsqlite3.dylib",
+          "/usr/lib/libiconv.2.dylib",
+          "/System/Library/Frameworks/Foundation.framework/Foundation",
+          "/System/Library/Frameworks/UIKit.framework/UIKit",
+          "/usr/lib/libSystem.B.dylib"
+        ]
+      },
+      "python_probe": {
+        "schema": 1,
+        "passed": true,
+        "scope": "CPython and synthetic inittab module only",
+        "python": "3.13.7 (main, Oct 25 2026, 17:10:27) [Clang 17.0.0 (clang-1700.0.13.5)]",
+        "platform": "ios",
+        "platform_description": "iPadOS-26.2-arm64-64bit",
+        "sysconfig_host": "aarch64-apple-ios17.0-simulator",
+        "extension_origins": {
+          "math": "built-in",
+          "_struct": "built-in",
+          "_datetime": "built-in",
+          "binascii": "built-in",
+          "zlib": "built-in",
+          "_json": "built-in",
+          "_pickle": "built-in",
+          "_random": "built-in",
+          "_sha2": "built-in",
+          "pyexpat": "built-in",
+          "_elementtree": "built-in",
+          "unicodedata": "built-in",
+          "array": "built-in"
+        },
+        "smoke_seconds": 0.0001880000000085147,
+        "resident_bytes": 73678848
+      },
+      "python_probe_report_sha256": "3271ceed1b2856d632e969242efe1c650ad2fa200132c716c5b897ebeb1afd7b"
+    },
+    "device": {
+      "artifact_id": 12607273386,
+      "zip_sha256": "138c952a5bbf35b5ea18a6985cbb4644820f0a4d13de99e86bcf4d0f9e752c29",
+      "occt_report_sha256": "0f64b9a35bdd96f6b7559bd5179a5f49b98619ea7d8902716cdb1a08737eb48c",
+      "python_report_sha256": "2e1fb9903ad6d0c2195abb16d54effaf8587fc6ff09e5606f2bd3597812a799f",
+      "python_binary_report_sha256": "1e7bf11380e639d7483cf09b72bd97a089c4dc2ff81061a8525c1598faaef8a2",
+      "occt": {
+        "schema": 1,
+        "source": {
+          "version": "7.8.1",
+          "directory": "OCCT-7_8_1",
+          "url": "https://github.com/Open-Cascade-SAS/OCCT/archive/refs/tags/V7_8_1.tar.gz",
+          "sha256": "7321af48c34dc253bf8aae3f0430e8cb10976961d534d8509e72516978aa82f5"
+        },
+        "sdk": "iphoneos",
+        "minimum_ios": "17.0",
+        "architecture": "arm64",
+        "patches": [],
+        "toolkit_roots": [
+          "TKFillet",
+          "TKMesh",
+          "TKernel",
+          "TKG2d",
+          "TKG3d",
+          "TKMath",
+          "TKShHealing",
+          "TKXSBase",
+          "TKBool",
+          "TKBO",
+          "TKBRep",
+          "TKTopAlgo",
+          "TKGeomAlgo",
+          "TKGeomBase",
+          "TKOffset",
+          "TKPrim",
+          "TKHLR",
+          "TKFeat",
+          "TKDESTEP",
+          "TKDEIGES",
+          "TKDEGLTF",
+          "TKDESTL",
+          "TKBin",
+          "TKBinL",
+          "TKCAF",
+          "TKXCAF",
+          "TKLCAF",
+          "TKVCAF",
+          "TKCDF",
+          "TKMeshVS",
+          "TKService",
+          "TKV3d",
+          "TKRWMesh",
+          "TKBinXCAF"
+        ],
+        "toolkit_dependencies": {
+          "TKBO": [
+            "TKBRep",
+            "TKG2d",
+            "TKG3d",
+            "TKGeomAlgo",
+            "TKGeomBase",
+            "TKMath",
+            "TKPrim",
+            "TKShHealing",
+            "TKTopAlgo",
+            "TKernel"
+          ],
+          "TKBRep": [
+            "TKG2d",
+            "TKG3d",
+            "TKGeomBase",
+            "TKMath",
+            "TKernel"
+          ],
+          "TKBin": [
+            "TKBRep",
+            "TKBinL",
+            "TKCAF",
+            "TKCDF",
+            "TKG2d",
+            "TKG3d",
+            "TKLCAF",
+            "TKMath",
+            "TKernel"
+          ],
+          "TKBinL": [
+            "TKCDF",
+            "TKLCAF",
+            "TKernel"
+          ],
+          "TKBinXCAF": [
+            "TKBRep",
+            "TKBin",
+            "TKBinL",
+            "TKCAF",
+            "TKCDF",
+            "TKG2d",
+            "TKG3d",
+            "TKLCAF",
+            "TKMath",
+            "TKService",
+            "TKXCAF",
+            "TKernel"
+          ],
+          "TKBool": [
+            "TKBO",
+            "TKBRep",
+            "TKG2d",
+            "TKG3d",
+            "TKGeomAlgo",
+            "TKGeomBase",
+            "TKMath",
+            "TKPrim",
+            "TKShHealing",
+            "TKTopAlgo",
+            "TKernel"
+          ],
+          "TKCAF": [
+            "TKBO",
+            "TKBRep",
+            "TKCDF",
+            "TKG2d",
+            "TKG3d",
+            "TKGeomBase",
+            "TKLCAF",
+            "TKMath",
+            "TKTopAlgo",
+            "TKernel"
+          ],
+          "TKCDF": [
+            "TKernel"
+          ],
+          "TKDE": [
+            "TKernel"
+          ],
+          "TKDEGLTF": [
+            "TKBRep",
+            "TKDE",
+            "TKG3d",
+            "TKLCAF",
+            "TKMath",
+            "TKMesh",
+            "TKRWMesh",
+            "TKService",
+            "TKV3d",
+            "TKXCAF",
+            "TKernel"
+          ],
+          "TKDEIGES": [
+            "TKBRep",
+            "TKBool",
+            "TKCDF",
+            "TKDE",
+            "TKG2d",
+            "TKG3d",
+            "TKGeomAlgo",
+            "TKGeomBase",
+            "TKLCAF",
+            "TKMath",
+            "TKPrim",
+            "TKShHealing",
+            "TKTopAlgo",
+            "TKXCAF",
+            "TKXSBase",
+            "TKernel"
+          ],
+          "TKDESTEP": [
+            "TKBRep",
+            "TKCAF",
+            "TKCDF",
+            "TKDE",
+            "TKG2d",
+            "TKG3d",
+            "TKGeomAlgo",
+            "TKGeomBase",
+            "TKLCAF",
+            "TKMath",
+            "TKShHealing",
+            "TKTopAlgo",
+            "TKXCAF",
+            "TKXSBase",
+            "TKernel"
+          ],
+          "TKDESTL": [
+            "TKBRep",
+            "TKDE",
+            "TKG2d",
+            "TKG3d",
+            "TKLCAF",
+            "TKMath",
+            "TKTopAlgo",
+            "TKXCAF",
+            "TKernel"
+          ],
+          "TKFeat": [
+            "TKBO",
+            "TKBRep",
+            "TKBool",
+            "TKG2d",
+            "TKG3d",
+            "TKGeomAlgo",
+            "TKGeomBase",
+            "TKMath",
+            "TKPrim",
+            "TKShHealing",
+            "TKTopAlgo",
+            "TKernel"
+          ],
+          "TKFillet": [
+            "TKBO",
+            "TKBRep",
+            "TKBool",
+            "TKG2d",
+            "TKG3d",
+            "TKGeomAlgo",
+            "TKGeomBase",
+            "TKMath",
+            "TKShHealing",
+            "TKTopAlgo",
+            "TKernel"
+          ],
+          "TKG2d": [
+            "TKMath",
+            "TKernel"
+          ],
+          "TKG3d": [
+            "TKG2d",
+            "TKMath",
+            "TKernel"
+          ],
+          "TKGeomAlgo": [
+            "TKBRep",
+            "TKG2d",
+            "TKG3d",
+            "TKGeomBase",
+            "TKMath",
+            "TKernel"
+          ],
+          "TKGeomBase": [
+            "TKG2d",
+            "TKG3d",
+            "TKMath",
+            "TKernel"
+          ],
+          "TKHLR": [
+            "TKBRep",
+            "TKG2d",
+            "TKG3d",
+            "TKGeomAlgo",
+            "TKGeomBase",
+            "TKMath",
+            "TKTopAlgo",
+            "TKernel"
+          ],
+          "TKLCAF": [
+            "TKCDF",
+            "TKernel"
+          ],
+          "TKMath": [
+            "TKernel"
+          ],
+          "TKMesh": [
+            "TKBRep",
+            "TKG2d",
+            "TKG3d",
+            "TKGeomBase",
+            "TKMath",
+            "TKShHealing",
+            "TKTopAlgo",
+            "TKernel"
+          ],
+          "TKMeshVS": [
+            "TKG2d",
+            "TKG3d",
+            "TKMath",
+            "TKService",
+            "TKV3d",
+            "TKernel"
+          ],
+          "TKOffset": [
+            "TKBO",
+            "TKBRep",
+            "TKBool",
+            "TKFillet",
+            "TKG2d",
+            "TKG3d",
+            "TKGeomAlgo",
+            "TKGeomBase",
+            "TKMath",
+            "TKPrim",
+            "TKShHealing",
+            "TKTopAlgo",
+            "TKernel"
+          ],
+          "TKPrim": [
+            "TKBRep",
+            "TKG2d",
+            "TKG3d",
+            "TKGeomBase",
+            "TKMath",
+            "TKTopAlgo",
+            "TKernel"
+          ],
+          "TKRWMesh": [
+            "TKBRep",
+            "TKDE",
+            "TKG3d",
+            "TKLCAF",
+            "TKMath",
+            "TKMesh",
+            "TKService",
+            "TKV3d",
+            "TKXCAF",
+            "TKernel"
+          ],
+          "TKService": [
+            "TKMath",
+            "TKernel"
+          ],
+          "TKShHealing": [
+            "TKBRep",
+            "TKG2d",
+            "TKG3d",
+            "TKGeomAlgo",
+            "TKGeomBase",
+            "TKMath",
+            "TKTopAlgo",
+            "TKernel"
+          ],
+          "TKTopAlgo": [
+            "TKBRep",
+            "TKG2d",
+            "TKG3d",
+            "TKGeomAlgo",
+            "TKGeomBase",
+            "TKMath",
+            "TKernel"
+          ],
+          "TKV3d": [
+            "TKBRep",
+            "TKG2d",
+            "TKG3d",
+            "TKGeomAlgo",
+            "TKGeomBase",
+            "TKHLR",
+            "TKMath",
+            "TKMesh",
+            "TKService",
+            "TKShHealing",
+            "TKTopAlgo",
+            "TKernel"
+          ],
+          "TKVCAF": [
+            "TKBO",
+            "TKBRep",
+            "TKCAF",
+            "TKCDF",
+            "TKG2d",
+            "TKG3d",
+            "TKGeomBase",
+            "TKLCAF",
+            "TKMath",
+            "TKService",
+            "TKTopAlgo",
+            "TKV3d",
+            "TKernel"
+          ],
+          "TKXCAF": [
+            "TKBRep",
+            "TKCAF",
+            "TKCDF",
+            "TKG2d",
+            "TKG3d",
+            "TKLCAF",
+            "TKMath",
+            "TKService",
+            "TKTopAlgo",
+            "TKV3d",
+            "TKVCAF",
+            "TKernel"
+          ],
+          "TKXSBase": [
+            "TKBRep",
+            "TKG2d",
+            "TKG3d",
+            "TKGeomBase",
+            "TKMath",
+            "TKShHealing",
+            "TKTopAlgo",
+            "TKernel"
+          ],
+          "TKernel": []
+        },
+        "archives": {
+          "lib/libTKBO.a": {
+            "sha256": "33c7b9aa7d9dc0c43697d639a017c66a4832688615d8fc299e12c153cb0aac7b",
+            "bytes": 6153328,
+            "verified_build_versions": 88
+          },
+          "lib/libTKBRep.a": {
+            "sha256": "a6cb8ea3f73a6ec8610866e1d237bbf2a38be4e982717674164dc8d6609b322c",
+            "bytes": 2638528,
+            "verified_build_versions": 77
+          },
+          "lib/libTKBin.a": {
+            "sha256": "6964df51088e259ff43b6950ec816d66c4448cc51394885b9b298e50d7643fc3",
+            "bytes": 284104,
+            "verified_build_versions": 13
+          },
+          "lib/libTKBinL.a": {
+            "sha256": "c152a0de0ed60bf008dc06032c7bb96e91a822f156423e8503d38c4087439dfd",
+            "bytes": 742824,
+            "verified_build_versions": 42
+          },
+          "lib/libTKBinXCAF.a": {
+            "sha256": "cc78765fab7dc59cfe1537bcd4b4263f9a269ace568de3d505370347c1c700c3",
+            "bytes": 308872,
+            "verified_build_versions": 18
+          },
+          "lib/libTKBool.a": {
+            "sha256": "4575e4086e9e1c8db0773e5e5078bcc8403cae9e21e356f08bb02ef3541786e8",
+            "bytes": 10352936,
+            "verified_build_versions": 243
+          },
+          "lib/libTKCAF.a": {
+            "sha256": "df3d0860564e9e43600fd79db833288b9dd9737abb16a9215031ab049158d6c8",
+            "bytes": 1344704,
+            "verified_build_versions": 31
+          },
+          "lib/libTKCDF.a": {
+            "sha256": "39ae2d1660a6fdbd71d14ef9bdeaee230a9b1683c0dff6ad559a32c19a848c82",
+            "bytes": 698808,
+            "verified_build_versions": 45
+          },
+          "lib/libTKDE.a": {
+            "sha256": "71fb6de95b80f6d017dad234e453be113311f2ed19047ec6d5df55dfab71d1a8",
+            "bytes": 161960,
+            "verified_build_versions": 4
+          },
+          "lib/libTKDEGLTF.a": {
+            "sha256": "4b4aabfa509a17b577cde9b3c40789e44cf0bf39d9559b156252ab7db83379af",
+            "bytes": 387328,
+            "verified_build_versions": 8
+          },
+          "lib/libTKDEIGES.a": {
+            "sha256": "cf4c537b418e1242009c9f04d724ab7c35652304859c63bcf818bfcbc15a07b2",
+            "bytes": 11346144,
+            "verified_build_versions": 459
+          },
+          "lib/libTKDESTEP.a": {
+            "sha256": "c40daa0772d0763ad22cbec375839597aef0d76511b99d610bffae82ec0a11dc",
+            "bytes": 26188592,
+            "verified_build_versions": 1712
+          },
+          "lib/libTKDESTL.a": {
+            "sha256": "2d46310f783faa5f6a888a99c65cf1c098612f6852fe536005c5f824ae41a6fd",
+            "bytes": 152976,
+            "verified_build_versions": 7
+          },
+          "lib/libTKFeat.a": {
+            "sha256": "8d09911e885288d8f68654dceca109cc1b16cd31cd08a4397cc2886c8da73ed9",
+            "bytes": 2933304,
+            "verified_build_versions": 35
+          },
+          "lib/libTKFillet.a": {
+            "sha256": "e05d00c7bc82186927db285820f0b06a53a744a7c02861ee4fadc66247a59f95",
+            "bytes": 4607232,
+            "verified_build_versions": 114
+          },
+          "lib/libTKG2d.a": {
+            "sha256": "211e9f647f40cc542dba28c74a91c0b7a2edcd5f90db95fbceb41dee7c6317f2",
+            "bytes": 816616,
+            "verified_build_versions": 36
+          },
+          "lib/libTKG3d.a": {
+            "sha256": "2961c6210cdfbe8f09ee7833b1aa32b547854d493d4da1394112195f90cdbad1",
+            "bytes": 2358552,
+            "verified_build_versions": 81
+          },
+          "lib/libTKGeomAlgo.a": {
+            "sha256": "5bec003def021ef2922f0f49b66aa418b14236436e49f4e06434ad7d6a57c13f",
+            "bytes": 10295904,
+            "verified_build_versions": 365
+          },
+          "lib/libTKGeomBase.a": {
+            "sha256": "a230413ebd4ef154e32fac4a44c97102859ce50e2e2a48d730c4df62a1e49075",
+            "bytes": 8896536,
+            "verified_build_versions": 288
+          },
+          "lib/libTKHLR.a": {
+            "sha256": "2b90a57041a837b6022e4386e28a8db5327c07ea723dac067617a0758b7eea09",
+            "bytes": 2153384,
+            "verified_build_versions": 91
+          },
+          "lib/libTKLCAF.a": {
+            "sha256": "45b7fa8a100ec0c2cb8749b76486b75accd1be7a1025af7dc4f55bfe098ba901",
+            "bytes": 2507464,
+            "verified_build_versions": 95
+          },
+          "lib/libTKMath.a": {
+            "sha256": "db75dc7751f4dde25774a1c786fd6ed10aa46b3a057dae1e3e9637b28c4224b8",
+            "bytes": 4750072,
+            "verified_build_versions": 211
+          },
+          "lib/libTKMesh.a": {
+            "sha256": "98d9a0e5e76447b33cd877c1e659f7d64472d762c64e1f28403830726a0fa906",
+            "bytes": 2195472,
+            "verified_build_versions": 65
+          },
+          "lib/libTKMeshVS.a": {
+            "sha256": "5e5b14c374f3e74633770ebc3a4b82e8530f1560ecff45e99c4bf08c7cc0b02d",
+            "bytes": 737656,
+            "verified_build_versions": 22
+          },
+          "lib/libTKOffset.a": {
+            "sha256": "0bf37ee75b1ef4b64be1c6417e7e2d69c0b22ea30523ca007cf9bcd91e98ab2f",
+            "bytes": 4258312,
+            "verified_build_versions": 34
+          },
+          "lib/libTKPrim.a": {
+            "sha256": "f554f14a11110cd08be2ab04a61f8ecf15fd403ccfe1a4623228482ac4eb58c9",
+            "bytes": 744656,
+            "verified_build_versions": 34
+          },
+          "lib/libTKRWMesh.a": {
+            "sha256": "cdcab807c7d1c8eb72951b54fc0733ec08f8d0e9998e15495d90b7bf4c6f6e19",
+            "bytes": 206496,
+            "verified_build_versions": 7
+          },
+          "lib/libTKService.a": {
+            "sha256": "a7979eb43d74cfe3779c5919a27e14dce6ec5f56eb9b977de13594b723068d4b",
+            "bytes": 2565120,
+            "verified_build_versions": 104
+          },
+          "lib/libTKShHealing.a": {
+            "sha256": "f64118154aed57acd84ed3b550e58aa84eb2e6f46400856b08898766cf40fcf8",
+            "bytes": 6046456,
+            "verified_build_versions": 112
+          },
+          "lib/libTKTopAlgo.a": {
+            "sha256": "965e9fbbb91d14f8fcadeb06b38d68394f47b88152ec186d808c404a892c6231",
+            "bytes": 6350520,
+            "verified_build_versions": 156
+          },
+          "lib/libTKV3d.a": {
+            "sha256": "514f5e940e456f58635d2578a306513639869f10f3f7f9cab05993937f929c03",
+            "bytes": 7326456,
+            "verified_build_versions": 203
+          },
+          "lib/libTKVCAF.a": {
+            "sha256": "93301f4055ffcc143da641ef05e21390a71d1ced9a9e2796485ea4dfcd497dcc",
+            "bytes": 374648,
+            "verified_build_versions": 11
+          },
+          "lib/libTKXCAF.a": {
+            "sha256": "c2dca89f9fcd71763cf11e606f9e06f3513c81432e7cccd60063bb1c4804de47",
+            "bytes": 2100032,
+            "verified_build_versions": 48
+          },
+          "lib/libTKXSBase.a": {
+            "sha256": "55b132efec68770cc15d96435f860374a40073a139c4cda5210307f5a51d8cc4",
+            "bytes": 5416144,
+            "verified_build_versions": 199
+          },
+          "lib/libTKernel.a": {
+            "sha256": "c0a5bf064f69e52f67982663a655840881b1390ed879091fb7badfad62fcdd2b",
+            "bytes": 3369072,
+            "verified_build_versions": 131
+          }
+        },
+        "notices": {
+          "LICENSE_LGPL_21.txt": {
+            "sha256": "e237fa56668030e928551ddd60f05df5fe957f75eab874bbd017e085ed722e7c",
+            "bytes": 26434
+          },
+          "OCCT_LGPL_EXCEPTION.txt": {
+            "sha256": "04580a884ea6cea294402649ff7b5cbb167d47462d1340a4ed33e550db10a81b",
+            "bytes": 663
+          }
+        },
+        "provider_header_dependencies": {
+          "TKDE": [
+            "TKernel"
+          ],
+          "TKDEGLTF": [
+            "TKBinXCAF",
+            "TKLCAF",
+            "TKXCAF",
+            "TKernel"
+          ],
+          "TKDEIGES": [
+            "TKBinXCAF",
+            "TKXCAF",
+            "TKXSBase",
+            "TKernel"
+          ],
+          "TKDESTEP": [
+            "TKBinXCAF",
+            "TKXCAF",
+            "TKXSBase",
+            "TKernel"
+          ],
+          "TKDESTL": [
+            "TKBRep",
+            "TKBinXCAF",
+            "TKLCAF",
+            "TKXCAF",
+            "TKernel"
+          ]
+        },
+        "configure_command": [
+          "cmake",
+          "-S",
+          "/Users/runner/work/corvcad/corvcad/build/freecad-ios/occt/OCCT-7_8_1",
+          "-B",
+          "/Users/runner/work/corvcad/corvcad/build/freecad-ios/occt/iphoneos/build",
+          "-G",
+          "Ninja",
+          "-DCMAKE_BUILD_TYPE=Release",
+          "-DCMAKE_SYSTEM_NAME=iOS",
+          "-DCMAKE_POLICY_VERSION_MINIMUM=3.5",
+          "-DCMAKE_OSX_SYSROOT=iphoneos",
+          "-DCMAKE_OSX_ARCHITECTURES=arm64",
+          "-DCMAKE_OSX_DEPLOYMENT_TARGET=17.0",
+          "-DCMAKE_TRY_COMPILE_TARGET_TYPE=STATIC_LIBRARY",
+          "-DCMAKE_INTERPROCEDURAL_OPTIMIZATION=OFF",
+          "-DCMAKE_EXPORT_COMPILE_COMMANDS=ON",
+          "-DBUILD_LIBRARY_TYPE=Static",
+          "-DBUILD_DOC_Overview=OFF",
+          "-DBUILD_USE_PCH=OFF",
+          "-DINSTALL_DIR_LAYOUT=Unix",
+          "-DCMAKE_INSTALL_PREFIX=/Users/runner/work/corvcad/corvcad/build/freecad-ios/occt/iphoneos/stage",
+          "-DINSTALL_DIR=/Users/runner/work/corvcad/corvcad/build/freecad-ios/occt/iphoneos/stage",
+          "-DBUILD_ADDITIONAL_TOOLKITS=TKFillet TKMesh TKernel TKG2d TKG3d TKMath TKShHealing TKXSBase TKBool TKBO TKBRep TKTopAlgo TKGeomAlgo TKGeomBase TKOffset TKPrim TKHLR TKFeat TKDESTEP TKDEIGES TKDEGLTF TKDESTL TKBin TKBinL TKCAF TKXCAF TKLCAF TKVCAF TKCDF TKMeshVS TKService TKV3d TKRWMesh TKBinXCAF",
+          "-DBUILD_MODULE_FoundationClasses=OFF",
+          "-DBUILD_MODULE_ModelingData=OFF",
+          "-DBUILD_MODULE_ModelingAlgorithms=OFF",
+          "-DBUILD_MODULE_Visualization=OFF",
+          "-DBUILD_MODULE_ApplicationFramework=OFF",
+          "-DBUILD_MODULE_DataExchange=OFF",
+          "-DBUILD_MODULE_DETools=OFF",
+          "-DBUILD_MODULE_Draw=OFF",
+          "-DUSE_TCL=OFF",
+          "-DUSE_TK=OFF",
+          "-DUSE_FREETYPE=OFF",
+          "-DUSE_FREEIMAGE=OFF",
+          "-DUSE_FFMPEG=OFF",
+          "-DUSE_OPENVR=OFF",
+          "-DUSE_RAPIDJSON=OFF",
+          "-DUSE_DRACO=OFF",
+          "-DUSE_TBB=OFF",
+          "-DUSE_EIGEN=OFF",
+          "-DUSE_XLIB=OFF",
+          "-DUSE_OPENGL=OFF",
+          "-DUSE_GLES2=OFF",
+          "-DUSE_D3D=OFF",
+          "-DCMAKE_CXX_COMPILER_LAUNCHER=ccache",
+          "-DCMAKE_C_COMPILER_LAUNCHER=ccache"
+        ],
+        "presentation_toolkits": [
+          "TKMeshVS",
+          "TKService",
+          "TKV3d",
+          "TKVCAF"
+        ],
+        "viewer_driver_toolkits": [],
+        "xcode": "Xcode 16.4\nBuild version 16F6",
+        "sdk_version": "18.5",
+        "source_file_count": 35999,
+        "source_files_canonical_sha256": "3dcee48881229f330b4b7ddf82f3d37f4f8a7a979c0d2fdbe4bf027c4c18a095"
+      },
+      "python": {
+        "schema": 1,
+        "sdk": "iphoneos",
+        "target": "arm64-apple-ios17.0",
+        "source": {
+          "version": "3.13.7",
+          "url": "https://www.python.org/ftp/python/3.13.7/Python-3.13.7.tar.xz",
+          "sha256": "5462f9099dfd30e238def83c71d91897d8caa5ff6ebc7a50f14d4802cdaaa79a",
+          "license": "PSF-2.0 and bundled component notices in LICENSE"
+        },
+        "archive_bytes": 46896232,
+        "archive_sha256": "69fb14a0e5ec0fb213e8bf1fc838e241f5389f1efaabd3d663b807b0521e91cd",
+        "libffi_sha256": "b40af61c063d295f44a2290b16dc2f2783fb0a24ffdd7d97aefc3a48f067fe50",
+        "dependency_archives": {
+          "libffi.a": "b40af61c063d295f44a2290b16dc2f2783fb0a24ffdd7d97aefc3a48f067fe50",
+          "libz.a": "245e88187067ca1b8a4e35dd535a67b7258fd58b8579703e3a6dc1afff9586f6",
+          "libbz2.a": "47ef6bc8ad7dc0924f35a2f91030e29416d5a4718cce658a19371861ed3046a7"
+        },
+        "stdlib_bytes": 22675396,
+        "static_archives": [
+          "libpython3.13.a",
+          "Modules/_decimal/libmpdec/libmpdec.a",
+          "Modules/_hacl/libHacl_Hash_SHA2.a",
+          "Modules/expat/libexpat.a"
+        ],
+        "xcode": "Xcode 16.4\nBuild version 16F6",
+        "sdk_version": "18.5"
+      },
+      "python_binary": {
+        "schema": 1,
+        "sdk": "iphoneos",
+        "architecture": "arm64",
+        "executable_file_bytes": 8848216,
+        "sha256": "1572ecd99bdb53d214d45c61fdb2a11c35b4fb48d00511a31d9fc34d501828ac",
+        "dynamic_system_links": [
+          "/usr/lib/libsqlite3.dylib",
+          "/usr/lib/libiconv.2.dylib",
+          "/System/Library/Frameworks/Foundation.framework/Foundation",
+          "/System/Library/Frameworks/UIKit.framework/UIKit",
+          "/usr/lib/libSystem.B.dylib"
+        ]
+      }
+    }
+  }
+}

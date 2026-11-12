@@ -1,0 +1,55 @@
+{
+  "schema": 1,
+  "status": "passed",
+  "scope": "F4 desktop Python session backend only; does not establish native C ABI, static-library, iOS simulator or physical device acceptance",
+  "created_utc": "2026-10-26T20:17:56.677769+00:00",
+  "working_directory": "C:\\Users\\Administrator\\.codex\\worktrees\\freecad-f2\\corvcad",
+  "command": [
+    "C:\\Users\\Administrator\\Documents\\GitHub\\corvcad\\build\\freecad-core\\stock-1.1.4\\FreeCAD_1.1.4-Windows-x86_64-py311\\bin\\python.exe",
+    "integrations/freecad_core/session/test_session_runtime.py"
+  ],
+  "runtime": {
+    "freecad_version": [
+      "1",
+      "1",
+      "4",
+      "20260928 (Git shallow)",
+      "Unknown",
+      "2026/09/28 13:46:34",
+      "(HEAD detached at 4fd3bf320)",
+      "4fd3bf320d9566a27e60069fc8387448aaa3a094"
+    ],
+    "python_version": "3.11.14 | packaged by conda-forge | (main, Oct 13 2025, 14:00:26) [MSC v.1944 64 bit (AMD64)]",
+    "python_executable": "C:\\Users\\Administrator\\Documents\\GitHub\\corvcad\\build\\freecad-core\\stock-1.1.4\\FreeCAD_1.1.4-Windows-x86_64-py311\\bin\\python.exe",
+    "platform": "Windows-10-10.0.26100-SP0"
+  },
+  "runtime_python_executable_sha256": "b4ca526908e5c93250b851427fa3265936472f1148eb7781c685afa2a13fb996",
+  "test_count": 13,
+  "elapsed_seconds": 30.672,
+  "exit_code": 0,
+  "source_sha256_lf": {
+    "integrations/freecad_core/session/session_runtime.py": "3b0d9e3d8fe62eb42cc2a32b3600be1b7d4136531571a4ca722223319796b3fb",
+    "integrations/freecad_core/session/test_session_runtime.py": "6a83e07c5333002b71ac2dff326ab1057e21ad9d0df75e1718fc5f6d3bff5010",
+    "integrations/freecad_core/inputs.py": "f48d660987021e8def853b94e6de547e3d60ef34c2e8c56910386c2f0071630e",
+    "integrations/freecad_core/model.py": "ecb7e4c877abb51e20f6fca052746c4081c1622d88a5491e768fadc14f62b938",
+    "integrations/freecad_core/checks.py": "f98331366b156f36fcc8a708afec842d7d97796770563a58b57e812f783ae519"
+  },
+  "log": {
+    "path": "build/freecad-ios/f4-windows-session.log",
+    "sha256": "6c39892e7decb06287500a252864e3a1c30e9ddc315041e8ac51d1d08aca3df1",
+    "bytes": 2213,
+    "retention": "ignored local full test output"
+  },
+  "validation": [
+    "both unchanged F1 fixtures",
+    "all eight parameter updates, undo/redo and FCStd reopen",
+    "separate STEP and STL exports from preview exact solids",
+    "invalid input and injected recompute rollback",
+    "unknown property/object retention",
+    "source SHA-only electronics revisions with mechanical identity unchanged",
+    "board geometry/provenance and partial-model rejection",
+    "external edits, unknown output and atomic create collision guards",
+    "independent documents and duplicate path rejection",
+    "constructor failure cleanup"
+  ]
+}

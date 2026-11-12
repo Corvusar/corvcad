@@ -1,0 +1,167 @@
+name: CorvCAD
+options:
+  bundleIdPrefix: org.corvcad
+  deploymentTarget:
+    iOS: '17.0'
+settings:
+  base:
+    SWIFT_VERSION: '5.9'
+    IPHONEOS_DEPLOYMENT_TARGET: '17.0'
+    TARGETED_DEVICE_FAMILY: '2'
+    CLANG_CXX_LANGUAGE_STANDARD: c++20
+    CLANG_CXX_LIBRARY: libc++
+targets:
+  CorvCAD:
+    type: application
+    platform: iOS
+    sources:
+      - path: Sources
+      - path: ../engine/src/engine.cpp
+      - path: ../engine/src/net_flow.cpp
+      - path: ../engine/src/eda.cpp
+      - path: ../engine/src/authoring.cpp
+      - path: ../engine/src/schematic_route.cpp
+      - path: ../engine/src/project.cpp
+      - path: ../engine/src/library.cpp
+      - path: ../engine/src/gerber.cpp
+      - path: ../engine/src/calculator.cpp
+      - path: ../engine/src/c_api.cpp
+      - path: ../engine/src/schematic_session.cpp
+      - path: ../engine/src/schematic_session_c_api.cpp
+      - path: ../engine/src/board_native_c_api.cpp
+      - path: ../engine/src/mechanical_session_c_api.cpp
+      # The 3D part generator (GPL-3.0-or-later), compiled only in the NATIVE_FREECAD edition,
+      # against the OCCT that edition already links.
+      - path: ../integrations/parts3d/parts3d.cpp
+      - path: ../integrations/parts3d/parts3d_c_api.cpp
+      - path: ../integrations/parts3d/parts3d_c_api.h
+        buildPhase: none
+      - path: ../integrations/parts3d/parts3d-notices
+        type: folder
+        buildPhase: resources
+      - path: ../engine/include
+        buildPhase: none
+      - path: ../LICENSE
+        buildPhase: resources
+      # Retained KiCad and dependency notices; bundled only in the NATIVE_KICAD edition.
+      - path: ../integrations/kicad_core/audit/notices
+        type: folder
+        buildPhase: resources
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: org.corvcad.CorvCAD
+        SWIFT_OBJC_BRIDGING_HEADER: Sources/CorvCAD-Bridging-Header.h
+        HEADER_SEARCH_PATHS: $(SRCROOT)/../engine/include $(SRCROOT)/../integrations/parts3d $(CORVCAD_OCCT_INCLUDE_$(NATIVE_FREECAD))
+        # The FreeCAD package's OCCT headers, next to the package (integrations/freecad_core/ios).
+        OCCT_INCLUDE: $(FREECAD_PACKAGE)/../occt/$(PLATFORM_NAME)/stage/include/opencascade
+        CORVCAD_OCCT_INCLUDE_YES: $(OCCT_INCLUDE)
+        GENERATE_INFOPLIST_FILE: YES
+        INFOPLIST_KEY_CFBundleDisplayName: CorvCAD
+        INFOPLIST_KEY_UIApplicationSceneManifest_Generation: YES
+        INFOPLIST_KEY_UILaunchScreen_Generation: YES
+        INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad: UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight
+        INFOPLIST_KEY_LSSupportsOpeningDocumentsInPlace: YES
+        INFOPLIST_KEY_UIFileSharingEnabled: YES
+        INFOPLIST_KEY_ITSAppUsesNonExemptEncryption: NO
+        # Sideloaded edition (GPL-3.0-or-later): `xcodebuild ... NATIVE_KICAD=YES` replaces the
+        # compatible schematic session with KiCad 10.0.6's and adds its board checks
+        # (board_native_c_api.h; the compatible stub is excluded), from the libraries that
+        # integrations/kicad_core/probe/ios_package.sh writes to KICAD_PACKAGE/{sim,device}.
+        NATIVE_KICAD: NO
+        # Opt-in native enclosure session. With NATIVE_KICAD=YES as well, both engines link
+        # from one shared dependency closure instead: NATIVE_WORKSPACE_LINK is the response
+        # file integrations/native_workspace/compose.py wrote (mixed-link.rsp), and
+        # FREECAD_PACKAGE the FreeCAD package built against the same closure.
+        NATIVE_FREECAD: NO
+        FREECAD_PACKAGE: $(SRCROOT)/../build/freecad-ios/package
+        NATIVE_WORKSPACE_LINK: $(SRCROOT)/../build/native-workspace/link/mixed-link.rsp
+        KICAD_PACKAGE: $(SRCROOT)/../build/kicad-probe/package
+        # The official KiCad 10.0.6 symbol (223) and footprint (155) libraries, no 3D models
+        # (fetch.py --libraries-only), copied into KiCadSymbols and KiCadFootprints by the
+        # script below in the NATIVE_KICAD edition only.
+        KICAD_SYMBOLS: $(SRCROOT)/../build/kicad-core/symbols-packed
+        KICAD_FOOTPRINTS: $(SRCROOT)/../build/kicad-core/footprints-packed
+        # The copy script reads the packed libraries outside the project.
+        ENABLE_USER_SCRIPT_SANDBOXING: NO
+        CORVCAD_KICAD_SDK[sdk=iphonesimulator*]: sim
+        CORVCAD_KICAD_SDK[sdk=iphoneos*]: device
+        CORVCAD_FREECAD_SDK[sdk=iphonesimulator*]: sim
+        CORVCAD_FREECAD_SDK[sdk=iphoneos*]: device
+        EXCLUDED_SOURCE_FILE_NAMES: $(CORVCAD_EXCLUDED_NATIVE_$(NATIVE_KICAD)) $(CORVCAD_EXCLUDED_FREECAD_$(NATIVE_FREECAD))
+        CORVCAD_EXCLUDED_NATIVE_YES: schematic_session_c_api.cpp board_native_c_api.cpp
+        CORVCAD_EXCLUDED_NATIVE_NO: notices
+        CORVCAD_EXCLUDED_FREECAD_YES: mechanical_session_c_api.cpp
+        CORVCAD_EXCLUDED_FREECAD_NO: parts3d.cpp parts3d_c_api.cpp parts3d-notices
+        SWIFT_ACTIVE_COMPILATION_CONDITIONS: $(inherited) $(CORVCAD_SWIFT_FREECAD_$(NATIVE_FREECAD))
+        CORVCAD_SWIFT_FREECAD_YES: NATIVE_FREECAD
+        OTHER_LDFLAGS: $(CORVCAD_LDFLAGS_$(NATIVE_KICAD)_$(NATIVE_FREECAD))
+        CORVCAD_LDFLAGS_YES_NO: $(CORVCAD_LDFLAGS_NATIVE_YES)
+        CORVCAD_LDFLAGS_NO_YES: $(CORVCAD_LDFLAGS_FREECAD_YES)
+        CORVCAD_LDFLAGS_YES_YES: '@"$(NATIVE_WORKSPACE_LINK)"'
+        CORVCAD_LDFLAGS_FREECAD_YES: >-
+          -Wl,-dead_strip -force_load "$(FREECAD_PACKAGE)/$(CORVCAD_FREECAD_SDK)/libcorvcad_freecad.a"
+          @"$(FREECAD_PACKAGE)/$(CORVCAD_FREECAD_SDK)/linker-flags.rsp"
+        # -dead_strip as in ios_link.sh: the closure's KIBIS code references the simulator,
+        # which is not linked, from paths the session never reaches.
+        CORVCAD_LDFLAGS_NATIVE_YES: >-
+          -Wl,-dead_strip -force_load $(KICAD_PACKAGE)/$(CORVCAD_KICAD_SDK)/libcorvcad_kicad.a
+          $(KICAD_PACKAGE)/$(CORVCAD_KICAD_SDK)/libcorvcad_kicad_deps.a
+          -framework UIKit -framework CoreFoundation -framework CoreGraphics -framework CoreText
+          -framework CFNetwork -framework Security -framework IOKit -framework AudioToolbox
+          -framework OpenGLES -framework QuartzCore -framework GLKit -framework WebKit -liconv
+      configs:
+        Debug:
+          SWIFT_ACTIVE_COMPILATION_CONDITIONS: $(inherited) DEBUG $(CORVCAD_SWIFT_FREECAD_$(NATIVE_FREECAD))
+    preBuildScripts:
+      - name: Validate native enclosure package (NATIVE_FREECAD)
+        basedOnDependencyAnalysis: false
+        script: |
+          [ "$NATIVE_FREECAD" = YES ] || exit 0
+          PACKAGE="$FREECAD_PACKAGE/$CORVCAD_FREECAD_SDK"
+          if [ "$NATIVE_KICAD" = YES ]; then
+            [ -s "$NATIVE_WORKSPACE_LINK" ] || { echo "error: no combined link at $NATIVE_WORKSPACE_LINK (integrations/native_workspace/compose.py)"; exit 1; }
+          else
+            [ -f "$PACKAGE/libcorvcad_freecad.a" ] && [ -s "$PACKAGE/linker-flags.rsp" ] \
+              || { echo "error: incomplete native enclosure package at $PACKAGE"; exit 1; }
+          fi
+          [ -d "$PACKAGE/FreeCADRuntime/lib/python3.13" ] && [ -d "$PACKAGE/FreeCADRuntime/harness" ] \
+            && [ -d "$PACKAGE/FreeCADRuntime/notices" ] \
+            || { echo "error: incomplete native enclosure package at $PACKAGE"; exit 1; }
+    postCompileScripts:
+      - name: Bundle native enclosure runtime (NATIVE_FREECAD)
+        basedOnDependencyAnalysis: false
+        script: |
+          [ -n "$TARGET_BUILD_DIR" ] && [ -n "$UNLOCALIZED_RESOURCES_FOLDER_PATH" ] \
+            || { echo "error: missing app resources destination"; exit 1; }
+          RES="$TARGET_BUILD_DIR/$UNLOCALIZED_RESOURCES_FOLDER_PATH"
+          if [ "$NATIVE_FREECAD" != YES ]; then
+            rm -rf "$RES/FreeCADRuntime"
+            exit 0
+          fi
+          rsync -a --delete "$FREECAD_PACKAGE/$CORVCAD_FREECAD_SDK/FreeCADRuntime/" "$RES/FreeCADRuntime/"
+      - name: Bundle KiCad symbol and footprint libraries (NATIVE_KICAD)
+        basedOnDependencyAnalysis: false
+        script: |
+          [ "$NATIVE_KICAD" = YES ] || exit 0
+          [ -f "$KICAD_SYMBOLS/sym-lib-table" ] && [ -f "$KICAD_FOOTPRINTS/fp-lib-table" ] \
+            || { echo "error: no packed libraries in $KICAD_SYMBOLS or $KICAD_FOOTPRINTS (run integrations/kicad_core/fetch.py --libraries-only)"; exit 1; }
+          RES="$TARGET_BUILD_DIR/$UNLOCALIZED_RESOURCES_FOLDER_PATH"
+          rsync -a --delete "$KICAD_SYMBOLS/" "$RES/KiCadSymbols/"
+          rsync -a --delete "$KICAD_FOOTPRINTS/" "$RES/KiCadFootprints/"
+    scheme:
+      testTargets: [CorvCADUITests]
+  # Simulator-only UI checks (orientation screenshots, touch flows). Not shipped.
+  CorvCADUITests:
+    type: bundle.ui-testing
+    platform: iOS
+    sources:
+      - path: UITests
+    dependencies:
+      - target: CorvCAD
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: org.corvcad.CorvCADUITests
+        GENERATE_INFOPLIST_FILE: YES
+        TEST_TARGET_NAME: CorvCAD
+        SWIFT_ACTIVE_COMPILATION_CONDITIONS: $(inherited) $(CORVCAD_SWIFT_FREECAD_$(NATIVE_FREECAD))
+        CORVCAD_SWIFT_FREECAD_YES: NATIVE_FREECAD

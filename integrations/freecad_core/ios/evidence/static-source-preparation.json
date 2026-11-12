@@ -1,0 +1,29 @@
+{
+  "schema": 1,
+  "source_commit": "4fd3bf320d9566a27e60069fc8387448aaa3a094",
+  "profile_sha256_lf": "6b6c4cf583c99ea7b89dd10b7dd86b4ac8a9742c0dc9f523f9d5f29bf58c67d7",
+  "source_files": {
+    "cMake/FreeCAD_Helpers/CheckInterModuleDependencies.cmake": "38cc5c51c843892f9917056f6b0fecba71d316ac413f9e3fd55dabfa40155455",
+    "cMake/FreeCAD_Helpers/SetupQt.cmake": "eee5398a459ae52a4dfa8207561de6af9f0849790a71cd1063095a4cd9a72be7",
+    "src/Mod/Part/parttests/TestPartMirror.py": "91d7ce2b38187b0487912ff7c866a1911687c7263240e4f457005533210df047",
+    "src/Mod/PartDesign/PartDesignTests/TestBoolean.py": "25741b7ebb30d372b5c84efc9e45d97ef31f9c804459b2d5c83ee32ad4890e09",
+    "src/Mod/PartDesign/CMakeLists.txt": "449bd20c2196254c6afeb875e19aeaa8fa794187306fbd54fe0a95ac7e51c8e6",
+    "src/Mod/PartDesign/InvoluteGearFeature.py": "37ebbf1a0fd69b86f2e30a179b6af371cb4b2df4f0b9318ece423bc74435105f",
+    "src/Mod/Sketcher/ProfileLib/RegularPolygon.py": "8c5ff9213080d9c8822ec1550af7c716424c0c1919479fbee44d6a64cf39c66d",
+    "CMakeLists.txt": "fbbde309ed79444fb5d4d8193076bd7bc5847865240c1f47e156e59b1325ca9d",
+    "cMake/FreeCadMacros.cmake": "97ba28f3ffc95358eb27eaa614b417bd15ab0a0f0c9e5df8df4ae9923aa84003",
+    "src/App/CMakeLists.txt": "9a2980dcfd57512f5ffab48b86e9e9117f66d9c937c6fd8eb198483044c1ad59",
+    "src/Base/CMakeLists.txt": "fcc922e5a78872c8017865abc7d5819f4a9f5363458e597e336857e3d40700d5",
+    "src/Main/CMakeLists.txt": "d2c61c70142e171b9db71bf28abc039750aad16a382772bcb9b16f0ad899af8d",
+    "src/Main/MainCmd.cpp": "35383b509a9963417589f669ccdb9279f87c042a018ad54bac216c48d80743af",
+    "src/Mod/Import/App/CMakeLists.txt": "02df225a2c9f8b6ab7a44da0116d889e88113c7ac9f7e310c1ff95455281709e",
+    "src/Mod/Material/App/CMakeLists.txt": "5f04e97027465a2a9dda9a1e178abd65ee2ee85d90dc328de45ca19886ad9a6b",
+    "src/Mod/Mesh/App/CMakeLists.txt": "66fdbaf5b3c3c660c008f0b5b3688c2b95d3fe6d1ea93accee4695be2ff5da45",
+    "src/Mod/Part/App/CMakeLists.txt": "026c1c005b0f6074433208dcb70842cd3bfc2fc973b1867b8054890fded8fb58",
+    "src/Mod/PartDesign/App/CMakeLists.txt": "6d0577da4f994c948dc8e872bf39e5ad9e8f612dbb9a41a6889075c7fa89b927",
+    "src/Mod/Sketcher/App/CMakeLists.txt": "78845537ad3ff46c500334d86be0c51611329d5dcf4419d5f2510637395ad7e9",
+    "src/Mod/Spreadsheet/App/CMakeLists.txt": "fdce48d5646f5536348a09a9c20e69d6af5f33993d755859a9dd5ed67935ef24"
+  },
+  "status": "source patch state verified; native build not established",
+  "verification": "Complete pinned source candidate verified locally; prepare/reentry/drift/untracked rejection exercised. Native compilation not run."
+}

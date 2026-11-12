@@ -1,0 +1,1319 @@
+{
+  "schema": 1,
+  "repository": "temporary private CI mirror",
+  "run": 40214097907,
+  "commit": "9c6a2a1856c564407031a0d8ea3db6a6934f0155",
+  "run_url": "private CI mirror run 40214097907",
+  "scope": "macOS static FreeCAD modules, desktop dependencies; not an iOS result",
+  "artifact": {
+    "id": 12606682929,
+    "zip_sha256": "f44310d2eb1268aad6d2e93cfa9d36f68ef061027516dadc54e9bf1fd7dddeb7"
+  },
+  "build": {
+    "schema": 1,
+    "source_commit": "4fd3bf320d9566a27e60069fc8387448aaa3a094",
+    "profile_sha256_lf": "6d8d82d3485db6c1472e8d5bf622a885d1cc7693ef509c6583b2a15adf3d7f5f",
+    "source_files": {
+      "cMake/FreeCAD_Helpers/CheckInterModuleDependencies.cmake": "38cc5c51c843892f9917056f6b0fecba71d316ac413f9e3fd55dabfa40155455",
+      "cMake/FreeCAD_Helpers/SetupQt.cmake": "eee5398a459ae52a4dfa8207561de6af9f0849790a71cd1063095a4cd9a72be7",
+      "src/Mod/Part/parttests/TestPartMirror.py": "91d7ce2b38187b0487912ff7c866a1911687c7263240e4f457005533210df047",
+      "src/Mod/PartDesign/PartDesignTests/TestBoolean.py": "25741b7ebb30d372b5c84efc9e45d97ef31f9c804459b2d5c83ee32ad4890e09",
+      "src/Mod/PartDesign/CMakeLists.txt": "449bd20c2196254c6afeb875e19aeaa8fa794187306fbd54fe0a95ac7e51c8e6",
+      "src/Mod/PartDesign/InvoluteGearFeature.py": "37ebbf1a0fd69b86f2e30a179b6af371cb4b2df4f0b9318ece423bc74435105f",
+      "src/Mod/Sketcher/ProfileLib/RegularPolygon.py": "8c5ff9213080d9c8822ec1550af7c716424c0c1919479fbee44d6a64cf39c66d",
+      "CMakeLists.txt": "fbbde309ed79444fb5d4d8193076bd7bc5847865240c1f47e156e59b1325ca9d",
+      "cMake/FreeCadMacros.cmake": "97ba28f3ffc95358eb27eaa614b417bd15ab0a0f0c9e5df8df4ae9923aa84003",
+      "src/App/CMakeLists.txt": "9a2980dcfd57512f5ffab48b86e9e9117f66d9c937c6fd8eb198483044c1ad59",
+      "src/Base/CMakeLists.txt": "fcc922e5a78872c8017865abc7d5819f4a9f5363458e597e336857e3d40700d5",
+      "src/Main/CMakeLists.txt": "d2c61c70142e171b9db71bf28abc039750aad16a382772bcb9b16f0ad899af8d",
+      "src/Main/MainCmd.cpp": "35383b509a9963417589f669ccdb9279f87c042a018ad54bac216c48d80743af",
+      "src/Mod/Import/App/CMakeLists.txt": "366a6a312aafada5e1a3edaea66e09336fd8c8d8c523796b2ec52d43dd479f5f",
+      "src/Mod/Material/App/CMakeLists.txt": "5f04e97027465a2a9dda9a1e178abd65ee2ee85d90dc328de45ca19886ad9a6b",
+      "src/Mod/Mesh/App/CMakeLists.txt": "66fdbaf5b3c3c660c008f0b5b3688c2b95d3fe6d1ea93accee4695be2ff5da45",
+      "src/Mod/Part/App/CMakeLists.txt": "026c1c005b0f6074433208dcb70842cd3bfc2fc973b1867b8054890fded8fb58",
+      "src/Mod/PartDesign/App/CMakeLists.txt": "6d0577da4f994c948dc8e872bf39e5ad9e8f612dbb9a41a6889075c7fa89b927",
+      "src/Mod/Sketcher/App/CMakeLists.txt": "78845537ad3ff46c500334d86be0c51611329d5dcf4419d5f2510637395ad7e9",
+      "src/Mod/Spreadsheet/App/CMakeLists.txt": "fdce48d5646f5536348a09a9c20e69d6af5f33993d755859a9dd5ed67935ef24"
+    },
+    "status": "static desktop regression passed; iOS acceptance remains open",
+    "platform": "macOS-15.7.9-arm64-arm-64bit",
+    "artifacts": [
+      {
+        "target": "E57Format",
+        "type": "STATIC_LIBRARY",
+        "path": "src/3rdParty/libE57Format/libE57Format.a",
+        "produced": true,
+        "sha256": "ee0814896d34f6ab18dfe3565107d6a5dd7cd95128f20268663981cb4af53dcd"
+      },
+      {
+        "target": "FreeCADApp",
+        "type": "STATIC_LIBRARY",
+        "path": "src/App/libFreeCADApp.a",
+        "produced": true,
+        "sha256": "799c054b1dab7e3f22ab26a4a255da0ccc1775385ebcdabcab20e33ac48b74e3"
+      },
+      {
+        "target": "FreeCADBase",
+        "type": "STATIC_LIBRARY",
+        "path": "src/Base/libFreeCADBase.a",
+        "produced": true,
+        "sha256": "196ea208e80ebc3b14be466dc5225710281bc6959b2e5ea6a25f79068adacf2e"
+      },
+      {
+        "target": "FreeCADMainCmd",
+        "type": "EXECUTABLE",
+        "path": "bin/FreeCADCmd",
+        "produced": true,
+        "sha256": "99e6b98437ff7826d318c0fbade7838f28923d0d029a5574c75ef437ab6ef2c7"
+      },
+      {
+        "target": "Import",
+        "type": "STATIC_LIBRARY",
+        "path": "src/Mod/Import/App/libImport.a",
+        "produced": true,
+        "sha256": "3dfd3fe0369071183391bab6bdaf0354d5ca22017848f1732c1f997afa7fccdc"
+      },
+      {
+        "target": "Materials",
+        "type": "STATIC_LIBRARY",
+        "path": "src/Mod/Material/App/libMaterials.a",
+        "produced": true,
+        "sha256": "518948dd31c253bbe9de9137bc13ee4d5c52bcbb64d415289a37f6f278118475"
+      },
+      {
+        "target": "Mesh",
+        "type": "STATIC_LIBRARY",
+        "path": "src/Mod/Mesh/App/libMesh.a",
+        "produced": true,
+        "sha256": "9358f8efcbefb8da4e001507017860eff43d486239f5c5b8ab0ddaa3bd8a9b68"
+      },
+      {
+        "target": "Part",
+        "type": "STATIC_LIBRARY",
+        "path": "src/Mod/Part/App/libPart.a",
+        "produced": true,
+        "sha256": "5169d4d5cc5920f02b12cfd8c4050c5d894ec607a4e62752f3f5fa9dfb75b364"
+      },
+      {
+        "target": "PartDesign",
+        "type": "STATIC_LIBRARY",
+        "path": "src/Mod/PartDesign/App/lib_PartDesign.a",
+        "produced": true,
+        "sha256": "723b6ea1c3408930f12d002b32d09b8af04e23102f6c4844bc6ed1a304c3554d"
+      },
+      {
+        "target": "Sketcher",
+        "type": "STATIC_LIBRARY",
+        "path": "src/Mod/Sketcher/App/libSketcher.a",
+        "produced": true,
+        "sha256": "b6a32705d3ed4936a1de22c81fd6ec87ea9568cc049f9a3df587d9664ad2b39a"
+      },
+      {
+        "target": "Spreadsheet",
+        "type": "STATIC_LIBRARY",
+        "path": "src/Mod/Spreadsheet/App/libSpreadsheet.a",
+        "produced": true,
+        "sha256": "f70edd5cf4ffd2a29b13fa675c5c0ea696a16e88a07e1ed6fcb8119bde0662e3"
+      }
+    ],
+    "executable_file_bytes": 23628024,
+    "imports": {
+      "schema": 1,
+      "passed": true,
+      "platform": "darwin",
+      "extension_origins": {
+        "FreeCAD": "built-in",
+        "__FreeCADBase__": "built-in",
+        "Materials": "built-in",
+        "Part": "built-in",
+        "Mesh": "built-in",
+        "Sketcher": "built-in",
+        "_PartDesign": "built-in",
+        "Spreadsheet": "built-in",
+        "Import": "built-in"
+      },
+      "scope": "Static FreeCAD modules; SDK/runtime acceptance is separate"
+    }
+  },
+  "upstream_tests": {
+    "status": "passed",
+    "freecad_version": [
+      "1",
+      "1",
+      "4",
+      "20260928 (Git shallow)",
+      "Unknown",
+      "2026/09/28 13:46:34",
+      "HEAD",
+      "4fd3bf320d9566a27e60069fc8387448aaa3a094"
+    ],
+    "suites": {
+      "BaseTests": {
+        "run": 48,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "expected_failures": 0,
+        "unexpected_successes": 0,
+        "passed": true
+      },
+      "UnitTests": {
+        "run": 12,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "expected_failures": 0,
+        "unexpected_successes": 0,
+        "passed": true
+      },
+      "Document": {
+        "run": 113,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "expected_failures": 0,
+        "unexpected_successes": 0,
+        "passed": true
+      },
+      "Metadata": {
+        "run": 12,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "expected_failures": 0,
+        "unexpected_successes": 0,
+        "passed": true
+      },
+      "StringHasher": {
+        "run": 4,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "expected_failures": 0,
+        "unexpected_successes": 0,
+        "passed": true
+      },
+      "UnicodeTests": {
+        "run": 2,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "expected_failures": 0,
+        "unexpected_successes": 0,
+        "passed": true
+      },
+      "TestPythonSyntax": {
+        "run": 1,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "expected_failures": 0,
+        "unexpected_successes": 0,
+        "passed": true
+      },
+      "TestPartApp": {
+        "run": 131,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 1,
+        "expected_failures": 0,
+        "unexpected_successes": 0,
+        "passed": true
+      },
+      "TestPartDesignApp": {
+        "run": 168,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "expected_failures": 0,
+        "unexpected_successes": 0,
+        "passed": true
+      },
+      "TestSketcherApp": {
+        "run": 33,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 1,
+        "expected_failures": 0,
+        "unexpected_successes": 0,
+        "passed": true
+      },
+      "TestSpreadsheet": {
+        "run": 86,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "expected_failures": 0,
+        "unexpected_successes": 0,
+        "passed": true
+      },
+      "MeshTestsApp": {
+        "run": 44,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 1,
+        "expected_failures": 0,
+        "unexpected_successes": 0,
+        "passed": true
+      },
+      "TestMaterialsApp": {
+        "run": 15,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "expected_failures": 0,
+        "unexpected_successes": 0,
+        "passed": true
+      }
+    },
+    "loaded_python_files": [
+      "/Users/runner/work/corvcad/corvcad/build/freecad-ios/static-desktop/Ext/freecad/__init__.py",
+      "/Users/runner/work/corvcad/corvcad/build/freecad-ios/static-desktop/Mod/Material/TestMaterialsApp.py",
+      "/Users/runner/work/corvcad/corvcad/build/freecad-ios/static-desktop/Mod/Material/materialtests/TestMaterialCreation.py",
+      "/Users/runner/work/corvcad/corvcad/build/freecad-ios/static-desktop/Mod/Material/materialtests/TestMaterialFilter.py",
+      "/Users/runner/work/corvcad/corvcad/build/freecad-ios/static-desktop/Mod/Material/materialtests/TestMaterials.py",
+      "/Users/runner/work/corvcad/corvcad/build/freecad-ios/static-desktop/Mod/Material/materialtests/TestModels.py",
+      "/Users/runner/work/corvcad/corvcad/build/freecad-ios/static-desktop/Mod/Material/materialtests/__init__.py",
+      "/Users/runner/work/corvcad/corvcad/build/freecad-ios/static-desktop/Mod/Mesh/BuildRegularGeoms.py",
+      "/Users/runner/work/corvcad/corvcad/build/freecad-ios/static-desktop/Mod/Mesh/MeshEnums.py",
+      "/Users/runner/work/corvcad/corvcad/build/freecad-ios/static-desktop/Mod/Mesh/MeshTestsApp.py",
+      "/Users/runner/work/corvcad/corvcad/build/freecad-ios/static-desktop/Mod/Part/BOPTools/BOPFeatures.py",
+      "/Users/runner/work/corvcad/corvcad/build/freecad-ios/static-desktop/Mod/Part/BOPTools/__init__.py",
+      "/Users/runner/work/corvcad/corvcad/build/freecad-ios/static-desktop/Mod/Part/PartEnums.py",
+      "/Users/runner/work/corvcad/corvcad/build/freecad-ios/static-desktop/Mod/Part/TestPartApp.py",
+      "/Users/runner/work/corvcad/corvcad/build/freecad-ios/static-desktop/Mod/Part/parttests/BRep_tests.py",
+      "/Users/runner/work/corvcad/corvcad/build/freecad-ios/static-desktop/Mod/Part/parttests/Geom2d_tests.py",
+      "/Users/runner/work/corvcad/corvcad/build/freecad-ios/static-desktop/Mod/Part/parttests/TestPartMirror.py",
+      "/Users/runner/work/corvcad/corvcad/build/freecad-ios/static-desktop/Mod/Part/parttests/TopoShapeListTest.py",
+      "/Users/runner/work/corvcad/corvcad/build/freecad-ios/static-desktop/Mod/Part/parttests/TopoShapeTest.py",
+      "/Users/runner/work/corvcad/corvcad/build/freecad-ios/static-desktop/Mod/Part/parttests/__init__.py",
+      "/Users/runner/work/corvcad/corvcad/build/freecad-ios/static-desktop/Mod/Part/parttests/regression_tests.py",
+      "/Users/runner/work/corvcad/corvcad/build/freecad-ios/static-desktop/Mod/PartDesign/InvoluteGearFeature.py",
+      "/Users/runner/work/corvcad/corvcad/build/freecad-ios/static-desktop/Mod/PartDesign/PartDesignTests/TestBoolean.py",
+      "/Users/runner/work/corvcad/corvcad/build/freecad-ios/static-desktop/Mod/PartDesign/PartDesignTests/TestChamfer.py",
+      "/Users/runner/work/corvcad/corvcad/build/freecad-ios/static-desktop/Mod/PartDesign/PartDesignTests/TestDatum.py",
+      "/Users/runner/work/corvcad/corvcad/build/freecad-ios/static-desktop/Mod/PartDesign/PartDesignTests/TestDraft.py",
+      "/Users/runner/work/corvcad/corvcad/build/freecad-ios/static-desktop/Mod/PartDesign/PartDesignTests/TestFillet.py",
+      "/Users/runner/work/corvcad/corvcad/build/freecad-ios/static-desktop/Mod/PartDesign/PartDesignTests/TestHelix.py",
+      "/Users/runner/work/corvcad/corvcad/build/freecad-ios/static-desktop/Mod/PartDesign/PartDesignTests/TestHole.py",
+      "/Users/runner/work/corvcad/corvcad/build/freecad-ios/static-desktop/Mod/PartDesign/PartDesignTests/TestInvoluteGear.py",
+      "/Users/runner/work/corvcad/corvcad/build/freecad-ios/static-desktop/Mod/PartDesign/PartDesignTests/TestLinearPattern.py",
+      "/Users/runner/work/corvcad/corvcad/build/freecad-ios/static-desktop/Mod/PartDesign/PartDesignTests/TestLoft.py",
+      "/Users/runner/work/corvcad/corvcad/build/freecad-ios/static-desktop/Mod/PartDesign/PartDesignTests/TestMirrored.py",
+      "/Users/runner/work/corvcad/corvcad/build/freecad-ios/static-desktop/Mod/PartDesign/PartDesignTests/TestMultiTransform.py",
+      "/Users/runner/work/corvcad/corvcad/build/freecad-ios/static-desktop/Mod/PartDesign/PartDesignTests/TestPad.py",
+      "/Users/runner/work/corvcad/corvcad/build/freecad-ios/static-desktop/Mod/PartDesign/PartDesignTests/TestPipe.py",
+      "/Users/runner/work/corvcad/corvcad/build/freecad-ios/static-desktop/Mod/PartDesign/PartDesignTests/TestPocket.py",
+      "/Users/runner/work/corvcad/corvcad/build/freecad-ios/static-desktop/Mod/PartDesign/PartDesignTests/TestPolarPattern.py",
+      "/Users/runner/work/corvcad/corvcad/build/freecad-ios/static-desktop/Mod/PartDesign/PartDesignTests/TestPrimitive.py",
+      "/Users/runner/work/corvcad/corvcad/build/freecad-ios/static-desktop/Mod/PartDesign/PartDesignTests/TestRevolve.py",
+      "/Users/runner/work/corvcad/corvcad/build/freecad-ios/static-desktop/Mod/PartDesign/PartDesignTests/TestShapeBinder.py",
+      "/Users/runner/work/corvcad/corvcad/build/freecad-ios/static-desktop/Mod/PartDesign/PartDesignTests/TestSketch.py",
+      "/Users/runner/work/corvcad/corvcad/build/freecad-ios/static-desktop/Mod/PartDesign/PartDesignTests/TestThickness.py",
+      "/Users/runner/work/corvcad/corvcad/build/freecad-ios/static-desktop/Mod/PartDesign/PartDesignTests/TestTopologicalNamingProblem.py",
+      "/Users/runner/work/corvcad/corvcad/build/freecad-ios/static-desktop/Mod/PartDesign/PartDesignTests/__init__.py",
+      "/Users/runner/work/corvcad/corvcad/build/freecad-ios/static-desktop/Mod/PartDesign/TestPartDesignApp.py",
+      "/Users/runner/work/corvcad/corvcad/build/freecad-ios/static-desktop/Mod/PartDesign/__init__.py",
+      "/Users/runner/work/corvcad/corvcad/build/freecad-ios/static-desktop/Mod/PartDesign/fcgear/__init__.py",
+      "/Users/runner/work/corvcad/corvcad/build/freecad-ios/static-desktop/Mod/PartDesign/fcgear/fcgear.py",
+      "/Users/runner/work/corvcad/corvcad/build/freecad-ios/static-desktop/Mod/PartDesign/fcgear/involute.py",
+      "/Users/runner/work/corvcad/corvcad/build/freecad-ios/static-desktop/Mod/Sketcher/ProfileLib/RegularPolygon.py",
+      "/Users/runner/work/corvcad/corvcad/build/freecad-ios/static-desktop/Mod/Sketcher/ProfileLib/__init__.py",
+      "/Users/runner/work/corvcad/corvcad/build/freecad-ios/static-desktop/Mod/Sketcher/SketcherTests/TestSketchCarbonCopyReverseMapping.py",
+      "/Users/runner/work/corvcad/corvcad/build/freecad-ios/static-desktop/Mod/Sketcher/SketcherTests/TestSketchExpression.py",
+      "/Users/runner/work/corvcad/corvcad/build/freecad-ios/static-desktop/Mod/Sketcher/SketcherTests/TestSketchFillet.py",
+      "/Users/runner/work/corvcad/corvcad/build/freecad-ios/static-desktop/Mod/Sketcher/SketcherTests/TestSketchValidateCoincidents.py",
+      "/Users/runner/work/corvcad/corvcad/build/freecad-ios/static-desktop/Mod/Sketcher/SketcherTests/TestSketcherSolver.py",
+      "/Users/runner/work/corvcad/corvcad/build/freecad-ios/static-desktop/Mod/Sketcher/SketcherTests/__init__.py",
+      "/Users/runner/work/corvcad/corvcad/build/freecad-ios/static-desktop/Mod/Sketcher/TestSketcherApp.py",
+      "/Users/runner/work/corvcad/corvcad/build/freecad-ios/static-desktop/Mod/Spreadsheet/TestSpreadsheet.py",
+      "/Users/runner/work/corvcad/corvcad/build/freecad-ios/static-desktop/Mod/Test/BaseTests.py",
+      "/Users/runner/work/corvcad/corvcad/build/freecad-ios/static-desktop/Mod/Test/Document.py",
+      "/Users/runner/work/corvcad/corvcad/build/freecad-ios/static-desktop/Mod/Test/Metadata.py",
+      "/Users/runner/work/corvcad/corvcad/build/freecad-ios/static-desktop/Mod/Test/StringHasher.py",
+      "/Users/runner/work/corvcad/corvcad/build/freecad-ios/static-desktop/Mod/Test/TestPythonSyntax.py",
+      "/Users/runner/work/corvcad/corvcad/build/freecad-ios/static-desktop/Mod/Test/UnicodeTests.py",
+      "/Users/runner/work/corvcad/corvcad/build/freecad-ios/static-desktop/Mod/Test/UnitTests.py",
+      "/Users/runner/work/corvcad/corvcad/integrations/freecad_core/upstream_tests.py",
+      "/opt/homebrew/Cellar/python@3.11/3.11.16/Frameworks/Python.framework/Versions/3.11/lib/python3.11/__future__.py",
+      "/opt/homebrew/Cellar/python@3.11/3.11.16/Frameworks/Python.framework/Versions/3.11/lib/python3.11/_collections_abc.py",
+      "/opt/homebrew/Cellar/python@3.11/3.11.16/Frameworks/Python.framework/Versions/3.11/lib/python3.11/_compression.py",
+      "/opt/homebrew/Cellar/python@3.11/3.11.16/Frameworks/Python.framework/Versions/3.11/lib/python3.11/_sitebuiltins.py",
+      "/opt/homebrew/Cellar/python@3.11/3.11.16/Frameworks/Python.framework/Versions/3.11/lib/python3.11/_weakrefset.py",
+      "/opt/homebrew/Cellar/python@3.11/3.11.16/Frameworks/Python.framework/Versions/3.11/lib/python3.11/abc.py",
+      "/opt/homebrew/Cellar/python@3.11/3.11.16/Frameworks/Python.framework/Versions/3.11/lib/python3.11/argparse.py",
+      "/opt/homebrew/Cellar/python@3.11/3.11.16/Frameworks/Python.framework/Versions/3.11/lib/python3.11/ast.py",
+      "/opt/homebrew/Cellar/python@3.11/3.11.16/Frameworks/Python.framework/Versions/3.11/lib/python3.11/bisect.py",
+      "/opt/homebrew/Cellar/python@3.11/3.11.16/Frameworks/Python.framework/Versions/3.11/lib/python3.11/bz2.py",
+      "/opt/homebrew/Cellar/python@3.11/3.11.16/Frameworks/Python.framework/Versions/3.11/lib/python3.11/codecs.py",
+      "/opt/homebrew/Cellar/python@3.11/3.11.16/Frameworks/Python.framework/Versions/3.11/lib/python3.11/collections/__init__.py",
+      "/opt/homebrew/Cellar/python@3.11/3.11.16/Frameworks/Python.framework/Versions/3.11/lib/python3.11/collections/abc.py",
+      "/opt/homebrew/Cellar/python@3.11/3.11.16/Frameworks/Python.framework/Versions/3.11/lib/python3.11/contextlib.py",
+      "/opt/homebrew/Cellar/python@3.11/3.11.16/Frameworks/Python.framework/Versions/3.11/lib/python3.11/copy.py",
+      "/opt/homebrew/Cellar/python@3.11/3.11.16/Frameworks/Python.framework/Versions/3.11/lib/python3.11/copyreg.py",
+      "/opt/homebrew/Cellar/python@3.11/3.11.16/Frameworks/Python.framework/Versions/3.11/lib/python3.11/dataclasses.py",
+      "/opt/homebrew/Cellar/python@3.11/3.11.16/Frameworks/Python.framework/Versions/3.11/lib/python3.11/datetime.py",
+      "/opt/homebrew/Cellar/python@3.11/3.11.16/Frameworks/Python.framework/Versions/3.11/lib/python3.11/difflib.py",
+      "/opt/homebrew/Cellar/python@3.11/3.11.16/Frameworks/Python.framework/Versions/3.11/lib/python3.11/dis.py",
+      "/opt/homebrew/Cellar/python@3.11/3.11.16/Frameworks/Python.framework/Versions/3.11/lib/python3.11/encodings/__init__.py",
+      "/opt/homebrew/Cellar/python@3.11/3.11.16/Frameworks/Python.framework/Versions/3.11/lib/python3.11/encodings/aliases.py",
+      "/opt/homebrew/Cellar/python@3.11/3.11.16/Frameworks/Python.framework/Versions/3.11/lib/python3.11/encodings/utf_8.py",
+      "/opt/homebrew/Cellar/python@3.11/3.11.16/Frameworks/Python.framework/Versions/3.11/lib/python3.11/enum.py",
+      "/opt/homebrew/Cellar/python@3.11/3.11.16/Frameworks/Python.framework/Versions/3.11/lib/python3.11/fnmatch.py",
+      "/opt/homebrew/Cellar/python@3.11/3.11.16/Frameworks/Python.framework/Versions/3.11/lib/python3.11/functools.py",
+      "/opt/homebrew/Cellar/python@3.11/3.11.16/Frameworks/Python.framework/Versions/3.11/lib/python3.11/genericpath.py",
+      "/opt/homebrew/Cellar/python@3.11/3.11.16/Frameworks/Python.framework/Versions/3.11/lib/python3.11/gettext.py",
+      "/opt/homebrew/Cellar/python@3.11/3.11.16/Frameworks/Python.framework/Versions/3.11/lib/python3.11/heapq.py",
+      "/opt/homebrew/Cellar/python@3.11/3.11.16/Frameworks/Python.framework/Versions/3.11/lib/python3.11/importlib/__init__.py",
+      "/opt/homebrew/Cellar/python@3.11/3.11.16/Frameworks/Python.framework/Versions/3.11/lib/python3.11/importlib/_abc.py",
+      "/opt/homebrew/Cellar/python@3.11/3.11.16/Frameworks/Python.framework/Versions/3.11/lib/python3.11/importlib/_bootstrap.py",
+      "/opt/homebrew/Cellar/python@3.11/3.11.16/Frameworks/Python.framework/Versions/3.11/lib/python3.11/importlib/_bootstrap_external.py",
+      "/opt/homebrew/Cellar/python@3.11/3.11.16/Frameworks/Python.framework/Versions/3.11/lib/python3.11/importlib/machinery.py",
+      "/opt/homebrew/Cellar/python@3.11/3.11.16/Frameworks/Python.framework/Versions/3.11/lib/python3.11/importlib/util.py",
+      "/opt/homebrew/Cellar/python@3.11/3.11.16/Frameworks/Python.framework/Versions/3.11/lib/python3.11/inspect.py",
+      "/opt/homebrew/Cellar/python@3.11/3.11.16/Frameworks/Python.framework/Versions/3.11/lib/python3.11/io.py",
+      "/opt/homebrew/Cellar/python@3.11/3.11.16/Frameworks/Python.framework/Versions/3.11/lib/python3.11/ipaddress.py",
+      "/opt/homebrew/Cellar/python@3.11/3.11.16/Frameworks/Python.framework/Versions/3.11/lib/python3.11/json/__init__.py",
+      "/opt/homebrew/Cellar/python@3.11/3.11.16/Frameworks/Python.framework/Versions/3.11/lib/python3.11/json/decoder.py",
+      "/opt/homebrew/Cellar/python@3.11/3.11.16/Frameworks/Python.framework/Versions/3.11/lib/python3.11/json/encoder.py",
+      "/opt/homebrew/Cellar/python@3.11/3.11.16/Frameworks/Python.framework/Versions/3.11/lib/python3.11/json/scanner.py",
+      "/opt/homebrew/Cellar/python@3.11/3.11.16/Frameworks/Python.framework/Versions/3.11/lib/python3.11/keyword.py",
+      "/opt/homebrew/Cellar/python@3.11/3.11.16/Frameworks/Python.framework/Versions/3.11/lib/python3.11/lib-dynload/_bisect.cpython-311-darwin.so",
+      "/opt/homebrew/Cellar/python@3.11/3.11.16/Frameworks/Python.framework/Versions/3.11/lib/python3.11/lib-dynload/_bz2.cpython-311-darwin.so",
+      "/opt/homebrew/Cellar/python@3.11/3.11.16/Frameworks/Python.framework/Versions/3.11/lib/python3.11/lib-dynload/_datetime.cpython-311-darwin.so",
+      "/opt/homebrew/Cellar/python@3.11/3.11.16/Frameworks/Python.framework/Versions/3.11/lib/python3.11/lib-dynload/_elementtree.cpython-311-darwin.so",
+      "/opt/homebrew/Cellar/python@3.11/3.11.16/Frameworks/Python.framework/Versions/3.11/lib/python3.11/lib-dynload/_heapq.cpython-311-darwin.so",
+      "/opt/homebrew/Cellar/python@3.11/3.11.16/Frameworks/Python.framework/Versions/3.11/lib/python3.11/lib-dynload/_json.cpython-311-darwin.so",
+      "/opt/homebrew/Cellar/python@3.11/3.11.16/Frameworks/Python.framework/Versions/3.11/lib/python3.11/lib-dynload/_lzma.cpython-311-darwin.so",
+      "/opt/homebrew/Cellar/python@3.11/3.11.16/Frameworks/Python.framework/Versions/3.11/lib/python3.11/lib-dynload/_opcode.cpython-311-darwin.so",
+      "/opt/homebrew/Cellar/python@3.11/3.11.16/Frameworks/Python.framework/Versions/3.11/lib/python3.11/lib-dynload/_random.cpython-311-darwin.so",
+      "/opt/homebrew/Cellar/python@3.11/3.11.16/Frameworks/Python.framework/Versions/3.11/lib/python3.11/lib-dynload/_sha512.cpython-311-darwin.so",
+      "/opt/homebrew/Cellar/python@3.11/3.11.16/Frameworks/Python.framework/Versions/3.11/lib/python3.11/lib-dynload/_struct.cpython-311-darwin.so",
+      "/opt/homebrew/Cellar/python@3.11/3.11.16/Frameworks/Python.framework/Versions/3.11/lib/python3.11/lib-dynload/_typing.cpython-311-darwin.so",
+      "/opt/homebrew/Cellar/python@3.11/3.11.16/Frameworks/Python.framework/Versions/3.11/lib/python3.11/lib-dynload/binascii.cpython-311-darwin.so",
+      "/opt/homebrew/Cellar/python@3.11/3.11.16/Frameworks/Python.framework/Versions/3.11/lib/python3.11/lib-dynload/math.cpython-311-darwin.so",
+      "/opt/homebrew/Cellar/python@3.11/3.11.16/Frameworks/Python.framework/Versions/3.11/lib/python3.11/lib-dynload/pyexpat.cpython-311-darwin.so",
+      "/opt/homebrew/Cellar/python@3.11/3.11.16/Frameworks/Python.framework/Versions/3.11/lib/python3.11/lib-dynload/zlib.cpython-311-darwin.so",
+      "/opt/homebrew/Cellar/python@3.11/3.11.16/Frameworks/Python.framework/Versions/3.11/lib/python3.11/linecache.py",
+      "/opt/homebrew/Cellar/python@3.11/3.11.16/Frameworks/Python.framework/Versions/3.11/lib/python3.11/lzma.py",
+      "/opt/homebrew/Cellar/python@3.11/3.11.16/Frameworks/Python.framework/Versions/3.11/lib/python3.11/ntpath.py",
+      "/opt/homebrew/Cellar/python@3.11/3.11.16/Frameworks/Python.framework/Versions/3.11/lib/python3.11/opcode.py",
+      "/opt/homebrew/Cellar/python@3.11/3.11.16/Frameworks/Python.framework/Versions/3.11/lib/python3.11/operator.py",
+      "/opt/homebrew/Cellar/python@3.11/3.11.16/Frameworks/Python.framework/Versions/3.11/lib/python3.11/os.py",
+      "/opt/homebrew/Cellar/python@3.11/3.11.16/Frameworks/Python.framework/Versions/3.11/lib/python3.11/pathlib.py",
+      "/opt/homebrew/Cellar/python@3.11/3.11.16/Frameworks/Python.framework/Versions/3.11/lib/python3.11/pkgutil.py",
+      "/opt/homebrew/Cellar/python@3.11/3.11.16/Frameworks/Python.framework/Versions/3.11/lib/python3.11/platform.py",
+      "/opt/homebrew/Cellar/python@3.11/3.11.16/Frameworks/Python.framework/Versions/3.11/lib/python3.11/plistlib.py",
+      "/opt/homebrew/Cellar/python@3.11/3.11.16/Frameworks/Python.framework/Versions/3.11/lib/python3.11/posixpath.py",
+      "/opt/homebrew/Cellar/python@3.11/3.11.16/Frameworks/Python.framework/Versions/3.11/lib/python3.11/pprint.py",
+      "/opt/homebrew/Cellar/python@3.11/3.11.16/Frameworks/Python.framework/Versions/3.11/lib/python3.11/random.py",
+      "/opt/homebrew/Cellar/python@3.11/3.11.16/Frameworks/Python.framework/Versions/3.11/lib/python3.11/re/__init__.py",
+      "/opt/homebrew/Cellar/python@3.11/3.11.16/Frameworks/Python.framework/Versions/3.11/lib/python3.11/re/_casefix.py",
+      "/opt/homebrew/Cellar/python@3.11/3.11.16/Frameworks/Python.framework/Versions/3.11/lib/python3.11/re/_compiler.py",
+      "/opt/homebrew/Cellar/python@3.11/3.11.16/Frameworks/Python.framework/Versions/3.11/lib/python3.11/re/_constants.py",
+      "/opt/homebrew/Cellar/python@3.11/3.11.16/Frameworks/Python.framework/Versions/3.11/lib/python3.11/re/_parser.py",
+      "/opt/homebrew/Cellar/python@3.11/3.11.16/Frameworks/Python.framework/Versions/3.11/lib/python3.11/reprlib.py",
+      "/opt/homebrew/Cellar/python@3.11/3.11.16/Frameworks/Python.framework/Versions/3.11/lib/python3.11/shutil.py",
+      "/opt/homebrew/Cellar/python@3.11/3.11.16/Frameworks/Python.framework/Versions/3.11/lib/python3.11/signal.py",
+      "/opt/homebrew/Cellar/python@3.11/3.11.16/Frameworks/Python.framework/Versions/3.11/lib/python3.11/site.py",
+      "/opt/homebrew/Cellar/python@3.11/3.11.16/Frameworks/Python.framework/Versions/3.11/lib/python3.11/sitecustomize.py",
+      "/opt/homebrew/Cellar/python@3.11/3.11.16/Frameworks/Python.framework/Versions/3.11/lib/python3.11/stat.py",
+      "/opt/homebrew/Cellar/python@3.11/3.11.16/Frameworks/Python.framework/Versions/3.11/lib/python3.11/struct.py",
+      "/opt/homebrew/Cellar/python@3.11/3.11.16/Frameworks/Python.framework/Versions/3.11/lib/python3.11/tempfile.py",
+      "/opt/homebrew/Cellar/python@3.11/3.11.16/Frameworks/Python.framework/Versions/3.11/lib/python3.11/textwrap.py",
+      "/opt/homebrew/Cellar/python@3.11/3.11.16/Frameworks/Python.framework/Versions/3.11/lib/python3.11/threading.py",
+      "/opt/homebrew/Cellar/python@3.11/3.11.16/Frameworks/Python.framework/Versions/3.11/lib/python3.11/token.py",
+      "/opt/homebrew/Cellar/python@3.11/3.11.16/Frameworks/Python.framework/Versions/3.11/lib/python3.11/tokenize.py",
+      "/opt/homebrew/Cellar/python@3.11/3.11.16/Frameworks/Python.framework/Versions/3.11/lib/python3.11/traceback.py",
+      "/opt/homebrew/Cellar/python@3.11/3.11.16/Frameworks/Python.framework/Versions/3.11/lib/python3.11/types.py",
+      "/opt/homebrew/Cellar/python@3.11/3.11.16/Frameworks/Python.framework/Versions/3.11/lib/python3.11/typing.py",
+      "/opt/homebrew/Cellar/python@3.11/3.11.16/Frameworks/Python.framework/Versions/3.11/lib/python3.11/unittest/__init__.py",
+      "/opt/homebrew/Cellar/python@3.11/3.11.16/Frameworks/Python.framework/Versions/3.11/lib/python3.11/unittest/case.py",
+      "/opt/homebrew/Cellar/python@3.11/3.11.16/Frameworks/Python.framework/Versions/3.11/lib/python3.11/unittest/loader.py",
+      "/opt/homebrew/Cellar/python@3.11/3.11.16/Frameworks/Python.framework/Versions/3.11/lib/python3.11/unittest/main.py",
+      "/opt/homebrew/Cellar/python@3.11/3.11.16/Frameworks/Python.framework/Versions/3.11/lib/python3.11/unittest/result.py",
+      "/opt/homebrew/Cellar/python@3.11/3.11.16/Frameworks/Python.framework/Versions/3.11/lib/python3.11/unittest/runner.py",
+      "/opt/homebrew/Cellar/python@3.11/3.11.16/Frameworks/Python.framework/Versions/3.11/lib/python3.11/unittest/signals.py",
+      "/opt/homebrew/Cellar/python@3.11/3.11.16/Frameworks/Python.framework/Versions/3.11/lib/python3.11/unittest/suite.py",
+      "/opt/homebrew/Cellar/python@3.11/3.11.16/Frameworks/Python.framework/Versions/3.11/lib/python3.11/unittest/util.py",
+      "/opt/homebrew/Cellar/python@3.11/3.11.16/Frameworks/Python.framework/Versions/3.11/lib/python3.11/urllib/__init__.py",
+      "/opt/homebrew/Cellar/python@3.11/3.11.16/Frameworks/Python.framework/Versions/3.11/lib/python3.11/urllib/parse.py",
+      "/opt/homebrew/Cellar/python@3.11/3.11.16/Frameworks/Python.framework/Versions/3.11/lib/python3.11/warnings.py",
+      "/opt/homebrew/Cellar/python@3.11/3.11.16/Frameworks/Python.framework/Versions/3.11/lib/python3.11/weakref.py",
+      "/opt/homebrew/Cellar/python@3.11/3.11.16/Frameworks/Python.framework/Versions/3.11/lib/python3.11/xml/__init__.py",
+      "/opt/homebrew/Cellar/python@3.11/3.11.16/Frameworks/Python.framework/Versions/3.11/lib/python3.11/xml/etree/ElementPath.py",
+      "/opt/homebrew/Cellar/python@3.11/3.11.16/Frameworks/Python.framework/Versions/3.11/lib/python3.11/xml/etree/ElementTree.py",
+      "/opt/homebrew/Cellar/python@3.11/3.11.16/Frameworks/Python.framework/Versions/3.11/lib/python3.11/xml/etree/__init__.py",
+      "/opt/homebrew/Cellar/python@3.11/3.11.16/Frameworks/Python.framework/Versions/3.11/lib/python3.11/xml/parsers/__init__.py",
+      "/opt/homebrew/Cellar/python@3.11/3.11.16/Frameworks/Python.framework/Versions/3.11/lib/python3.11/xml/parsers/expat.py",
+      "/opt/homebrew/Cellar/python@3.11/3.11.16/Frameworks/Python.framework/Versions/3.11/lib/python3.11/zipimport.py",
+      "/opt/homebrew/lib/python3.11/site-packages/_distutils_hack/__init__.py"
+    ],
+    "elapsed_seconds": 46.891705040999966,
+    "import_coverage": "No upstream Import App test suite at this pin; F1 checks STEP export/reimport"
+  },
+  "proofs": {
+    "demo": {
+      "status": "passed",
+      "gate": "F1-desktop-model",
+      "platform": "macOS-15.7.9-arm64-arm-64bit",
+      "freecad_version": [
+        "1",
+        "1",
+        "4",
+        "20260928 (Git shallow)",
+        "Unknown",
+        "2026/09/28 13:46:34",
+        "HEAD",
+        "4fd3bf320d9566a27e60069fc8387448aaa3a094"
+      ],
+      "occt_version": "7.9.3",
+      "input_sha256": "07b02c7b5731fb28f0fa2326fa8c792fc3f2c7c39e2d7f496ecfb36d6db18911",
+      "board_source": {
+        "name": "demo.kicad_pcb",
+        "sha256": "48c7dd725956ded849ccb96e2add58e9f09895dbb54839b3044f786fab382efe",
+        "kicad_version": "10.0.7-10.0.7~ubuntu24.04.1"
+      },
+      "settings_mm": {
+        "margin": 3.0,
+        "wall": 2.0,
+        "floor": 2.0,
+        "board_clearance": 2.0,
+        "standoff_height": 4.0,
+        "standoff_diameter": 6.0,
+        "lid_thickness": 2.0,
+        "lid_gap": 0.25
+      },
+      "tools_sha256": {
+        "fetch.py": "2ccf47ad8e82a82cf5e499753fdac7e3d23ad6f7993e5e3f989205a84d13f6d8",
+        "prepare.py": "1236e61ad4dd0cef8eed43ae4e01a9f4afe5d753dcd6a1b04c2cac8ad49d9972",
+        "inputs.py": "f48d660987021e8def853b94e6de547e3d60ef34c2e8c56910386c2f0071630e",
+        "model.py": "ecb7e4c877abb51e20f6fca052746c4081c1622d88a5491e768fadc14f62b938",
+        "checks.py": "f98331366b156f36fcc8a708afec842d7d97796770563a58b57e812f783ae519",
+        "proof.py": "9f00253316677690c8278e2854d07ce5734724b2370d2c2fc0171897d1fccab3",
+        "run.py": "2db45f184c4d81587b28d2ea2724f9d275f0c479d3d67f6ded2c2ac5235d2a91",
+        "upstream.json": "06623645779c44c4d03608935988dcab2098cf47849d6e7593fc001496795e0c"
+      },
+      "parts": {
+        "Tray": {
+          "bounds_mm": [
+            5.0,
+            15.0,
+            0.0,
+            65.0,
+            55.0,
+            9.6
+          ],
+          "volume_mm3": 7783.2424723700915,
+          "valid_solids": 1
+        },
+        "Lid": {
+          "bounds_mm": [
+            5.25,
+            15.25,
+            9.85,
+            64.75,
+            54.75,
+            11.85
+          ],
+          "volume_mm3": 4700.5,
+          "valid_solids": 1
+        }
+      },
+      "bore_count": 1,
+      "save_reopen_recompute": "passed",
+      "parameter_recomputes": [
+        {
+          "parameter": "wall",
+          "value_mm": 2.6,
+          "parts": {
+            "Tray": {
+              "bounds_mm": [
+                4.4,
+                14.399999999999999,
+                0.0,
+                65.60000000000001,
+                55.6,
+                9.6
+              ],
+              "volume_mm3": 8949.066472370101,
+              "valid_solids": 1
+            },
+            "Lid": {
+              "bounds_mm": [
+                4.65,
+                14.649999999999999,
+                9.85,
+                65.35000000000001,
+                55.35,
+                11.85
+              ],
+              "volume_mm3": 4940.9800000000005,
+              "valid_solids": 1
+            }
+          }
+        },
+        {
+          "parameter": "floor",
+          "value_mm": 2.7,
+          "parts": {
+            "Tray": {
+              "bounds_mm": [
+                5.0,
+                15.0,
+                0.0,
+                65.0,
+                55.0,
+                10.299999999999999
+              ],
+              "volume_mm3": 9457.61273833486,
+              "valid_solids": 1
+            },
+            "Lid": {
+              "bounds_mm": [
+                5.25,
+                15.25,
+                10.549999999999999,
+                64.75,
+                54.75,
+                12.549999999999999
+              ],
+              "volume_mm3": 4700.5,
+              "valid_solids": 1
+            }
+          }
+        },
+        {
+          "parameter": "standoff_height",
+          "value_mm": 5.1,
+          "parts": {
+            "Tray": {
+              "bounds_mm": [
+                5.0,
+                15.0,
+                0.0,
+                65.0,
+                55.0,
+                10.7
+              ],
+              "volume_mm3": 8227.897514728129,
+              "valid_solids": 1
+            },
+            "Lid": {
+              "bounds_mm": [
+                5.25,
+                15.25,
+                10.95,
+                64.75,
+                54.75,
+                12.95
+              ],
+              "volume_mm3": 4700.5,
+              "valid_solids": 1
+            }
+          }
+        },
+        {
+          "parameter": "standoff_diameter",
+          "value_mm": 6.8,
+          "parts": {
+            "Tray": {
+              "bounds_mm": [
+                5.0,
+                15.0,
+                0.0,
+                65.0,
+                55.0,
+                9.6
+              ],
+              "volume_mm3": 7815.412381142852,
+              "valid_solids": 1
+            },
+            "Lid": {
+              "bounds_mm": [
+                5.25,
+                15.25,
+                9.85,
+                64.75,
+                54.75,
+                11.85
+              ],
+              "volume_mm3": 4700.5,
+              "valid_solids": 1
+            }
+          }
+        },
+        {
+          "parameter": "margin",
+          "value_mm": 4.0,
+          "parts": {
+            "Tray": {
+              "bounds_mm": [
+                4.0,
+                14.0,
+                0.0,
+                66.0,
+                56.0,
+                9.6
+              ],
+              "volume_mm3": 8312.842472370088,
+              "valid_solids": 1
+            },
+            "Lid": {
+              "bounds_mm": [
+                4.25,
+                14.25,
+                9.85,
+                65.75,
+                55.75,
+                11.85
+              ],
+              "volume_mm3": 5104.5,
+              "valid_solids": 1
+            }
+          }
+        },
+        {
+          "parameter": "board_clearance",
+          "value_mm": 3.1,
+          "parts": {
+            "Tray": {
+              "bounds_mm": [
+                5.0,
+                15.0,
+                0.0,
+                65.0,
+                55.0,
+                10.7
+              ],
+              "volume_mm3": 8205.642472370093,
+              "valid_solids": 1
+            },
+            "Lid": {
+              "bounds_mm": [
+                5.25,
+                15.25,
+                10.95,
+                64.75,
+                54.75,
+                12.95
+              ],
+              "volume_mm3": 4700.5,
+              "valid_solids": 1
+            }
+          }
+        },
+        {
+          "parameter": "lid_thickness",
+          "value_mm": 2.6,
+          "parts": {
+            "Tray": {
+              "bounds_mm": [
+                5.0,
+                15.0,
+                0.0,
+                65.0,
+                55.0,
+                9.6
+              ],
+              "volume_mm3": 7783.2424723700915,
+              "valid_solids": 1
+            },
+            "Lid": {
+              "bounds_mm": [
+                5.25,
+                15.25,
+                9.85,
+                64.75,
+                54.75,
+                12.45
+              ],
+              "volume_mm3": 6110.650000000001,
+              "valid_solids": 1
+            }
+          }
+        },
+        {
+          "parameter": "lid_gap",
+          "value_mm": 0.5,
+          "parts": {
+            "Tray": {
+              "bounds_mm": [
+                5.0,
+                15.0,
+                0.0,
+                65.0,
+                55.0,
+                9.6
+              ],
+              "volume_mm3": 7783.2424723700915,
+              "valid_solids": 1
+            },
+            "Lid": {
+              "bounds_mm": [
+                5.5,
+                15.5,
+                10.1,
+                64.5,
+                54.5,
+                12.1
+              ],
+              "volume_mm3": 4601.999999999999,
+              "valid_solids": 1
+            }
+          }
+        }
+      ],
+      "stl": {
+        "Tray": {
+          "triangles": 1040,
+          "edges": 1560,
+          "signed_volume_mm3": 7783.215593793686
+        },
+        "Lid": {
+          "triangles": 12,
+          "edges": 18,
+          "signed_volume_mm3": 4700.499999999998
+        }
+      },
+      "step_reimport": {
+        "Tray": {
+          "bounds_mm": [
+            5.0,
+            15.0,
+            0.0,
+            65.0,
+            55.0,
+            9.6
+          ],
+          "volume_mm3": 7783.242472370099,
+          "valid_solids": 1
+        },
+        "Lid": {
+          "bounds_mm": [
+            5.25,
+            15.25,
+            9.85,
+            64.75,
+            54.75,
+            11.85
+          ],
+          "volume_mm3": 4700.5,
+          "valid_solids": 1
+        }
+      },
+      "files": {
+        "enclosure.FCStd": {
+          "bytes": 31224,
+          "sha256": "d8b08f00cf1143c8e611090ef84d06ef675ac045c68aeadd15c1369dcb7f4f96"
+        },
+        "enclosure.step": {
+          "bytes": 23746,
+          "sha256": "d3b83cb6e33fc655eb36beff806c34afb83adeb374976475d922f71cd41a9c03"
+        },
+        "tray.step": {
+          "bytes": 15089,
+          "sha256": "940739ee5ce3be3638ecb9ee86528744427c31fbbcc54f0b9854b2a0bf771351"
+        },
+        "lid.step": {
+          "bytes": 6961,
+          "sha256": "fa605704d8289e60e755e17439d6ed09807e73cd361d283e931d3843c74043d9"
+        },
+        "tray.stl": {
+          "bytes": 52084,
+          "sha256": "78af5033218ee9216fac100cbfd93de4052efbf25929d92a56c21cdcd99fb8f0"
+        },
+        "lid.stl": {
+          "bytes": 684,
+          "sha256": "d8da03cd2aa156c2893e7b25dd20f4836890598e80461aac609b0f6193f8a354"
+        }
+      },
+      "synthetic_model_regressions": {
+        "no_mounts": {
+          "Tray": {
+            "bounds_mm": [
+              -35.0,
+              -25.0,
+              0.0,
+              35.0,
+              25.0,
+              9.6
+            ],
+            "volume_mm3": 10526.400000000001,
+            "valid_solids": 1
+          },
+          "Lid": {
+            "bounds_mm": [
+              -34.75,
+              -24.75,
+              9.85,
+              34.75,
+              24.75,
+              11.85
+            ],
+            "volume_mm3": 6880.5,
+            "valid_solids": 1
+          }
+        },
+        "mixed_bores_and_negative_origin": {
+          "Tray": {
+            "bounds_mm": [
+              -35.0,
+              -25.0,
+              0.0,
+              35.0,
+              25.0,
+              9.6
+            ],
+            "volume_mm3": 10674.88737677192,
+            "valid_solids": 1
+          },
+          "Lid": {
+            "bounds_mm": [
+              -34.75,
+              -24.75,
+              9.85,
+              34.75,
+              24.75,
+              11.85
+            ],
+            "volume_mm3": 6880.5,
+            "valid_solids": 1
+          }
+        }
+      },
+      "elapsed_seconds": 1.1542701249999823
+    },
+    "roundtrip": {
+      "status": "passed",
+      "gate": "F1-desktop-model",
+      "platform": "macOS-15.7.9-arm64-arm-64bit",
+      "freecad_version": [
+        "1",
+        "1",
+        "4",
+        "20260928 (Git shallow)",
+        "Unknown",
+        "2026/09/28 13:46:34",
+        "HEAD",
+        "4fd3bf320d9566a27e60069fc8387448aaa3a094"
+      ],
+      "occt_version": "7.9.3",
+      "input_sha256": "aaa8a9873cec3df6a8fd284b6c3ad1dc9716f5e781c7222fcca6bc5f2d69eb70",
+      "board_source": {
+        "name": "RoundTrip.kicad_pcb",
+        "sha256": "b734c040c392df1ec18f1106315721b204fed68d77948674b85113f7ee896c63",
+        "kicad_version": "10.0.7-10.0.7~ubuntu24.04.1"
+      },
+      "settings_mm": {
+        "margin": 3.0,
+        "wall": 2.0,
+        "floor": 2.0,
+        "board_clearance": 2.0,
+        "standoff_height": 4.0,
+        "standoff_diameter": 6.0,
+        "lid_thickness": 2.0,
+        "lid_gap": 0.25
+      },
+      "tools_sha256": {
+        "fetch.py": "2ccf47ad8e82a82cf5e499753fdac7e3d23ad6f7993e5e3f989205a84d13f6d8",
+        "prepare.py": "1236e61ad4dd0cef8eed43ae4e01a9f4afe5d753dcd6a1b04c2cac8ad49d9972",
+        "inputs.py": "f48d660987021e8def853b94e6de547e3d60ef34c2e8c56910386c2f0071630e",
+        "model.py": "ecb7e4c877abb51e20f6fca052746c4081c1622d88a5491e768fadc14f62b938",
+        "checks.py": "f98331366b156f36fcc8a708afec842d7d97796770563a58b57e812f783ae519",
+        "proof.py": "9f00253316677690c8278e2854d07ce5734724b2370d2c2fc0171897d1fccab3",
+        "run.py": "2db45f184c4d81587b28d2ea2724f9d275f0c479d3d67f6ded2c2ac5235d2a91",
+        "upstream.json": "06623645779c44c4d03608935988dcab2098cf47849d6e7593fc001496795e0c"
+      },
+      "parts": {
+        "Tray": {
+          "bounds_mm": [
+            -5.0,
+            -5.0,
+            0.0,
+            85.0,
+            65.0,
+            9.6
+          ],
+          "volume_mm3": 17472.084944740196,
+          "valid_solids": 1
+        },
+        "Lid": {
+          "bounds_mm": [
+            -4.75,
+            -4.75,
+            9.85,
+            84.75,
+            64.75,
+            11.85
+          ],
+          "volume_mm3": 12440.5,
+          "valid_solids": 1
+        }
+      },
+      "bore_count": 2,
+      "save_reopen_recompute": "passed",
+      "parameter_recomputes": [
+        {
+          "parameter": "wall",
+          "value_mm": 2.6,
+          "parts": {
+            "Tray": {
+              "bounds_mm": [
+                -5.6,
+                -5.6,
+                0.0,
+                85.60000000000001,
+                65.60000000000001,
+                9.6
+              ],
+              "volume_mm3": 19329.108944740212,
+              "valid_solids": 1
+            },
+            "Lid": {
+              "bounds_mm": [
+                -5.35,
+                -5.35,
+                9.85,
+                85.35000000000001,
+                65.35000000000001,
+                11.85
+              ],
+              "volume_mm3": 12824.980000000003,
+              "valid_solids": 1
+            }
+          }
+        },
+        {
+          "parameter": "floor",
+          "value_mm": 2.7,
+          "parts": {
+            "Tray": {
+              "bounds_mm": [
+                -5.0,
+                -5.0,
+                0.0,
+                85.0,
+                65.0,
+                10.299999999999999
+              ],
+              "volume_mm3": 21870.82547666972,
+              "valid_solids": 1
+            },
+            "Lid": {
+              "bounds_mm": [
+                -4.75,
+                -4.75,
+                10.549999999999999,
+                84.75,
+                64.75,
+                12.549999999999999
+              ],
+              "volume_mm3": 12440.5,
+              "valid_solids": 1
+            }
+          }
+        },
+        {
+          "parameter": "standoff_height",
+          "value_mm": 5.1,
+          "parts": {
+            "Tray": {
+              "bounds_mm": [
+                -5.0,
+                -5.0,
+                0.0,
+                85.0,
+                65.0,
+                10.7
+              ],
+              "volume_mm3": 18202.995029456237,
+              "valid_solids": 1
+            },
+            "Lid": {
+              "bounds_mm": [
+                -4.75,
+                -4.75,
+                10.95,
+                84.75,
+                64.75,
+                12.95
+              ],
+              "volume_mm3": 12440.5,
+              "valid_solids": 1
+            }
+          }
+        },
+        {
+          "parameter": "standoff_diameter",
+          "value_mm": 6.8,
+          "parts": {
+            "Tray": {
+              "bounds_mm": [
+                -5.0,
+                -5.0,
+                0.0,
+                85.0,
+                65.0,
+                9.6
+              ],
+              "volume_mm3": 17536.424762285707,
+              "valid_solids": 1
+            },
+            "Lid": {
+              "bounds_mm": [
+                -4.75,
+                -4.75,
+                9.85,
+                84.75,
+                64.75,
+                11.85
+              ],
+              "volume_mm3": 12440.5,
+              "valid_solids": 1
+            }
+          }
+        },
+        {
+          "parameter": "margin",
+          "value_mm": 4.0,
+          "parts": {
+            "Tray": {
+              "bounds_mm": [
+                -6.0,
+                -6.0,
+                0.0,
+                86.0,
+                66.0,
+                9.6
+              ],
+              "volume_mm3": 18241.684944740206,
+              "valid_solids": 1
+            },
+            "Lid": {
+              "bounds_mm": [
+                -5.75,
+                -5.75,
+                9.85,
+                85.75,
+                65.75,
+                11.85
+              ],
+              "volume_mm3": 13084.5,
+              "valid_solids": 1
+            }
+          }
+        },
+        {
+          "parameter": "board_clearance",
+          "value_mm": 3.1,
+          "parts": {
+            "Tray": {
+              "bounds_mm": [
+                -5.0,
+                -5.0,
+                0.0,
+                85.0,
+                65.0,
+                10.7
+              ],
+              "volume_mm3": 18158.484944740194,
+              "valid_solids": 1
+            },
+            "Lid": {
+              "bounds_mm": [
+                -4.75,
+                -4.75,
+                10.95,
+                84.75,
+                64.75,
+                12.95
+              ],
+              "volume_mm3": 12440.5,
+              "valid_solids": 1
+            }
+          }
+        },
+        {
+          "parameter": "lid_thickness",
+          "value_mm": 2.6,
+          "parts": {
+            "Tray": {
+              "bounds_mm": [
+                -5.0,
+                -5.0,
+                0.0,
+                85.0,
+                65.0,
+                9.6
+              ],
+              "volume_mm3": 17472.084944740196,
+              "valid_solids": 1
+            },
+            "Lid": {
+              "bounds_mm": [
+                -4.75,
+                -4.75,
+                9.85,
+                84.75,
+                64.75,
+                12.45
+              ],
+              "volume_mm3": 16172.649999999998,
+              "valid_solids": 1
+            }
+          }
+        },
+        {
+          "parameter": "lid_gap",
+          "value_mm": 0.5,
+          "parts": {
+            "Tray": {
+              "bounds_mm": [
+                -5.0,
+                -5.0,
+                0.0,
+                85.0,
+                65.0,
+                9.6
+              ],
+              "volume_mm3": 17472.084944740196,
+              "valid_solids": 1
+            },
+            "Lid": {
+              "bounds_mm": [
+                -4.5,
+                -4.5,
+                10.1,
+                84.5,
+                64.5,
+                12.1
+              ],
+              "volume_mm3": 12282.0,
+              "valid_solids": 1
+            }
+          }
+        }
+      ],
+      "stl": {
+        "Tray": {
+          "triangles": 2052,
+          "edges": 3078,
+          "signed_volume_mm3": 17472.031242761223
+        },
+        "Lid": {
+          "triangles": 12,
+          "edges": 18,
+          "signed_volume_mm3": 12440.499999999996
+        }
+      },
+      "step_reimport": {
+        "Tray": {
+          "bounds_mm": [
+            -5.0,
+            -5.0,
+            0.0,
+            85.0,
+            65.0,
+            9.6
+          ],
+          "volume_mm3": 17472.084944740192,
+          "valid_solids": 1
+        },
+        "Lid": {
+          "bounds_mm": [
+            -4.75,
+            -4.75,
+            9.85,
+            84.75,
+            64.75,
+            11.85
+          ],
+          "volume_mm3": 12440.5,
+          "valid_solids": 1
+        }
+      },
+      "files": {
+        "enclosure.FCStd": {
+          "bytes": 37540,
+          "sha256": "93f1435a330327d567e7703d0f508570a4878868c3256655b418e57b8ac420f7"
+        },
+        "enclosure.step": {
+          "bytes": 26898,
+          "sha256": "f77c7e940cd907051c933102c22bd6980bb1369c66e5ad799ef2d24a0748babc"
+        },
+        "tray.step": {
+          "bytes": 18229,
+          "sha256": "a6fa37c43b931d36712aa1c5f58cf08d3cd43cbdebc9039b3b07def2e1d9baf6"
+        },
+        "lid.step": {
+          "bytes": 6973,
+          "sha256": "65f9ffdded7bfc3eded089db20aa130c952a223b7cb37b729e6deadd84befbc3"
+        },
+        "tray.stl": {
+          "bytes": 102684,
+          "sha256": "5bcbfd3d30de213c5f58f16bf9311d5e72021f83323ae8f743dca7d2815d58f0"
+        },
+        "lid.stl": {
+          "bytes": 684,
+          "sha256": "cd3bc4905a1b56d877796acbe6545f0f5387949b7c8b5e3ca5fa4c5e006386ef"
+        }
+      },
+      "synthetic_model_regressions": {
+        "no_mounts": {
+          "Tray": {
+            "bounds_mm": [
+              -35.0,
+              -25.0,
+              0.0,
+              35.0,
+              25.0,
+              9.6
+            ],
+            "volume_mm3": 10526.400000000001,
+            "valid_solids": 1
+          },
+          "Lid": {
+            "bounds_mm": [
+              -34.75,
+              -24.75,
+              9.85,
+              34.75,
+              24.75,
+              11.85
+            ],
+            "volume_mm3": 6880.5,
+            "valid_solids": 1
+          }
+        },
+        "mixed_bores_and_negative_origin": {
+          "Tray": {
+            "bounds_mm": [
+              -35.0,
+              -25.0,
+              0.0,
+              35.0,
+              25.0,
+              9.6
+            ],
+            "volume_mm3": 10674.88737677192,
+            "valid_solids": 1
+          },
+          "Lid": {
+            "bounds_mm": [
+              -34.75,
+              -24.75,
+              9.85,
+              34.75,
+              24.75,
+              11.85
+            ],
+            "volume_mm3": 6880.5,
+            "valid_solids": 1
+          }
+        }
+      },
+      "elapsed_seconds": 1.8650544580000314
+    }
+  }
+}

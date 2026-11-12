@@ -1,0 +1,175 @@
+name: Demo video
+
+# Legacy CI experiment with prebuilt projects. The current from-scratch demo uses the
+# local iMac and measured landscape/60 fps capture: docs/history/IPAD_DEMO_CAPTURE.md.
+# This manual workflow does not implement that capture plan.
+# A screen recording of the NATIVE_KICAD edition in an iPad simulator, in landscape: KiCad's
+# schematic and library parts, then routing with KiCad's router and KiCad's DRC
+# (app/UITests/DemoVideoTests.swift). Manual only. The first run builds wxWidgets, the vcpkg
+# libraries and KiCad's closures for the arm64 simulator (over an hour); they are cached after.
+on:
+  workflow_dispatch:
+
+jobs:
+  demo:
+    runs-on: macos-15
+    timeout-minutes: 300
+    env:
+      SIM_ARCH: arm64
+      HOMEBREW_NO_AUTO_UPDATE: 1
+      HOMEBREW_NO_INSTALL_CLEANUP: 1
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Xcode 26 and tools
+        run: |
+          sudo xcode-select -s "$(ls -d /Applications/Xcode_26*.app | sort -V | tail -1)"
+          xcodebuild -version; uname -m; sysctl -n hw.ncpu
+          PKGS="cmake ninja xcodegen pkgconf wxwidgets boost glm zstd freetype harfbuzz fontconfig libgit2 protobuf unixodbc cairo pixman ffmpeg"
+          brew install $PKGS || true
+          brew list --versions $PKGS
+
+      - uses: actions/cache/restore@v4
+        with:
+          path: build/kicad-core
+          key: kicad-src-${{ hashFiles('integrations/kicad_core/upstream.json', 'integrations/kicad_core/patches/*.patch') }}
+
+      - name: KiCad 10.0.6 source with the patch series, checked against the gate 1 inventory
+        run: |
+          [ -d build/kicad-core/kicad ] || python3 integrations/kicad_core/fetch.py --output build/kicad-core --source-only
+          python3 integrations/kicad_core/audit.py verify --kicad build/kicad-core/kicad || {
+            rm -rf build/kicad-core/kicad
+            python3 integrations/kicad_core/fetch.py --output build/kicad-core --source-only
+            python3 integrations/kicad_core/audit.py verify --kicad build/kicad-core/kicad; }
+
+      - uses: actions/cache/save@v4
+        if: always()
+        with:
+          path: build/kicad-core
+          key: kicad-src-${{ hashFiles('integrations/kicad_core/upstream.json', 'integrations/kicad_core/patches/*.patch') }}
+
+      - name: Probe configure and measured closures
+        run: |
+          cmake -G Ninja -S integrations/kicad_core/probe -B build/kicad-probe \
+            -DKICAD_SOURCE="$PWD/build/kicad-core/kicad" -DCMAKE_BUILD_TYPE=Release > build/configure.log 2>&1 \
+            || { tail -40 build/configure.log; exit 1; }
+          python3 - "$PWD" <<'EOF'
+          import json, sys
+          repo = sys.argv[1].lstrip("/")
+          profiles = json.load(open("integrations/kicad_core/audit/sources.json"))["profiles"]
+          def unit(path):
+              head, _, rest = path.partition("/")
+              return {"kicad": rest, "generated": path, "corvcad": f"{repo}/{rest}"}[head]
+          for profile, name in (("schematic", "probe_headless"), ("session", "session"), ("board", "pcb_probe_headless"), ("native", "native")):
+              if profile in profiles:
+                  with open(f"build/kicad-probe/{name}.closure.txt", "w") as out:
+                      out.write("\n".join(sorted(unit(p) for p in profiles[profile]["closure"])) + "\n")
+          EOF
+
+      - uses: actions/cache/restore@v4
+        with:
+          path: build/wx-ios
+          key: wx-sim-arm64-${{ hashFiles('integrations/kicad_core/upstream.json', 'integrations/kicad_core/wx_ios.sh') }}
+
+      - name: wxWidgets for the arm64 simulator (cached)
+        run: '[ -x build/wx-ios/build-sim/wx-config ] || bash integrations/kicad_core/wx_ios.sh build/wx-ios sim'
+
+      - uses: actions/cache/save@v4
+        if: always()
+        with:
+          path: build/wx-ios
+          key: wx-sim-arm64-${{ hashFiles('integrations/kicad_core/upstream.json', 'integrations/kicad_core/wx_ios.sh') }}
+
+      - uses: actions/cache/restore@v4
+        with:
+          path: build/ios-deps/installed
+          key: vcpkg-arm64-ios-simulator-${{ hashFiles('integrations/kicad_core/upstream.json', 'integrations/kicad_core/triplets/arm64-ios-simulator.cmake') }}
+
+      - name: vcpkg dependencies for arm64-ios-simulator (cached)
+        run: '[ -d build/ios-deps/installed/arm64-ios-simulator/lib ] || bash integrations/kicad_core/ios_deps.sh build/ios-deps arm64-ios-simulator'
+
+      - uses: actions/cache/save@v4
+        if: always()
+        with:
+          path: build/ios-deps/installed
+          key: vcpkg-arm64-ios-simulator-${{ hashFiles('integrations/kicad_core/upstream.json', 'integrations/kicad_core/triplets/arm64-ios-simulator.cmake') }}
+
+      - name: Compile the session and board closures for the arm64 simulator
+        run: |
+          IOS_TARGET=sim bash integrations/kicad_core/probe/ios_sweep.sh build/kicad-probe \
+            build/wx-ios/build-sim "$(sysctl -n hw.ncpu)" build/ios-deps/installed/arm64-ios-simulator
+          [ ! -f build/kicad-probe/ios_sweep/failed.txt ] || { cat build/kicad-probe/ios_sweep/first_errors.txt; exit 1; }
+
+      - uses: actions/cache/restore@v4
+        with:
+          path: |
+            build/kicad-core/symbols-packed
+            build/kicad-core/footprints-packed
+          key: kicad-libraries-${{ hashFiles('integrations/kicad_core/upstream.json', 'integrations/kicad_core/fetch.py') }}
+
+      - name: KiCad 10.0.6 symbol and footprint libraries, packed (cached)
+        run: |
+          [ -f build/kicad-core/footprints-packed/index.json ] && [ -f build/kicad-core/symbols-packed/index.json ] \
+            || python3 integrations/kicad_core/fetch.py --output build/kicad-core --libraries-only
+
+      - uses: actions/cache/save@v4
+        if: always()
+        with:
+          path: |
+            build/kicad-core/symbols-packed
+            build/kicad-core/footprints-packed
+          key: kicad-libraries-${{ hashFiles('integrations/kicad_core/upstream.json', 'integrations/kicad_core/fetch.py') }}
+
+      - name: Package and build the NATIVE_KICAD app and tests for the simulator
+        run: |
+          TARGETS=sim bash integrations/kicad_core/probe/ios_package.sh build/kicad-probe build/wx-ios build/ios-deps/installed
+          (cd app && xcodegen generate -q)
+          SIM=$(xcrun simctl list devices available | grep -m1 'iPad Pro 13' | grep -oE '[0-9A-F-]{36}')
+          echo "simulator $SIM"; echo "SIM=$SIM" >> "$GITHUB_ENV"
+          xcodebuild build-for-testing -project app/CorvCAD.xcodeproj -scheme CorvCAD -destination "id=$SIM" \
+            -derivedDataPath build/DerivedData NATIVE_KICAD=YES KICAD_PACKAGE="$PWD/build/kicad-probe/package" \
+            ENABLE_DEBUG_DYLIB=NO ENABLE_TESTABILITY=NO \
+            > build/ui-build.log 2>&1 || { grep -E 'error:' build/ui-build.log | head -40; tail -20 build/ui-build.log; exit 1; }
+
+      - name: Record the demo (DemoVideoTests, landscape)
+        run: |
+          mkdir -p build/demo
+          xcrun simctl boot "$SIM" || true; xcrun simctl bootstatus "$SIM" -b > /dev/null
+          xcrun simctl install "$SIM" build/DerivedData/Build/Products/Debug-iphonesimulator/CorvCAD.app
+          DATA=$(xcrun simctl get_app_container "$SIM" org.corvcad.CorvCAD data)
+          git clone -q --filter=blob:none --depth 1 --branch 10.0.6 --sparse https://gitlab.com/kicad/code/kicad.git build/kicad-demos
+          git -C build/kicad-demos sparse-checkout set demos/ecc83
+          for project in ecc83-pp ecc83-unrouted; do
+            mkdir -p "$DATA/Documents/Projects/$project" && cp -R build/kicad-demos/demos/ecc83/. "$DATA/Documents/Projects/$project/"
+          done
+          for f in "$DATA/Documents/Projects/ecc83-unrouted"/ecc83-pp.*; do mv "$f" "${f/ecc83-pp./ecc83-unrouted.}"; done
+          python3 - "$DATA/Documents/Projects/ecc83-unrouted/ecc83-unrouted.kicad_pcb" <<'EOF'
+          import sys
+          from pathlib import Path
+          sys.path.insert(0, "integrations/kicad_core/session")
+          from board_check import blocks
+          board = Path(sys.argv[1]); text = board.read_text(encoding="utf-8")
+          for item in list(blocks(text, "segment")) + list(blocks(text, "via")) + list(blocks(text, "arc")):
+              text = text.replace(item, "")
+          board.write_text(text, encoding="utf-8")
+          EOF
+          xcrun simctl io "$SIM" recordVideo --codec=h264 --force build/demo/corvcad-demo-raw.mp4 &
+          RECORDER=$!
+          sleep 3
+          xcodebuild test-without-building -project app/CorvCAD.xcodeproj -scheme CorvCAD -destination "id=$SIM" \
+            -derivedDataPath build/DerivedData -only-testing:CorvCADUITests/DemoVideoTests > build/demo/ui-test.log 2>&1 \
+            || grep -E 'error|failed|XCTAssert' build/demo/ui-test.log | head -20
+          sleep 2
+          kill -INT $RECORDER; wait $RECORDER || true
+          # The recording keeps the device's portrait frame; rotate it upright for landscape (both ways,
+          # since the simulator's landscape side varies), and keep the original.
+          ffmpeg -loglevel error -i build/demo/corvcad-demo-raw.mp4 -vf transpose=1 -c:v libx264 -crf 18 -pix_fmt yuv420p build/demo/corvcad-demo-landscape-cw.mp4
+          ffmpeg -loglevel error -i build/demo/corvcad-demo-raw.mp4 -vf transpose=2 -c:v libx264 -crf 18 -pix_fmt yuv420p build/demo/corvcad-demo-landscape-ccw.mp4
+          ffmpeg -loglevel error -ss 20 -i build/demo/corvcad-demo-raw.mp4 -frames:v 1 build/demo/frame-20s.png || true
+          ls -l build/demo
+
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: corvcad-demo-video
+          path: build/demo

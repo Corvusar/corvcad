@@ -1,0 +1,174 @@
+--- a/src/Mod/Part/parttests/TestPartMirror.py
++++ b/src/Mod/Part/parttests/TestPartMirror.py
+@@ -6,9 +6,15 @@
+ import unittest
+ import FreeCAD as App
+ import Part
+-import Draft
++try:
++    import Draft
++except ModuleNotFoundError as error:
++    if error.name != "Draft":
++        raise
++    Draft = None
+ 
+ 
++@unittest.skipIf(Draft is None, "Draft workbench is outside the headless slice")
+ class TestPartMirroringRegression(unittest.TestCase):
+     """Regression test for GitHub issue #27365.
+ 
+--- a/src/Mod/PartDesign/PartDesignTests/TestBoolean.py
++++ b/src/Mod/PartDesign/PartDesignTests/TestBoolean.py
+@@ -22,7 +22,6 @@
+ import unittest
+ 
+ import FreeCAD
+-from pivy import coin
+ 
+ App = FreeCAD
+ 
+--- a/src/Mod/PartDesign/CMakeLists.txt
++++ b/src/Mod/PartDesign/CMakeLists.txt
+@@ -8,13 +8,13 @@
+     __init__.py
+     Init.py
+     TestPartDesignApp.py
++    InvoluteGearFeature.py
+ )
+ 
+ if(BUILD_GUI)
+     list (APPEND PartDesign_Scripts
+           InitGui.py
+           TestPartDesignGui.py
+-          InvoluteGearFeature.py
+           InvoluteGearFeature.ui
+           SprocketFeature.py
+           SprocketFeature.ui
+--- a/src/Mod/PartDesign/InvoluteGearFeature.py
++++ b/src/Mod/PartDesign/InvoluteGearFeature.py
+@@ -21,13 +21,17 @@
+ 
+ import pathlib
+ import FreeCAD, Part
+-from PySide import QtCore
+ from fcgear import involute
+ from fcgear import fcgear
+ 
+ if FreeCAD.GuiUp:
+     import FreeCADGui
+-    from PySide import QtGui
++    from PySide import QtCore, QtGui
++    from PySide.QtCore import QT_TRANSLATE_NOOP
++else:
++    def QT_TRANSLATE_NOOP(context, text):
++        # The Qt macro marks source text without translating it.
++        return text
+ 
+ __title__ = "PartDesign InvoluteGearObject management"
+ __author__ = "Juergen Riegel"
+@@ -57,9 +61,9 @@
+     def GetResources(self):
+         return {
+             "Pixmap": "PartDesign_InternalExternalGear",
+-            "MenuText": QtCore.QT_TRANSLATE_NOOP("PartDesign_InvoluteGear", "Involute Gear"),
++            "MenuText": QT_TRANSLATE_NOOP("PartDesign_InvoluteGear", "Involute Gear"),
+             "Accel": "",
+-            "ToolTip": QtCore.QT_TRANSLATE_NOOP(
++            "ToolTip": QT_TRANSLATE_NOOP(
+                 "PartDesign_InvoluteGear", "Creates or edits the involute gear definition"
+             ),
+         }
+@@ -103,25 +107,25 @@
+         ensure_property(
+             "App::PropertyInteger",
+             "NumberOfTeeth",
+-            doc=QtCore.QT_TRANSLATE_NOOP("App::Property", "Number of gear teeth"),
++            doc=QT_TRANSLATE_NOOP("App::Property", "Number of gear teeth"),
+             default=26,
+         )
+         ensure_property(
+             "App::PropertyLength",
+             "Modules",
+-            doc=QtCore.QT_TRANSLATE_NOOP("App::Property", "Module of the gear"),
++            doc=QT_TRANSLATE_NOOP("App::Property", "Module of the gear"),
+             default="2.5 mm",
+         )
+         ensure_property(
+             "App::PropertyAngle",
+             "PressureAngle",
+-            doc=QtCore.QT_TRANSLATE_NOOP("App::Property", "Pressure angle of gear teeth"),
++            doc=QT_TRANSLATE_NOOP("App::Property", "Pressure angle of gear teeth"),
+             default="20 deg",
+         )
+         ensure_property(
+             "App::PropertyBool",
+             "HighPrecision",
+-            doc=QtCore.QT_TRANSLATE_NOOP(
++            doc=QT_TRANSLATE_NOOP(
+                 "App::Property",
+                 "True=2 curves with each 3 control points, False=1 curve with 4 control points.",
+             ),
+@@ -130,7 +134,7 @@
+         ensure_property(
+             "App::PropertyBool",
+             "ExternalGear",
+-            doc=QtCore.QT_TRANSLATE_NOOP(
++            doc=QT_TRANSLATE_NOOP(
+                 "App::Property", "True=external Gear, False=internal Gear"
+             ),
+             default=True,
+@@ -138,7 +142,7 @@
+         ensure_property(
+             "App::PropertyFloat",
+             "AddendumCoefficient",
+-            doc=QtCore.QT_TRANSLATE_NOOP(
++            doc=QT_TRANSLATE_NOOP(
+                 "App::Property",
+                 "The height of the tooth from the pitch circle up to its tip, normalized by the module.",
+             ),
+@@ -147,7 +151,7 @@
+         ensure_property(
+             "App::PropertyFloat",
+             "DedendumCoefficient",
+-            doc=QtCore.QT_TRANSLATE_NOOP(
++            doc=QT_TRANSLATE_NOOP(
+                 "App::Property",
+                 "The height of the tooth from the pitch circle down to its root, normalized by the module.",
+             ),
+@@ -156,7 +160,7 @@
+         ensure_property(
+             "App::PropertyFloat",
+             "RootFilletCoefficient",
+-            doc=QtCore.QT_TRANSLATE_NOOP(
++            doc=QT_TRANSLATE_NOOP(
+                 "App::Property",
+                 "The radius of the fillet at the root of the tooth, normalized by the module.",
+             ),
+@@ -165,7 +169,7 @@
+         ensure_property(
+             "App::PropertyFloat",
+             "ProfileShiftCoefficient",
+-            doc=QtCore.QT_TRANSLATE_NOOP(
++            doc=QT_TRANSLATE_NOOP(
+                 "App::Property",
+                 "The distance by which the reference profile is shifted outwards, normalized by the module.",
+             ),
+--- a/src/Mod/Sketcher/ProfileLib/RegularPolygon.py
++++ b/src/Mod/Sketcher/ProfileLib/RegularPolygon.py
+@@ -20,7 +20,7 @@
+ # *                                                                         *
+ # ***************************************************************************
+ 
+-import FreeCAD, FreeCADGui, Sketcher, Part, math
++import FreeCAD, Sketcher, Part, math
+ 
+ 
+ __title__ = "Regular polygon profile lib"
+@@ -28,7 +28,6 @@
+ __url__ = "https://www.freecad.org"
+ 
+ App = FreeCAD
+-Gui = FreeCADGui
+ 
+ 
+ def makeRegularPolygon(

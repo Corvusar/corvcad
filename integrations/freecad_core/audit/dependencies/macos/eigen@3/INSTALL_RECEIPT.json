@@ -1,0 +1,38 @@
+{
+  "homebrew_version": "4.6.19-39-g71358ca",
+  "used_options": [],
+  "unused_options": [],
+  "built_as_bottle": true,
+  "poured_from_bottle": true,
+  "loaded_from_api": true,
+  "loaded_from_internal_api": true,
+  "installed_on_request": true,
+  "changed_files": [
+    "share/pkgconfig/eigen3.pc"
+  ],
+  "time": 1792926849,
+  "source_modified_time": 1759188314,
+  "compiler": "gcc-12",
+  "aliases": [],
+  "runtime_dependencies": [],
+  "source": {
+    "spec": "stable",
+    "versions": {
+      "stable": "3.4.1",
+      "head": null,
+      "version_scheme": 0,
+      "compatibility_version": null
+    },
+    "path": "/Users/runner/Library/Caches/Homebrew/api/internal/packages.arm64_sequoia.jws.json",
+    "tap_git_head": "a7496e08a4f47d93bf30ba518e3dfae9f1dbab3b",
+    "tap": "homebrew/core"
+  },
+  "arch": "arm64",
+  "built_on": {
+    "os": "Linux",
+    "os_version": "Ubuntu 22.04.5",
+    "cpu_family": "arm",
+    "glibc_version": "2.35",
+    "oldest_cpu_family": "armv8"
+  }
+}

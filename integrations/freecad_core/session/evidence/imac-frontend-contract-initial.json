@@ -1,0 +1,30 @@
+{
+  "schema": 1,
+  "passed": true,
+  "scope": "frontend C ABI contract compilation and stub linkage only",
+  "native_runtime_acceptance": false,
+  "ui_tests_executed": false,
+  "snapshot_revision": "83b09a9",
+  "host": "corvmac (Intel iMac)",
+  "remote_workspace": "/Users/<user>/corvcad-freecad-f4",
+  "xcode": "26.2 (17C52)",
+  "sdk": "iphonesimulator26.2",
+  "architectures": [
+    "x86_64",
+    "arm64"
+  ],
+  "build_action": "build-for-testing",
+  "configuration": "Debug",
+  "build_settings": {
+    "NATIVE_FREECAD": "NO",
+    "NATIVE_KICAD": "NO",
+    "SWIFT_ACTIVE_COMPILATION_CONDITIONS": "DEBUG NATIVE_FREECAD",
+    "CODE_SIGNING_ALLOWED": "NO"
+  },
+  "native_api_implementation": "engine/src/mechanical_session_c_api.cpp (genuine unavailable/default implementation)",
+  "log_sha256": "2274ea253997ec9db60f04bc0beff8d8cdc2479cf8d06525f7eafaeece43b42c",
+  "warnings": [
+    "AppIntents metadata extraction skipped (no AppIntents.framework dependency), app and test target"
+  ],
+  "source_edits": []
+}

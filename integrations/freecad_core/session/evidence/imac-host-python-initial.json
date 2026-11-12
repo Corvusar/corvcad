@@ -1,0 +1,26 @@
+{
+  "schema": 1,
+  "source_revision": "54e2a64",
+  "architecture": "x86_64",
+  "sdk": "iphonesimulator",
+  "scope": "Intel target dependencies completed and inventory verified; host Python failed before target Python/FreeCAD build",
+  "dependency_inventory": {
+    "package_records": 123,
+    "static_archives": 50,
+    "notices": 105
+  },
+  "failure": "Pinned CPython 3.13.7 host _ssl module discovered unsupported Homebrew OpenSSL 4 headers",
+  "native_freecad_tested": false,
+  "native_app_tested": false,
+  "failure_log": {
+    "name": "python-build-openssl-initial.log",
+    "bytes": 228002,
+    "sha256": "ab99aa4994a7feb247b939cce565a5850827c213da1468ec3055d8e4a3fee9dd"
+  },
+  "corrective_regressions": {
+    "suite": "test_ios.py",
+    "tests": 26,
+    "passed": 26,
+    "host": "Intel iMac, Python 3.14"
+  }
+}

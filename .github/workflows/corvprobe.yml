@@ -1,0 +1,31 @@
+name: CorvProbe tweak
+# Builds the LiveContainer measurement tweak (tools/corvprobe) for arm64 iOS, ad-hoc signed, and
+# pushes it to the ci/corvprobe branch. Manual only (owner's decision 2026-10-24).
+on:
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  build:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build CorvProbe.dylib
+        run: |
+          mkdir -p out
+          xcrun --sdk iphoneos clang -arch arm64 -miphoneos-version-min=17.0 -dynamiclib -fobjc-arc \
+            -Wall -Werror -framework Foundation -framework UIKit -framework OSLog -install_name @rpath/CorvProbe.dylib \
+            -o out/CorvProbe.dylib tools/corvprobe/CorvProbe.m 2>&1 | tee out/build.log
+          codesign -f -s - out/CorvProbe.dylib
+          { file out/CorvProbe.dylib; otool -L out/CorvProbe.dylib; shasum -a 256 out/CorvProbe.dylib; } | tee -a out/build.log
+      - name: Push to ci/corvprobe
+        if: always()
+        run: |
+          echo "commit ${GITHUB_SHA}" > out/STATUS
+          git config user.name "corvcad-ci"
+          git config user.email "corvcad-ci@users.noreply.github.com"
+          git checkout --orphan ci/corvprobe
+          git rm -rq --cached .
+          git add -f out
+          git commit -qm "CorvProbe build for ${GITHUB_SHA}"
+          git push -f origin HEAD:refs/heads/ci/corvprobe

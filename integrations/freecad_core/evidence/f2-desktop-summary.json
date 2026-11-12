@@ -1,0 +1,110 @@
+{
+  "schema": 1,
+  "gate": "F2",
+  "status": "desktop-build-and-tests-passed; audit acceptance remains open",
+  "run_url": "https://github.com/Corvusar/corvcad/actions/runs/40182424954",
+  "repository_commit": "7676f80e6efb2345f9fa95ef5a4cf32e893616a5",
+  "platforms": {
+    "linux": {
+      "artifact_id": 12594667147,
+      "artifact_sha256": "2baf6a81fda1b3bf6c52434871a5769bbfad84654c970488a23226cedfa9d34f",
+      "platform": "Linux-6.17.0-1022-azure-x86_64-with-glibc2.39",
+      "objects": 673,
+      "target_artifacts": 12,
+      "compiler_inputs": 9447,
+      "runtime_link_inspections": 11,
+      "source_commit": "4fd3bf320d9566a27e60069fc8387448aaa3a094",
+      "profile_sha256": "f32cae5326abb071cce1ea7bb82c0075de1a837d1b66b4688300b169d3a3cc7c",
+      "tests_run": 669,
+      "tests_skipped": 3,
+      "source_input_counts": {
+        "source": 1339,
+        "build": 999,
+        "host": 7109
+      },
+      "reports": {
+        "upstream": {
+          "path": "f2-linux-upstream.json",
+          "sha256": "ac6a23d161a8838579c28939e76efd2b4f60637a1d079f069741567ba718cf43"
+        },
+        "demo": {
+          "path": "f2-linux-demo.json",
+          "sha256": "1e2a29e7e0ed0cc5254984a61e1888a9c885f4abcb91211f5f2edec695c1ef25"
+        },
+        "roundtrip": {
+          "path": "f2-linux-roundtrip.json",
+          "sha256": "a1657386d8ff4f729773c7bd4170319e9fa719b4521eefd2d4b8d545c96ce03c"
+        }
+      },
+      "occt_version": "7.6.3",
+      "freecad_version": [
+        "1",
+        "1",
+        "4",
+        "20260928 (Git shallow)",
+        "Unknown",
+        "2026/09/28 13:46:34",
+        "HEAD",
+        "4fd3bf320d9566a27e60069fc8387448aaa3a094"
+      ],
+      "skips_from_log": [
+        "Test that Part::Mirroring position is stable across recomputes. ... skipped 'Draft workbench is outside the headless slice'",
+        "testCircleToLineDistance_Driving_Secant (SketcherTests.TestSketcherSolver.TestSketcherSolver.testCircleToLineDistance_Driving_Secant) ... skipped 'Support for secants still under discussion, see comments in PR 9044'",
+        "testPrimitiveCount (MeshTestsApp.PivyTestCases.testPrimitiveCount) ... skipped 'GUI not running, skipping coin3d primitive count test'"
+      ]
+    },
+    "macos": {
+      "artifact_id": 12594841741,
+      "artifact_sha256": "ec8351814f34bee3013b834b62b93a6a0e20c339c7a0bfc88a3a16308b72385a",
+      "platform": "macOS-15.7.9-arm64-arm-64bit",
+      "objects": 673,
+      "target_artifacts": 12,
+      "compiler_inputs": 9983,
+      "runtime_link_inspections": 11,
+      "source_commit": "4fd3bf320d9566a27e60069fc8387448aaa3a094",
+      "profile_sha256": "f32cae5326abb071cce1ea7bb82c0075de1a837d1b66b4688300b169d3a3cc7c",
+      "tests_run": 669,
+      "tests_skipped": 3,
+      "source_input_counts": {
+        "source": 1339,
+        "build": 365,
+        "host": 8279
+      },
+      "reports": {
+        "upstream": {
+          "path": "f2-macos-upstream.json",
+          "sha256": "85a7dcb1b36ee5c4626240a41517e31cc78c6dcf110a398ffe91af5c06f9a329"
+        },
+        "demo": {
+          "path": "f2-macos-demo.json",
+          "sha256": "d4f68b9c75d1804eb2ff792e6b5e392b1c5bd5637736badae9440c16a6fae040"
+        },
+        "roundtrip": {
+          "path": "f2-macos-roundtrip.json",
+          "sha256": "4d2d4cb3a820f7c1bf0057ce89d65e5c0d436a92f7d3fa4a849757ae0d71c66a"
+        }
+      },
+      "occt_version": "7.9.3",
+      "freecad_version": [
+        "1",
+        "1",
+        "4",
+        "20260928 (Git shallow)",
+        "Unknown",
+        "2026/09/28 13:46:34",
+        "HEAD",
+        "4fd3bf320d9566a27e60069fc8387448aaa3a094"
+      ],
+      "skips_from_log": [
+        "Test that Part::Mirroring position is stable across recomputes. ... skipped 'Draft workbench is outside the headless slice'",
+        "testCircleToLineDistance_Driving_Secant (SketcherTests.TestSketcherSolver.TestSketcherSolver.testCircleToLineDistance_Driving_Secant) ... skipped 'Support for secants still under discussion, see comments in PR 9044'",
+        "testPrimitiveCount (MeshTestsApp.PivyTestCases.testPrimitiveCount) ... skipped 'GUI not running, skipping coin3d primitive count test'"
+      ]
+    }
+  },
+  "remaining_acceptance": [
+    "Reviewed source/binary dependency locks; host-package lists are measured snapshots",
+    "Per-file licence classification and retained dependency notices",
+    "Source inventory/generator-input verification suitable for the selected native profile"
+  ]
+}

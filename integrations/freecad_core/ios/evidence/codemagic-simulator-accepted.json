@@ -1,0 +1,1379 @@
+{
+  "schema": 1,
+  "provider": "Codemagic",
+  "app_id": "6adef14098c06b067e3a725c",
+  "build_id": "6adf5ba69da373ce40d9741a",
+  "commit": "3bfde68d865526566e8a9edabd8402a3f790e6e8",
+  "run_url": "https://codemagic.io/app/6adef14098c06b067e3a725c/build/6adf5ba69da373ce40d9741a",
+  "scope": "Accepted arm64 iPad simulator execution of both unchanged F1 proofs, static FreeCAD built-ins, desktop geometry parity and measured size/RSS/recompute; no app or physical iPad validation",
+  "artifact": {
+    "bytes": 3622187,
+    "sha256": "3316d502b4c00b6e7645755bd1e4945520020042f6de77b5168d1f76bb32402d"
+  },
+  "report_sha256": {
+    "job": "af8b7ac35fbe256200fb0a85bcc79872fe818417d3d2f7aa9eea34d91cb7167a",
+    "simulator_result": "08d148776f91c83c0128c2b7898346331d6b206e15dd1455699c32038e8e35c4",
+    "cleanup": "e1b5e10a8f44053163b5570e986d67282f5b070a7c2a389648931493abd24dbd",
+    "demo_f1": "092ad394c6be375643e88e9814bb67307bd1cb02409efea80107057bfbf3867f",
+    "demo_metrics": "c08a41acbf9260d70b3572b6443a03593549fb2cf4d1cbf905ca7e82001f7151",
+    "roundtrip_f1": "77ff3b433383fb5a9475d3a7eff1c3158421edd1962d5a1f165477861aa76ef3",
+    "roundtrip_metrics": "abaabc67ea2b4ae3025c2edb75b1e90ed17139bd3fc9a55219aec491adfb9537"
+  },
+  "reports": {
+    "job": {
+      "schema": 1,
+      "scope": "full",
+      "sdk": "iphonesimulator",
+      "commit": "3bfde68d865526566e8a9edabd8402a3f790e6e8"
+    },
+    "simulator_result": {
+      "schema": 1,
+      "sdk": "iphonesimulator",
+      "architecture": "arm64",
+      "executable_file_bytes": 91861192,
+      "executable_sha256": "1c969f2dfaf1bd35a19168326952fd449ea8c192e21b9d038695cb375381666b",
+      "runtime_file_bytes": 123428595,
+      "dynamic_system_links": [
+        "/usr/lib/libsqlite3.dylib",
+        "/usr/lib/libiconv.2.dylib",
+        "/usr/lib/libobjc.A.dylib",
+        "/System/Library/Frameworks/Foundation.framework/Foundation",
+        "/System/Library/Frameworks/UIKit.framework/UIKit",
+        "/System/Library/Frameworks/CoreServices.framework/CoreServices",
+        "/System/Library/Frameworks/IOKit.framework/Versions/A/IOKit",
+        "/System/Library/Frameworks/CoreFoundation.framework/CoreFoundation",
+        "/System/Library/Frameworks/UniformTypeIdentifiers.framework/UniformTypeIdentifiers",
+        "/usr/lib/libSystem.B.dylib",
+        "/System/Library/Frameworks/MobileCoreServices.framework/MobileCoreServices",
+        "/usr/lib/libc++.1.dylib"
+      ],
+      "runtime_manifest_sha256": "1d112b1723f5e955ab83a441c89492245632671adfacf5a9f135e398ac117ce3",
+      "status": "simulator F1 proofs passed with static FreeCAD modules",
+      "simulator": {
+        "device": "EC8F414B-9343-4F25-A786-600A01EF3235",
+        "type": "iPad Pro (12.9-inch) (3rd generation)",
+        "runtime": {
+          "version": "26.5",
+          "buildversion": "23F77",
+          "identifier": "com.apple.CoreSimulator.SimRuntime.iOS-26-5",
+          "supportedArchitectures": [
+            "arm64"
+          ]
+        }
+      },
+      "proofs": {
+        "demo": {
+          "input_sha256": "07b02c7b5731fb28f0fa2326fa8c792fc3f2c7c39e2d7f496ecfb36d6db18911",
+          "desktop_reference_sha256": "332edca4048307f661d7e8365d0f5eacd4b00196fd62e8ec6806e0c72d5189dd",
+          "desktop_geometry_comparison": "passed",
+          "metrics": {
+            "schema": 1,
+            "passed": true,
+            "platform": "ios",
+            "extension_origins": {
+              "FreeCAD": "built-in",
+              "__FreeCADBase__": "built-in",
+              "Materials": "built-in",
+              "Part": "built-in",
+              "Mesh": "built-in",
+              "Sketcher": "built-in",
+              "_PartDesign": "built-in",
+              "Spreadsheet": "built-in",
+              "Import": "built-in"
+            },
+            "peak_process_rss_bytes": 148766720,
+            "recompute_call_seconds": [
+              0.0006277499999214342,
+              0.08067016699988017,
+              0.037800083000092854,
+              0.03339162500014936,
+              0.04806954099990435,
+              0.004677334000007249,
+              0.00010291600005984947,
+              6.766700016669347e-05,
+              0.10177108299990323,
+              0.06339520899996387,
+              0.0776191249999556,
+              0.11729291699998612,
+              0.11382541600005425,
+              0.05112004100010381,
+              0.06575825000004443,
+              0.07003116700002465,
+              0.13325433399995745,
+              0.2114521670000613,
+              0.13437337499999558,
+              0.14379312500000196,
+              0.5450095000001056,
+              0.12353299999995215,
+              0.06347354199988331,
+              0.215630874999988,
+              0.18313229199998204,
+              0.0007017090001681936,
+              0.02071320899995044,
+              0.029659791000085534,
+              0.005544917000179339,
+              7.170799995037669e-05,
+              4.7582999968653894e-05,
+              0.0004346670000359154,
+              0.0031082499999683932,
+              0.032036165999898,
+              0.026784334000012677,
+              0.026390250000076776,
+              0.17730187500001193,
+              0.009827625000070839,
+              0.00025250000021515007,
+              0.00019666599996526202
+            ],
+            "recompute_calls": 40,
+            "recompute_total_seconds": 2.952943751000703,
+            "recompute_max_seconds": 0.5450095000001056
+          },
+          "files": {
+            "enclosure.FCStd": {
+              "bytes": 31240,
+              "sha256": "a37a1748386af60b10580439c7d764a26cc5abaadb56eed129d26fc2eb95cef4"
+            },
+            "enclosure.step": {
+              "bytes": 23746,
+              "sha256": "ec611dbead049a13b2d4f0869249acfc9a2e8c8335c4cf5cba223ac1e2b7aaba"
+            },
+            "tray.step": {
+              "bytes": 15089,
+              "sha256": "27e94b55ac07c01096fea8971ec17a7967bb64946c543a964a1b4d1b3b0f6b67"
+            },
+            "lid.step": {
+              "bytes": 6961,
+              "sha256": "f3794f928c9d04d2011c91df27fbe48bf13d2ceb0582e9b6b700db8ac1745293"
+            },
+            "tray.stl": {
+              "bytes": 52084,
+              "sha256": "78af5033218ee9216fac100cbfd93de4052efbf25929d92a56c21cdcd99fb8f0"
+            },
+            "lid.stl": {
+              "bytes": 684,
+              "sha256": "d8da03cd2aa156c2893e7b25dd20f4836890598e80461aac609b0f6193f8a354"
+            }
+          },
+          "parts": {
+            "Tray": {
+              "bounds_mm": [
+                5.0,
+                15.0,
+                0.0,
+                65.0,
+                55.0,
+                9.6
+              ],
+              "volume_mm3": 7783.2424723700915,
+              "valid_solids": 1
+            },
+            "Lid": {
+              "bounds_mm": [
+                5.25,
+                15.25,
+                9.85,
+                64.75,
+                54.75,
+                11.85
+              ],
+              "volume_mm3": 4700.5,
+              "valid_solids": 1
+            }
+          },
+          "step_reimport": {
+            "Tray": {
+              "bounds_mm": [
+                5.0,
+                15.0,
+                0.0,
+                65.0,
+                55.0,
+                9.6
+              ],
+              "volume_mm3": 7783.242472370099,
+              "valid_solids": 1
+            },
+            "Lid": {
+              "bounds_mm": [
+                5.25,
+                15.25,
+                9.85,
+                64.75,
+                54.75,
+                11.85
+              ],
+              "volume_mm3": 4700.5,
+              "valid_solids": 1
+            }
+          }
+        },
+        "roundtrip": {
+          "input_sha256": "aaa8a9873cec3df6a8fd284b6c3ad1dc9716f5e781c7222fcca6bc5f2d69eb70",
+          "desktop_reference_sha256": "18462e10fdd32cc194cc8873b834a00315e25762222e9b74228ac8576d5aa90c",
+          "desktop_geometry_comparison": "passed",
+          "metrics": {
+            "schema": 1,
+            "passed": true,
+            "platform": "ios",
+            "extension_origins": {
+              "FreeCAD": "built-in",
+              "__FreeCADBase__": "built-in",
+              "Materials": "built-in",
+              "Part": "built-in",
+              "Mesh": "built-in",
+              "Sketcher": "built-in",
+              "_PartDesign": "built-in",
+              "Spreadsheet": "built-in",
+              "Import": "built-in"
+            },
+            "peak_process_rss_bytes": 155664384,
+            "recompute_call_seconds": [
+              0.00029312500009837095,
+              0.029420124999887776,
+              0.033566915999927005,
+              0.10841383299998597,
+              0.10443766600019444,
+              0.09511333299997204,
+              0.00710033299992574,
+              0.0001305000000684231,
+              8.504099992023839e-05,
+              0.11866983400000208,
+              0.3863768749999963,
+              0.24971441699995012,
+              0.19849791700016794,
+              0.12553566599990518,
+              0.15602391699985674,
+              0.16461195800002315,
+              0.17213554199997816,
+              0.18214295899997524,
+              0.9240643749999435,
+              0.1802114580000307,
+              0.136321333000069,
+              0.3510068340001453,
+              0.2734970419999172,
+              0.11540320900007828,
+              0.7651078750000124,
+              0.21233870800006116,
+              0.0008074169998053549,
+              0.003670207999903141,
+              0.11894950000009885,
+              0.04132116699997823,
+              8.733300001040334e-05,
+              4.883299993707624e-05,
+              0.0005174160000933625,
+              0.004566584000031071,
+              0.02067041700001937,
+              0.025513333000162675,
+              0.02885095800002091,
+              0.04274600000007922,
+              0.00817608400006975,
+              0.000394125000184431,
+              0.00022604199989473273
+            ],
+            "recompute_calls": 41,
+            "recompute_total_seconds": 5.386766208000381,
+            "recompute_max_seconds": 0.9240643749999435
+          },
+          "files": {
+            "enclosure.FCStd": {
+              "bytes": 37536,
+              "sha256": "7ae27c2413b378b702852bc6622e3e8479e4bdbdf6d3ad55f71dc8949a3820f9"
+            },
+            "enclosure.step": {
+              "bytes": 26898,
+              "sha256": "0a0700f1d847c8efe74d7360c8bd13a1a1ae3bc7575feded82eb487143730e02"
+            },
+            "tray.step": {
+              "bytes": 18229,
+              "sha256": "db53a5df501ca4bc6d941512c10da4747650439c4ca60880596b87219f4dc986"
+            },
+            "lid.step": {
+              "bytes": 6973,
+              "sha256": "c4dd8827e0016b16e7f87bd3b68501a0eae9a3958b449c26b17dc9546e846ea8"
+            },
+            "tray.stl": {
+              "bytes": 102684,
+              "sha256": "5bcbfd3d30de213c5f58f16bf9311d5e72021f83323ae8f743dca7d2815d58f0"
+            },
+            "lid.stl": {
+              "bytes": 684,
+              "sha256": "cd3bc4905a1b56d877796acbe6545f0f5387949b7c8b5e3ca5fa4c5e006386ef"
+            }
+          },
+          "parts": {
+            "Tray": {
+              "bounds_mm": [
+                -5.0,
+                -5.0,
+                0.0,
+                85.0,
+                65.0,
+                9.6
+              ],
+              "volume_mm3": 17472.084944740196,
+              "valid_solids": 1
+            },
+            "Lid": {
+              "bounds_mm": [
+                -4.75,
+                -4.75,
+                9.85,
+                84.75,
+                64.75,
+                11.85
+              ],
+              "volume_mm3": 12440.5,
+              "valid_solids": 1
+            }
+          },
+          "step_reimport": {
+            "Tray": {
+              "bounds_mm": [
+                -5.0,
+                -5.0,
+                0.0,
+                85.0,
+                65.0,
+                9.6
+              ],
+              "volume_mm3": 17472.084944740192,
+              "valid_solids": 1
+            },
+            "Lid": {
+              "bounds_mm": [
+                -4.75,
+                -4.75,
+                9.85,
+                84.75,
+                64.75,
+                11.85
+              ],
+              "volume_mm3": 12440.5,
+              "valid_solids": 1
+            }
+          }
+        }
+      },
+      "peak_process_rss_bytes": 155664384,
+      "scope": "Simulator execution; no physical iPad validation or app integration"
+    },
+    "cleanup": {
+      "device": "EC8F414B-9343-4F25-A786-600A01EF3235",
+      "actions": {
+        "shutdown": {
+          "returncode": 0
+        },
+        "delete": {
+          "returncode": 0
+        }
+      }
+    },
+    "demo_f1": {
+      "status": "passed",
+      "gate": "F1-desktop-model",
+      "platform": "iPadOS-26.5-arm64-64bit",
+      "freecad_version": [
+        "1",
+        "1",
+        "4",
+        "20260928 (Git shallow)",
+        "Unknown",
+        "2026/09/28 13:46:34",
+        "HEAD",
+        "4fd3bf320d9566a27e60069fc8387448aaa3a094"
+      ],
+      "occt_version": "7.8.1",
+      "input_sha256": "07b02c7b5731fb28f0fa2326fa8c792fc3f2c7c39e2d7f496ecfb36d6db18911",
+      "board_source": {
+        "name": "demo.kicad_pcb",
+        "sha256": "48c7dd725956ded849ccb96e2add58e9f09895dbb54839b3044f786fab382efe",
+        "kicad_version": "10.0.7-10.0.7~ubuntu24.04.1"
+      },
+      "settings_mm": {
+        "margin": 3.0,
+        "wall": 2.0,
+        "floor": 2.0,
+        "board_clearance": 2.0,
+        "standoff_height": 4.0,
+        "standoff_diameter": 6.0,
+        "lid_thickness": 2.0,
+        "lid_gap": 0.25
+      },
+      "tools_sha256": {
+        "fetch.py": "2ccf47ad8e82a82cf5e499753fdac7e3d23ad6f7993e5e3f989205a84d13f6d8",
+        "prepare.py": "1236e61ad4dd0cef8eed43ae4e01a9f4afe5d753dcd6a1b04c2cac8ad49d9972",
+        "inputs.py": "f48d660987021e8def853b94e6de547e3d60ef34c2e8c56910386c2f0071630e",
+        "model.py": "ecb7e4c877abb51e20f6fca052746c4081c1622d88a5491e768fadc14f62b938",
+        "checks.py": "f98331366b156f36fcc8a708afec842d7d97796770563a58b57e812f783ae519",
+        "proof.py": "9f00253316677690c8278e2854d07ce5734724b2370d2c2fc0171897d1fccab3",
+        "run.py": "2db45f184c4d81587b28d2ea2724f9d275f0c479d3d67f6ded2c2ac5235d2a91",
+        "upstream.json": "06623645779c44c4d03608935988dcab2098cf47849d6e7593fc001496795e0c"
+      },
+      "parts": {
+        "Tray": {
+          "bounds_mm": [
+            5.0,
+            15.0,
+            0.0,
+            65.0,
+            55.0,
+            9.6
+          ],
+          "volume_mm3": 7783.2424723700915,
+          "valid_solids": 1
+        },
+        "Lid": {
+          "bounds_mm": [
+            5.25,
+            15.25,
+            9.85,
+            64.75,
+            54.75,
+            11.85
+          ],
+          "volume_mm3": 4700.5,
+          "valid_solids": 1
+        }
+      },
+      "bore_count": 1,
+      "save_reopen_recompute": "passed",
+      "parameter_recomputes": [
+        {
+          "parameter": "wall",
+          "value_mm": 2.6,
+          "parts": {
+            "Tray": {
+              "bounds_mm": [
+                4.4,
+                14.399999999999999,
+                0.0,
+                65.60000000000001,
+                55.6,
+                9.6
+              ],
+              "volume_mm3": 8949.066472370101,
+              "valid_solids": 1
+            },
+            "Lid": {
+              "bounds_mm": [
+                4.65,
+                14.649999999999999,
+                9.85,
+                65.35000000000001,
+                55.35,
+                11.85
+              ],
+              "volume_mm3": 4940.9800000000005,
+              "valid_solids": 1
+            }
+          }
+        },
+        {
+          "parameter": "floor",
+          "value_mm": 2.7,
+          "parts": {
+            "Tray": {
+              "bounds_mm": [
+                5.0,
+                15.0,
+                0.0,
+                65.0,
+                55.0,
+                10.299999999999999
+              ],
+              "volume_mm3": 9457.61273833486,
+              "valid_solids": 1
+            },
+            "Lid": {
+              "bounds_mm": [
+                5.25,
+                15.25,
+                10.549999999999999,
+                64.75,
+                54.75,
+                12.549999999999999
+              ],
+              "volume_mm3": 4700.5,
+              "valid_solids": 1
+            }
+          }
+        },
+        {
+          "parameter": "standoff_height",
+          "value_mm": 5.1,
+          "parts": {
+            "Tray": {
+              "bounds_mm": [
+                5.0,
+                15.0,
+                0.0,
+                65.0,
+                55.0,
+                10.7
+              ],
+              "volume_mm3": 8227.897514728129,
+              "valid_solids": 1
+            },
+            "Lid": {
+              "bounds_mm": [
+                5.25,
+                15.25,
+                10.95,
+                64.75,
+                54.75,
+                12.95
+              ],
+              "volume_mm3": 4700.5,
+              "valid_solids": 1
+            }
+          }
+        },
+        {
+          "parameter": "standoff_diameter",
+          "value_mm": 6.8,
+          "parts": {
+            "Tray": {
+              "bounds_mm": [
+                5.0,
+                15.0,
+                0.0,
+                65.0,
+                55.0,
+                9.6
+              ],
+              "volume_mm3": 7815.412381142852,
+              "valid_solids": 1
+            },
+            "Lid": {
+              "bounds_mm": [
+                5.25,
+                15.25,
+                9.85,
+                64.75,
+                54.75,
+                11.85
+              ],
+              "volume_mm3": 4700.5,
+              "valid_solids": 1
+            }
+          }
+        },
+        {
+          "parameter": "margin",
+          "value_mm": 4.0,
+          "parts": {
+            "Tray": {
+              "bounds_mm": [
+                4.0,
+                14.0,
+                0.0,
+                66.0,
+                56.0,
+                9.6
+              ],
+              "volume_mm3": 8312.842472370088,
+              "valid_solids": 1
+            },
+            "Lid": {
+              "bounds_mm": [
+                4.25,
+                14.25,
+                9.85,
+                65.75,
+                55.75,
+                11.85
+              ],
+              "volume_mm3": 5104.5,
+              "valid_solids": 1
+            }
+          }
+        },
+        {
+          "parameter": "board_clearance",
+          "value_mm": 3.1,
+          "parts": {
+            "Tray": {
+              "bounds_mm": [
+                5.0,
+                15.0,
+                0.0,
+                65.0,
+                55.0,
+                10.7
+              ],
+              "volume_mm3": 8205.642472370093,
+              "valid_solids": 1
+            },
+            "Lid": {
+              "bounds_mm": [
+                5.25,
+                15.25,
+                10.95,
+                64.75,
+                54.75,
+                12.95
+              ],
+              "volume_mm3": 4700.5,
+              "valid_solids": 1
+            }
+          }
+        },
+        {
+          "parameter": "lid_thickness",
+          "value_mm": 2.6,
+          "parts": {
+            "Tray": {
+              "bounds_mm": [
+                5.0,
+                15.0,
+                0.0,
+                65.0,
+                55.0,
+                9.6
+              ],
+              "volume_mm3": 7783.2424723700915,
+              "valid_solids": 1
+            },
+            "Lid": {
+              "bounds_mm": [
+                5.25,
+                15.25,
+                9.85,
+                64.75,
+                54.75,
+                12.45
+              ],
+              "volume_mm3": 6110.650000000001,
+              "valid_solids": 1
+            }
+          }
+        },
+        {
+          "parameter": "lid_gap",
+          "value_mm": 0.5,
+          "parts": {
+            "Tray": {
+              "bounds_mm": [
+                5.0,
+                15.0,
+                0.0,
+                65.0,
+                55.0,
+                9.6
+              ],
+              "volume_mm3": 7783.2424723700915,
+              "valid_solids": 1
+            },
+            "Lid": {
+              "bounds_mm": [
+                5.5,
+                15.5,
+                10.1,
+                64.5,
+                54.5,
+                12.1
+              ],
+              "volume_mm3": 4601.999999999999,
+              "valid_solids": 1
+            }
+          }
+        }
+      ],
+      "stl": {
+        "Tray": {
+          "triangles": 1040,
+          "edges": 1560,
+          "signed_volume_mm3": 7783.215593793686
+        },
+        "Lid": {
+          "triangles": 12,
+          "edges": 18,
+          "signed_volume_mm3": 4700.499999999998
+        }
+      },
+      "step_reimport": {
+        "Tray": {
+          "bounds_mm": [
+            5.0,
+            15.0,
+            0.0,
+            65.0,
+            55.0,
+            9.6
+          ],
+          "volume_mm3": 7783.242472370099,
+          "valid_solids": 1
+        },
+        "Lid": {
+          "bounds_mm": [
+            5.25,
+            15.25,
+            9.85,
+            64.75,
+            54.75,
+            11.85
+          ],
+          "volume_mm3": 4700.5,
+          "valid_solids": 1
+        }
+      },
+      "files": {
+        "enclosure.FCStd": {
+          "bytes": 31240,
+          "sha256": "a37a1748386af60b10580439c7d764a26cc5abaadb56eed129d26fc2eb95cef4"
+        },
+        "enclosure.step": {
+          "bytes": 23746,
+          "sha256": "ec611dbead049a13b2d4f0869249acfc9a2e8c8335c4cf5cba223ac1e2b7aaba"
+        },
+        "tray.step": {
+          "bytes": 15089,
+          "sha256": "27e94b55ac07c01096fea8971ec17a7967bb64946c543a964a1b4d1b3b0f6b67"
+        },
+        "lid.step": {
+          "bytes": 6961,
+          "sha256": "f3794f928c9d04d2011c91df27fbe48bf13d2ceb0582e9b6b700db8ac1745293"
+        },
+        "tray.stl": {
+          "bytes": 52084,
+          "sha256": "78af5033218ee9216fac100cbfd93de4052efbf25929d92a56c21cdcd99fb8f0"
+        },
+        "lid.stl": {
+          "bytes": 684,
+          "sha256": "d8da03cd2aa156c2893e7b25dd20f4836890598e80461aac609b0f6193f8a354"
+        }
+      },
+      "synthetic_model_regressions": {
+        "no_mounts": {
+          "Tray": {
+            "bounds_mm": [
+              -35.0,
+              -25.0,
+              0.0,
+              35.0,
+              25.0,
+              9.6
+            ],
+            "volume_mm3": 10526.400000000001,
+            "valid_solids": 1
+          },
+          "Lid": {
+            "bounds_mm": [
+              -34.75,
+              -24.75,
+              9.85,
+              34.75,
+              24.75,
+              11.85
+            ],
+            "volume_mm3": 6880.5,
+            "valid_solids": 1
+          }
+        },
+        "mixed_bores_and_negative_origin": {
+          "Tray": {
+            "bounds_mm": [
+              -35.0,
+              -25.0,
+              0.0,
+              35.0,
+              25.0,
+              9.6
+            ],
+            "volume_mm3": 10674.88737677192,
+            "valid_solids": 1
+          },
+          "Lid": {
+            "bounds_mm": [
+              -34.75,
+              -24.75,
+              9.85,
+              34.75,
+              24.75,
+              11.85
+            ],
+            "volume_mm3": 6880.5,
+            "valid_solids": 1
+          }
+        }
+      },
+      "elapsed_seconds": 7.8572704169998815
+    },
+    "demo_metrics": {
+      "schema": 1,
+      "passed": true,
+      "platform": "ios",
+      "extension_origins": {
+        "FreeCAD": "built-in",
+        "__FreeCADBase__": "built-in",
+        "Materials": "built-in",
+        "Part": "built-in",
+        "Mesh": "built-in",
+        "Sketcher": "built-in",
+        "_PartDesign": "built-in",
+        "Spreadsheet": "built-in",
+        "Import": "built-in"
+      },
+      "peak_process_rss_bytes": 148766720,
+      "recompute_call_seconds": [
+        0.0006277499999214342,
+        0.08067016699988017,
+        0.037800083000092854,
+        0.03339162500014936,
+        0.04806954099990435,
+        0.004677334000007249,
+        0.00010291600005984947,
+        6.766700016669347e-05,
+        0.10177108299990323,
+        0.06339520899996387,
+        0.0776191249999556,
+        0.11729291699998612,
+        0.11382541600005425,
+        0.05112004100010381,
+        0.06575825000004443,
+        0.07003116700002465,
+        0.13325433399995745,
+        0.2114521670000613,
+        0.13437337499999558,
+        0.14379312500000196,
+        0.5450095000001056,
+        0.12353299999995215,
+        0.06347354199988331,
+        0.215630874999988,
+        0.18313229199998204,
+        0.0007017090001681936,
+        0.02071320899995044,
+        0.029659791000085534,
+        0.005544917000179339,
+        7.170799995037669e-05,
+        4.7582999968653894e-05,
+        0.0004346670000359154,
+        0.0031082499999683932,
+        0.032036165999898,
+        0.026784334000012677,
+        0.026390250000076776,
+        0.17730187500001193,
+        0.009827625000070839,
+        0.00025250000021515007,
+        0.00019666599996526202
+      ],
+      "recompute_calls": 40,
+      "recompute_total_seconds": 2.952943751000703,
+      "recompute_max_seconds": 0.5450095000001056
+    },
+    "roundtrip_f1": {
+      "status": "passed",
+      "gate": "F1-desktop-model",
+      "platform": "iPadOS-26.5-arm64-64bit",
+      "freecad_version": [
+        "1",
+        "1",
+        "4",
+        "20260928 (Git shallow)",
+        "Unknown",
+        "2026/09/28 13:46:34",
+        "HEAD",
+        "4fd3bf320d9566a27e60069fc8387448aaa3a094"
+      ],
+      "occt_version": "7.8.1",
+      "input_sha256": "aaa8a9873cec3df6a8fd284b6c3ad1dc9716f5e781c7222fcca6bc5f2d69eb70",
+      "board_source": {
+        "name": "RoundTrip.kicad_pcb",
+        "sha256": "b734c040c392df1ec18f1106315721b204fed68d77948674b85113f7ee896c63",
+        "kicad_version": "10.0.7-10.0.7~ubuntu24.04.1"
+      },
+      "settings_mm": {
+        "margin": 3.0,
+        "wall": 2.0,
+        "floor": 2.0,
+        "board_clearance": 2.0,
+        "standoff_height": 4.0,
+        "standoff_diameter": 6.0,
+        "lid_thickness": 2.0,
+        "lid_gap": 0.25
+      },
+      "tools_sha256": {
+        "fetch.py": "2ccf47ad8e82a82cf5e499753fdac7e3d23ad6f7993e5e3f989205a84d13f6d8",
+        "prepare.py": "1236e61ad4dd0cef8eed43ae4e01a9f4afe5d753dcd6a1b04c2cac8ad49d9972",
+        "inputs.py": "f48d660987021e8def853b94e6de547e3d60ef34c2e8c56910386c2f0071630e",
+        "model.py": "ecb7e4c877abb51e20f6fca052746c4081c1622d88a5491e768fadc14f62b938",
+        "checks.py": "f98331366b156f36fcc8a708afec842d7d97796770563a58b57e812f783ae519",
+        "proof.py": "9f00253316677690c8278e2854d07ce5734724b2370d2c2fc0171897d1fccab3",
+        "run.py": "2db45f184c4d81587b28d2ea2724f9d275f0c479d3d67f6ded2c2ac5235d2a91",
+        "upstream.json": "06623645779c44c4d03608935988dcab2098cf47849d6e7593fc001496795e0c"
+      },
+      "parts": {
+        "Tray": {
+          "bounds_mm": [
+            -5.0,
+            -5.0,
+            0.0,
+            85.0,
+            65.0,
+            9.6
+          ],
+          "volume_mm3": 17472.084944740196,
+          "valid_solids": 1
+        },
+        "Lid": {
+          "bounds_mm": [
+            -4.75,
+            -4.75,
+            9.85,
+            84.75,
+            64.75,
+            11.85
+          ],
+          "volume_mm3": 12440.5,
+          "valid_solids": 1
+        }
+      },
+      "bore_count": 2,
+      "save_reopen_recompute": "passed",
+      "parameter_recomputes": [
+        {
+          "parameter": "wall",
+          "value_mm": 2.6,
+          "parts": {
+            "Tray": {
+              "bounds_mm": [
+                -5.6,
+                -5.6,
+                0.0,
+                85.60000000000001,
+                65.60000000000001,
+                9.6
+              ],
+              "volume_mm3": 19329.108944740212,
+              "valid_solids": 1
+            },
+            "Lid": {
+              "bounds_mm": [
+                -5.35,
+                -5.35,
+                9.85,
+                85.35000000000001,
+                65.35000000000001,
+                11.85
+              ],
+              "volume_mm3": 12824.980000000003,
+              "valid_solids": 1
+            }
+          }
+        },
+        {
+          "parameter": "floor",
+          "value_mm": 2.7,
+          "parts": {
+            "Tray": {
+              "bounds_mm": [
+                -5.0,
+                -5.0,
+                0.0,
+                85.0,
+                65.0,
+                10.299999999999999
+              ],
+              "volume_mm3": 21870.82547666972,
+              "valid_solids": 1
+            },
+            "Lid": {
+              "bounds_mm": [
+                -4.75,
+                -4.75,
+                10.549999999999999,
+                84.75,
+                64.75,
+                12.549999999999999
+              ],
+              "volume_mm3": 12440.5,
+              "valid_solids": 1
+            }
+          }
+        },
+        {
+          "parameter": "standoff_height",
+          "value_mm": 5.1,
+          "parts": {
+            "Tray": {
+              "bounds_mm": [
+                -5.0,
+                -5.0,
+                0.0,
+                85.0,
+                65.0,
+                10.7
+              ],
+              "volume_mm3": 18202.995029456237,
+              "valid_solids": 1
+            },
+            "Lid": {
+              "bounds_mm": [
+                -4.75,
+                -4.75,
+                10.95,
+                84.75,
+                64.75,
+                12.95
+              ],
+              "volume_mm3": 12440.5,
+              "valid_solids": 1
+            }
+          }
+        },
+        {
+          "parameter": "standoff_diameter",
+          "value_mm": 6.8,
+          "parts": {
+            "Tray": {
+              "bounds_mm": [
+                -5.0,
+                -5.0,
+                0.0,
+                85.0,
+                65.0,
+                9.6
+              ],
+              "volume_mm3": 17536.424762285707,
+              "valid_solids": 1
+            },
+            "Lid": {
+              "bounds_mm": [
+                -4.75,
+                -4.75,
+                9.85,
+                84.75,
+                64.75,
+                11.85
+              ],
+              "volume_mm3": 12440.5,
+              "valid_solids": 1
+            }
+          }
+        },
+        {
+          "parameter": "margin",
+          "value_mm": 4.0,
+          "parts": {
+            "Tray": {
+              "bounds_mm": [
+                -6.0,
+                -6.0,
+                0.0,
+                86.0,
+                66.0,
+                9.6
+              ],
+              "volume_mm3": 18241.684944740206,
+              "valid_solids": 1
+            },
+            "Lid": {
+              "bounds_mm": [
+                -5.75,
+                -5.75,
+                9.85,
+                85.75,
+                65.75,
+                11.85
+              ],
+              "volume_mm3": 13084.5,
+              "valid_solids": 1
+            }
+          }
+        },
+        {
+          "parameter": "board_clearance",
+          "value_mm": 3.1,
+          "parts": {
+            "Tray": {
+              "bounds_mm": [
+                -5.0,
+                -5.0,
+                0.0,
+                85.0,
+                65.0,
+                10.7
+              ],
+              "volume_mm3": 18158.484944740194,
+              "valid_solids": 1
+            },
+            "Lid": {
+              "bounds_mm": [
+                -4.75,
+                -4.75,
+                10.95,
+                84.75,
+                64.75,
+                12.95
+              ],
+              "volume_mm3": 12440.5,
+              "valid_solids": 1
+            }
+          }
+        },
+        {
+          "parameter": "lid_thickness",
+          "value_mm": 2.6,
+          "parts": {
+            "Tray": {
+              "bounds_mm": [
+                -5.0,
+                -5.0,
+                0.0,
+                85.0,
+                65.0,
+                9.6
+              ],
+              "volume_mm3": 17472.084944740196,
+              "valid_solids": 1
+            },
+            "Lid": {
+              "bounds_mm": [
+                -4.75,
+                -4.75,
+                9.85,
+                84.75,
+                64.75,
+                12.45
+              ],
+              "volume_mm3": 16172.649999999998,
+              "valid_solids": 1
+            }
+          }
+        },
+        {
+          "parameter": "lid_gap",
+          "value_mm": 0.5,
+          "parts": {
+            "Tray": {
+              "bounds_mm": [
+                -5.0,
+                -5.0,
+                0.0,
+                85.0,
+                65.0,
+                9.6
+              ],
+              "volume_mm3": 17472.084944740196,
+              "valid_solids": 1
+            },
+            "Lid": {
+              "bounds_mm": [
+                -4.5,
+                -4.5,
+                10.1,
+                84.5,
+                64.5,
+                12.1
+              ],
+              "volume_mm3": 12282.0,
+              "valid_solids": 1
+            }
+          }
+        }
+      ],
+      "stl": {
+        "Tray": {
+          "triangles": 2052,
+          "edges": 3078,
+          "signed_volume_mm3": 17472.031242761223
+        },
+        "Lid": {
+          "triangles": 12,
+          "edges": 18,
+          "signed_volume_mm3": 12440.499999999996
+        }
+      },
+      "step_reimport": {
+        "Tray": {
+          "bounds_mm": [
+            -5.0,
+            -5.0,
+            0.0,
+            85.0,
+            65.0,
+            9.6
+          ],
+          "volume_mm3": 17472.084944740192,
+          "valid_solids": 1
+        },
+        "Lid": {
+          "bounds_mm": [
+            -4.75,
+            -4.75,
+            9.85,
+            84.75,
+            64.75,
+            11.85
+          ],
+          "volume_mm3": 12440.5,
+          "valid_solids": 1
+        }
+      },
+      "files": {
+        "enclosure.FCStd": {
+          "bytes": 37536,
+          "sha256": "7ae27c2413b378b702852bc6622e3e8479e4bdbdf6d3ad55f71dc8949a3820f9"
+        },
+        "enclosure.step": {
+          "bytes": 26898,
+          "sha256": "0a0700f1d847c8efe74d7360c8bd13a1a1ae3bc7575feded82eb487143730e02"
+        },
+        "tray.step": {
+          "bytes": 18229,
+          "sha256": "db53a5df501ca4bc6d941512c10da4747650439c4ca60880596b87219f4dc986"
+        },
+        "lid.step": {
+          "bytes": 6973,
+          "sha256": "c4dd8827e0016b16e7f87bd3b68501a0eae9a3958b449c26b17dc9546e846ea8"
+        },
+        "tray.stl": {
+          "bytes": 102684,
+          "sha256": "5bcbfd3d30de213c5f58f16bf9311d5e72021f83323ae8f743dca7d2815d58f0"
+        },
+        "lid.stl": {
+          "bytes": 684,
+          "sha256": "cd3bc4905a1b56d877796acbe6545f0f5387949b7c8b5e3ca5fa4c5e006386ef"
+        }
+      },
+      "synthetic_model_regressions": {
+        "no_mounts": {
+          "Tray": {
+            "bounds_mm": [
+              -35.0,
+              -25.0,
+              0.0,
+              35.0,
+              25.0,
+              9.6
+            ],
+            "volume_mm3": 10526.400000000001,
+            "valid_solids": 1
+          },
+          "Lid": {
+            "bounds_mm": [
+              -34.75,
+              -24.75,
+              9.85,
+              34.75,
+              24.75,
+              11.85
+            ],
+            "volume_mm3": 6880.5,
+            "valid_solids": 1
+          }
+        },
+        "mixed_bores_and_negative_origin": {
+          "Tray": {
+            "bounds_mm": [
+              -35.0,
+              -25.0,
+              0.0,
+              35.0,
+              25.0,
+              9.6
+            ],
+            "volume_mm3": 10674.88737677192,
+            "valid_solids": 1
+          },
+          "Lid": {
+            "bounds_mm": [
+              -34.75,
+              -24.75,
+              9.85,
+              34.75,
+              24.75,
+              11.85
+            ],
+            "volume_mm3": 6880.5,
+            "valid_solids": 1
+          }
+        }
+      },
+      "elapsed_seconds": 17.76921570799982
+    },
+    "roundtrip_metrics": {
+      "schema": 1,
+      "passed": true,
+      "platform": "ios",
+      "extension_origins": {
+        "FreeCAD": "built-in",
+        "__FreeCADBase__": "built-in",
+        "Materials": "built-in",
+        "Part": "built-in",
+        "Mesh": "built-in",
+        "Sketcher": "built-in",
+        "_PartDesign": "built-in",
+        "Spreadsheet": "built-in",
+        "Import": "built-in"
+      },
+      "peak_process_rss_bytes": 155664384,
+      "recompute_call_seconds": [
+        0.00029312500009837095,
+        0.029420124999887776,
+        0.033566915999927005,
+        0.10841383299998597,
+        0.10443766600019444,
+        0.09511333299997204,
+        0.00710033299992574,
+        0.0001305000000684231,
+        8.504099992023839e-05,
+        0.11866983400000208,
+        0.3863768749999963,
+        0.24971441699995012,
+        0.19849791700016794,
+        0.12553566599990518,
+        0.15602391699985674,
+        0.16461195800002315,
+        0.17213554199997816,
+        0.18214295899997524,
+        0.9240643749999435,
+        0.1802114580000307,
+        0.136321333000069,
+        0.3510068340001453,
+        0.2734970419999172,
+        0.11540320900007828,
+        0.7651078750000124,
+        0.21233870800006116,
+        0.0008074169998053549,
+        0.003670207999903141,
+        0.11894950000009885,
+        0.04132116699997823,
+        8.733300001040334e-05,
+        4.883299993707624e-05,
+        0.0005174160000933625,
+        0.004566584000031071,
+        0.02067041700001937,
+        0.025513333000162675,
+        0.02885095800002091,
+        0.04274600000007922,
+        0.00817608400006975,
+        0.000394125000184431,
+        0.00022604199989473273
+      ],
+      "recompute_calls": 41,
+      "recompute_total_seconds": 5.386766208000381,
+      "recompute_max_seconds": 0.9240643749999435
+    }
+  },
+  "runtime_inventory": {
+    "files": 1711,
+    "file_bytes": 123428595,
+    "executable_bytes": 91861192,
+    "resource_and_notice_bytes": 31567403,
+    "python_version": "3.13.7",
+    "manifest_sha256": "1d112b1723f5e955ab83a441c89492245632671adfacf5a9f135e398ac117ce3"
+  },
+  "independent_verification": {
+    "status": "passed",
+    "checks": [
+      "Artifact output hashes and nonempty exact output set",
+      "F1 tool/fixture hashes against git blobs at the native commit, avoiding Windows CRLF checkout differences",
+      "Both geometry reports and all parameter recomputes against accepted macOS references",
+      "Native report metrics and builtin origins",
+      "Mach-O arm64 simulator/minimum-iOS and system-only dynamic dependencies",
+      "Runtime manifest digest, byte totals, staged F1 source hashes and successful simulator cleanup"
+    ],
+    "limit": "Native executable/resources are not distributed in this artifact; full runtime immutability was verified by run_ios.py on the runner."
+  }
+}

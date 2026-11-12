@@ -1,0 +1,70 @@
+CorvCAD patch series for KiCad 10.0.6 (caf7377), on top of 0010: let KiCad's NGSPICE wrapper use
+a statically linked ngspice.
+
+Applied by integrations/kicad_core/fetch.py. Nothing changes in KiCad's own builds: the new code
+is compiled only with CORVCAD_NGSPICE_STATIC defined.
+
+NGSPICE::init_dll loads libngspice at run time with wxDynamicLibrary, looks its functions up by
+name, then sources a spinit script that loads the XSPICE code models (.cm plug-ins). An iPadOS
+app can't load a library at run time. With CORVCAD_NGSPICE_STATIC, init_dll takes the same
+functions from the linked library (integrations/kicad_core/ngspice_ios.sh) and calls
+corvcad_ngspice_codemodels(), which registers the code models linked into it, in place of the
+spinit search. The rest of init_dll (noaskquit, nomoremode, the empty first circuit) and every
+other NGSPICE member are unchanged.
+diff --git a/eeschema/sim/ngspice.cpp b/eeschema/sim/ngspice.cpp
+index 4ae94f1..41aa8be 100644
+--- a/eeschema/sim/ngspice.cpp
++++ b/eeschema/sim/ngspice.cpp
+@@ -54,6 +54,14 @@
+ #include <pthread.h>
+ #endif
+ 
++#ifdef CORVCAD_NGSPICE_STATIC
++// CorvCAD: registers the XSPICE code models linked into the static ngspice library
++// (integrations/kicad_core/ngspice/static_codemodels.c). That library is built with XSPICE, so
++// it has ngCM_Input_Path, which sharedspice.h declares only when XSPICE is defined.
++extern "C" int corvcad_ngspice_codemodels( void );
++extern "C" char* ngCM_Input_Path( const char* path );
++#endif
++
+ 
+ /**
+  * Flag to enable debug output of Ngspice simulator.
+@@ -483,6 +491,29 @@ void NGSPICE::init_dll()
+         return;
+ 
+     LOCALE_IO c_locale;               // ngspice works correctly only with C locale
++
++#ifdef CORVCAD_NGSPICE_STATIC
++    // CorvCAD (iPadOS): an app can't load a library at run time, so ngspice is linked
++    // statically, and its XSPICE code models are registered instead of loaded from .cm files
++    // through a spinit script.
++    m_error = false;
++
++    m_ngSpice_Init = reinterpret_cast<ngSpice_Init>( &::ngSpice_Init );
++    m_ngSpice_Circ = &::ngSpice_Circ;
++    m_ngSpice_Command = &::ngSpice_Command;
++    m_ngGet_Vec_Info = &::ngGet_Vec_Info;
++    m_ngCM_Input_Path = &::ngCM_Input_Path;
++    m_ngSpice_CurPlot = &::ngSpice_CurPlot;
++    m_ngSpice_AllPlots = &::ngSpice_AllPlots;
++    m_ngSpice_AllVecs = &::ngSpice_AllVecs;
++    m_ngSpice_Running = &::ngSpice_running;
++    m_ngSpice_LockRealloc = &::ngSpice_LockRealloc;
++    m_ngSpice_UnlockRealloc = &::ngSpice_UnlockRealloc;
++
++    m_ngSpice_Init( &cbSendChar, &cbSendStat, &cbControlledExit, nullptr, nullptr,
++                    &cbBGThreadRunning, this );
++    corvcad_ngspice_codemodels();
++#else
+     const wxStandardPaths& stdPaths = wxStandardPaths::Get();
+ 
+     if( m_dll.IsLoaded() )      // enable force reload
+@@ -628,6 +659,7 @@ void NGSPICE::init_dll()
+ 
+     // Restore the working directory
+     wxSetWorkingDirectory( cwd );
++#endif
+ 
+     // Workarounds to avoid hang ups on certain errors
+     // These commands have to be called, no matter what is in the spinit file

@@ -1,0 +1,202 @@
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -49,6 +49,16 @@
+ endif()
+ 
+ project(FreeCAD)
++
++option(FREECAD_STATIC_MODULES "Experimental static headless Python modules" OFF)
++if(FREECAD_STATIC_MODULES)
++    if(NOT APPLE OR BUILD_GUI)
++        message(FATAL_ERROR "The static investigation profile requires headless Apple targets")
++    endif()
++    set(FREECAD_MODULE_LIBRARY_TYPE STATIC)
++else()
++    set(FREECAD_MODULE_LIBRARY_TYPE SHARED)
++endif()
+ 
+ set(PACKAGE_VERSION_MAJOR "1")
+ set(PACKAGE_VERSION_MINOR "1")
+--- a/cMake/FreeCadMacros.cmake
++++ b/cMake/FreeCadMacros.cmake
+@@ -256,16 +256,20 @@
+ 
+ # Set python prefix & suffix together
+ MACRO(SET_PYTHON_PREFIX_SUFFIX ProjectName)
+-    if(NOT MSVC)
+-        set_target_properties(${ProjectName} PROPERTIES PREFIX "")
+-    endif(NOT MSVC)
+-    
+-    if(WIN32)
+-        set_target_properties(${ProjectName} PROPERTIES SUFFIX ".pyd")
+-    # 0000661: cmake build on Mac OS: dealing with dylib versus so
+-    elseif(APPLE)
+-        set_target_properties(${ProjectName} PROPERTIES SUFFIX ".so")
+-    endif(WIN32)
++    if(FREECAD_STATIC_MODULES)
++        set_target_properties(${ProjectName} PROPERTIES PREFIX "lib" SUFFIX ".a")
++    else()
++        if(NOT MSVC)
++            set_target_properties(${ProjectName} PROPERTIES PREFIX "")
++        endif(NOT MSVC)
++
++        if(WIN32)
++            set_target_properties(${ProjectName} PROPERTIES SUFFIX ".pyd")
++        # 0000661: cmake build on Mac OS: dealing with dylib versus so
++        elseif(APPLE)
++            set_target_properties(${ProjectName} PROPERTIES SUFFIX ".so")
++        endif(WIN32)
++    endif()
+ ENDMACRO(SET_PYTHON_PREFIX_SUFFIX)
+ 
+ # Locate the include directory for a pip-installed package -- uses pip show to find the base pip
+--- a/src/App/CMakeLists.txt
++++ b/src/App/CMakeLists.txt
+@@ -1,4 +1,4 @@
+-add_library(FreeCADApp SHARED)
++add_library(FreeCADApp ${FREECAD_MODULE_LIBRARY_TYPE})
+ 
+ if(WIN32)
+     add_definitions(-DFCApp)
+--- a/src/Base/CMakeLists.txt
++++ b/src/Base/CMakeLists.txt
+@@ -1,6 +1,6 @@
+ # SPDX-License-Identifier: LGPL-2.1-or-later
+ 
+-add_library(FreeCADBase SHARED)
++add_library(FreeCADBase ${FREECAD_MODULE_LIBRARY_TYPE})
+ 
+ if(WIN32)
+     add_definitions(-DFCBase)
+--- a/src/Main/CMakeLists.txt
++++ b/src/Main/CMakeLists.txt
+@@ -98,6 +98,20 @@
+     )
+ endif()
+ 
++if(FREECAD_STATIC_MODULES)
++    if(NOT EXISTS "${CORVCAD_STATIC_REGISTRY}")
++        message(FATAL_ERROR "Static profile requires CORVCAD_STATIC_REGISTRY")
++    endif()
++    target_sources(FreeCADMainCmd PRIVATE "${CORVCAD_STATIC_REGISTRY}")
++    target_compile_definitions(FreeCADMainCmd PRIVATE CORVCAD_FREECAD_STATIC)
++    foreach(module FreeCADBase FreeCADApp Materials Part Mesh Sketcher PartDesign Spreadsheet Import)
++        target_link_libraries(FreeCADMainCmd ${module})
++        # Keep registration objects and Qt resources in static archives alive.
++        target_link_options(FreeCADMainCmd PRIVATE "LINKER:-force_load,$<TARGET_FILE:${module}>")
++    endforeach()
++endif()
++
++if(NOT FREECAD_STATIC_MODULES)
+ ######################## FreeCADMainPy ########################
+ 
+ SET(FreeCADMainPy_SRCS
+@@ -124,6 +138,8 @@
+         LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
+     )
+ endif(WIN32)
++
++endif() # NOT FREECAD_STATIC_MODULES
+ 
+ ######################## FreeCADGuiPy ########################
+ if(BUILD_GUI)
+--- a/src/Main/MainCmd.cpp
++++ b/src/Main/MainCmd.cpp
+@@ -52,8 +52,18 @@
+     FCCopyrightYear
+ );
+ 
++#ifdef CORVCAD_FREECAD_STATIC
++extern bool corvcad_register_freecad_modules();
++#endif
++
+ int main(int argc, char** argv)
+ {
++#ifdef CORVCAD_FREECAD_STATIC
++    if (!corvcad_register_freecad_modules()) {
++        std::cerr << "Static FreeCAD module registration failed before initialization\n";
++        return 102;
++    }
++#endif
+     // Make sure that we use '.' as decimal point
+     setlocale(LC_ALL, "");
+     setlocale(LC_NUMERIC, "C");
+--- a/src/Mod/Import/App/CMakeLists.txt
++++ b/src/Mod/Import/App/CMakeLists.txt
+@@ -73,7 +73,14 @@
+ 
+ generate_from_py(StepShape)
+ 
+-add_library(Import SHARED ${Import_SRCS})
++add_library(Import ${FREECAD_MODULE_LIBRARY_TYPE} ${Import_SRCS})
++
++# OCCT exports HAVE_TBB globally. ImportOCAF then calls TBB directly, so a
++# static Import archive must carry that dependency to its final executable.
++if(FREECAD_STATIC_MODULES AND OpenCASCADE_WITH_TBB)
++    find_package(TBB CONFIG REQUIRED COMPONENTS tbb)
++    target_link_libraries(Import TBB::tbb)
++endif()
+ 
+ if(FREECAD_USE_PCH)
+     target_precompile_headers(Import PRIVATE
+--- a/src/Mod/Material/App/CMakeLists.txt
++++ b/src/Mod/Material/App/CMakeLists.txt
+@@ -135,7 +135,7 @@
+     )
+ endif(BUILD_MATERIAL_EXTERNAL)
+ 
+-add_library(Materials SHARED ${Materials_SRCS})
++add_library(Materials ${FREECAD_MODULE_LIBRARY_TYPE} ${Materials_SRCS})
+ 
+ if(FREECAD_USE_PCH)
+     target_precompile_headers(Materials PRIVATE
+--- a/src/Mod/Mesh/App/CMakeLists.txt
++++ b/src/Mod/Mesh/App/CMakeLists.txt
+@@ -1,6 +1,6 @@
+ # SPDX-License-Identifier: LGPL-2.1-or-later
+ 
+-add_library(Mesh SHARED)
++add_library(Mesh ${FREECAD_MODULE_LIBRARY_TYPE})
+ 
+ if(WIN32)
+     add_definitions(-DFCAppMesh -DWM4_FOUNDATION_DLL_EXPORT)
+--- a/src/Mod/Part/App/CMakeLists.txt
++++ b/src/Mod/Part/App/CMakeLists.txt
+@@ -1,6 +1,6 @@
+ # SPDX-License-Identifier: LGPL-2.1-or-later
+ 
+-add_library(Part SHARED)
++add_library(Part ${FREECAD_MODULE_LIBRARY_TYPE})
+ 
+ target_include_directories(
+     Part
+--- a/src/Mod/PartDesign/App/CMakeLists.txt
++++ b/src/Mod/PartDesign/App/CMakeLists.txt
+@@ -131,7 +131,7 @@
+     ${Python_SRCS}
+ )
+ 
+-add_library(PartDesign SHARED ${PartDesign_SRCS})
++add_library(PartDesign ${FREECAD_MODULE_LIBRARY_TYPE} ${PartDesign_SRCS})
+ target_include_directories(
+     PartDesign
+     PRIVATE
+--- a/src/Mod/Sketcher/App/CMakeLists.txt
++++ b/src/Mod/Sketcher/App/CMakeLists.txt
+@@ -1,4 +1,4 @@
+-add_library(Sketcher SHARED)
++add_library(Sketcher ${FREECAD_MODULE_LIBRARY_TYPE})
+ 
+ # Uncomment this code if you want to try Eigen's multithread
+ #find_package(OpenMP)
+--- a/src/Mod/Spreadsheet/App/CMakeLists.txt
++++ b/src/Mod/Spreadsheet/App/CMakeLists.txt
+@@ -41,7 +41,7 @@
+ generate_from_py(PropertyColumnWidths)
+ generate_from_py(PropertyRowHeights)
+ 
+-add_library(Spreadsheet SHARED ${Spreadsheet_SRCS})
++add_library(Spreadsheet ${FREECAD_MODULE_LIBRARY_TYPE} ${Spreadsheet_SRCS})
+ 
+ if(FREECAD_USE_PCH)
+     target_precompile_headers(Spreadsheet PRIVATE

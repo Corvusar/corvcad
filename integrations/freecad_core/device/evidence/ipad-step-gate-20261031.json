@@ -1,0 +1,750 @@
+{
+ "app": {
+  "device": "iPad Air 11-inch (M2), iPad14,8, iPadOS 27.0.1",
+  "edition": "NATIVE_KICAD + NATIVE_FREECAD",
+  "fresh_launch": false,
+  "ipa": "CorvCAD-combined-f9b86a6-diagnostics-unsigned.ipa"
+ },
+ "cases": {
+  "demo": {
+   "collection": {
+    "artifacts": {
+     "app-window.png": {
+      "bytes": 1056244,
+      "sha256": "1e8d58d42c63ab6593d509be821465da36677ddebaebffb079db0c7200e1ee70"
+     },
+     "device-log.json": {
+      "bytes": 391522,
+      "sha256": "0ddcae3e0a963568466c642fc9c855a6758e27e022ac7165b7d7651f8260d030"
+     },
+     "device-report.json": {
+      "bytes": 4941,
+      "sha256": "682937b11854df685a997cdec87927b9203a5cba9cfa98a81a645c9ce2c70dcc"
+     },
+     "enclosure.FCStd": {
+      "bytes": 31392,
+      "sha256": "f2d082b8289eeaf65e5e581305a70c74939c718717d9bd97322301f8fdcaf31f"
+     },
+     "identity-after.json": {
+      "bytes": 319,
+      "sha256": "7f8f2291d68e837f0644c31b73ac5a58a86b93a9c9f6daab7db649d9ac50dc49"
+     },
+     "identity-before.json": {
+      "bytes": 320,
+      "sha256": "85618bbe2d40acaf696731d71a934488a90d011badc6552e40767b48486f2494"
+     },
+     "input.json": {
+      "bytes": 371,
+      "sha256": "fd46425972c3f1be5a67abe8407556a31a5a791e7a6ea57a1523693125aadb29"
+     },
+     "inputs/demo.kicad_pcb": {
+      "bytes": 10534,
+      "sha256": "bd56d31af6bab2418e53000636961867a1e43f0f53b6a637babc2898d4d83517"
+     },
+     "inputs/expected-input.json": {
+      "bytes": 482,
+      "sha256": "b3c135d38280b3448dd47cbf29959c204c8c1dda968ffa68466a2d75965f9597"
+     },
+     "inputs/request.json": {
+      "bytes": 47,
+      "sha256": "fb0aa1cc89b3dc6d8d97530d66daea3c92262ef9aa3c355fcadca8d024929909"
+     },
+     "lid.step": {
+      "bytes": 6961,
+      "sha256": "52b0247b3d688445b400103a32126f8f6747a8aab1d8f16fb37c9a7b4759a260"
+     },
+     "lid.stl": {
+      "bytes": 684,
+      "sha256": "d8da03cd2aa156c2893e7b25dd20f4836890598e80461aac609b0f6193f8a354"
+     },
+     "memory-timeline.json": {
+      "bytes": 1334,
+      "sha256": "ab162de4592fde599ba48ebc82c67f7b59bc9c6fbc7e9990ed2b256487613fab"
+     },
+     "metrics-after.json": {
+      "bytes": 701,
+      "sha256": "3844cd7ad4984f3d5f21b44bcad9ae44e477e825697f6b04e3c4ce3b691a8d5b"
+     },
+     "metrics-before.json": {
+      "bytes": 701,
+      "sha256": "52899d46b9c2998ebcccfb9e84a832db975402efc767b6185ee785aa3f197f8d"
+     },
+     "packet.json": {
+      "bytes": 2900,
+      "sha256": "eaa6c7f57643e4232bb90761784d814429128f3b839c2d6cb0fe8a1e54f984ad"
+     },
+     "probe-reply.json": {
+      "bytes": 4648,
+      "sha256": "396234a42424a4b00610c40fb6fe1065f14e4e51ab514a96631eccbde0b4e5ea"
+     },
+     "tray.step": {
+      "bytes": 15089,
+      "sha256": "17b17491856b18a38c6a82bff92bc584e66fb75a7e50f0cec957bc56c4505bcf"
+     },
+     "tray.stl": {
+      "bytes": 52084,
+      "sha256": "78af5033218ee9216fac100cbfd93de4052efbf25929d92a56c21cdcd99fb8f0"
+     }
+    },
+    "case": "demo",
+    "cold_runtime_observed": true,
+    "desktop_reimport": "pending",
+    "expected_hardware": "physical-device",
+    "f5_accepted": false,
+    "gate": "F5-preparation",
+    "hardware_class": "physical-device",
+    "manual_device_ui": "pending",
+    "operator_confirmed_fresh_launch": false,
+    "packet_sha256": "eaa6c7f57643e4232bb90761784d814429128f3b839c2d6cb0fe8a1e54f984ad",
+    "schema": 1,
+    "slicer_review": "pending",
+    "status": "collected; independent desktop and slicer/device review pending"
+   },
+   "desktop_reimport": {
+    "collection_sha256": "8142748a3f8ff03eebfd80d0a86c3820f7391a0e76fb6f86c23668a6c95b1819",
+    "f5_accepted": false,
+    "fcstd": {
+     "Lid": {
+      "bounds_mm": [
+       5.25,
+       15.25,
+       9.85,
+       64.75,
+       54.75,
+       11.85
+      ],
+      "valid_solids": 1,
+      "volume_mm3": 4700.5
+     },
+     "Tray": {
+      "bounds_mm": [
+       5.0,
+       15.0,
+       0.0,
+       65.0,
+       55.0,
+       9.6
+      ],
+      "valid_solids": 1,
+      "volume_mm3": 7783.2424723700915
+     }
+    },
+    "freecad_version": [
+     "1",
+     "1",
+     "4",
+     "20260928 (Git shallow)",
+     "Unknown",
+     "2026/09/28 13:46:34",
+     "(HEAD detached at 4fd3bf320)",
+     "4fd3bf320d9566a27e60069fc8387448aaa3a094"
+    ],
+    "hardware_class": "physical-device",
+    "manual_device_ui": "pending",
+    "occt_version": "7.8.1",
+    "schema": 1,
+    "slicer_review": "pending",
+    "status": "desktop reimport passed",
+    "step": {
+     "Lid": {
+      "bounds_mm": [
+       5.25,
+       15.25,
+       9.85,
+       64.75,
+       54.75,
+       11.85
+      ],
+      "valid_solids": 1,
+      "volume_mm3": 4700.5
+     },
+     "Tray": {
+      "bounds_mm": [
+       5.0,
+       15.0,
+       0.0,
+       65.0,
+       55.0,
+       9.6
+      ],
+      "valid_solids": 1,
+      "volume_mm3": 7783.242472370099
+     }
+    },
+    "stl": {
+     "Lid": {
+      "edges": 18,
+      "signed_volume_mm3": 4700.499999999998,
+      "triangles": 12
+     },
+     "Tray": {
+      "edges": 1560,
+      "signed_volume_mm3": 7783.215593793686,
+      "triangles": 1040
+     }
+    },
+    "validator_sha256": "9d3079d09b842cc5659f7310751b8d6ef05025c57d0cb408def1481477b9df74"
+   },
+   "device_report": {
+    "exports": {
+     "lid": {
+      "exact_step_ms": 21.906917,
+      "stl_ms": 37.086917
+     },
+     "tray": {
+      "exact_step_ms": 33.914375,
+      "stl_ms": 57.090542
+     }
+    },
+    "f5_accepted": false,
+    "files": {
+     "enclosure.FCStd": {
+      "bytes": 31392,
+      "sha256": "f2d082b8289eeaf65e5e581305a70c74939c718717d9bd97322301f8fdcaf31f"
+     },
+     "input.json": {
+      "bytes": 371,
+      "sha256": "fd46425972c3f1be5a67abe8407556a31a5a791e7a6ea57a1523693125aadb29"
+     },
+     "lid.step": {
+      "bytes": 6961,
+      "sha256": "52b0247b3d688445b400103a32126f8f6747a8aab1d8f16fb37c9a7b4759a260"
+     },
+     "lid.stl": {
+      "bytes": 684,
+      "sha256": "d8da03cd2aa156c2893e7b25dd20f4836890598e80461aac609b0f6193f8a354"
+     },
+     "tray.step": {
+      "bytes": 15089,
+      "sha256": "17b17491856b18a38c6a82bff92bc584e66fb75a7e50f0cec957bc56c4505bcf"
+     },
+     "tray.stl": {
+      "bytes": 52084,
+      "sha256": "78af5033218ee9216fac100cbfd93de4052efbf25929d92a56c21cdcd99fb8f0"
+     }
+    },
+    "gate": "F5-preparation",
+    "hardware_class": "physical-device",
+    "input": {
+     "board_thickness": 1.6,
+     "bounds": [
+      10,
+      20,
+      60,
+      50
+     ],
+     "coordinate_system": "KiCad XY unchanged; enclosure Z up",
+     "mounting_holes": [
+      {
+       "diameter": 3.2,
+       "reference": "H1",
+       "x": 15,
+       "y": 25
+      }
+     ],
+     "schema": 1,
+     "source": {
+      "kicad_version": "compatible parser",
+      "name": "demo.kicad_pcb",
+      "sha256": "bd56d31af6bab2418e53000636961867a1e43f0f53b6a637babc2898d4d83517"
+     },
+     "units": "mm"
+    },
+    "kicad_board_backend": "kicad-10.0.6-native",
+    "native_available": true,
+    "open_measurement": "initialization plus parse/open/preview",
+    "open_preview_ms": 721.871375,
+    "operations": {
+     "parameter_restore": true,
+     "redo": true,
+     "rejected_edit_rollback": true,
+     "save_reopen_byte_preservation": true,
+     "step": true,
+     "stl": true,
+     "undo": true
+    },
+    "parameter_timings": [
+     {
+      "edit_recompute_ms": 50.462,
+      "parameter": "wall",
+      "restore_recompute_ms": 51.333666,
+      "value_mm": 2.6
+     },
+     {
+      "edit_recompute_ms": 50.851667,
+      "parameter": "floor",
+      "restore_recompute_ms": 50.737,
+      "value_mm": 2.7
+     },
+     {
+      "edit_recompute_ms": 50.476083,
+      "parameter": "standoff_height",
+      "restore_recompute_ms": 51.069083,
+      "value_mm": 5.1
+     },
+     {
+      "edit_recompute_ms": 50.469833,
+      "parameter": "standoff_diameter",
+      "restore_recompute_ms": 51.091791,
+      "value_mm": 6.8
+     },
+     {
+      "edit_recompute_ms": 51.57525,
+      "parameter": "margin",
+      "restore_recompute_ms": 50.797708,
+      "value_mm": 4
+     },
+     {
+      "edit_recompute_ms": 54.368291,
+      "parameter": "board_clearance",
+      "restore_recompute_ms": 50.684292,
+      "value_mm": 3.1
+     },
+     {
+      "edit_recompute_ms": 51.072875,
+      "parameter": "lid_thickness",
+      "restore_recompute_ms": 50.361459,
+      "value_mm": 2.6
+     },
+     {
+      "edit_recompute_ms": 50.838833,
+      "parameter": "lid_gap",
+      "restore_recompute_ms": 51.154875,
+      "value_mm": 0.5
+     }
+    ],
+    "passed": true,
+    "preview": {
+     "lid": {
+      "tessellation_ms": 34.727,
+      "triangles": 12
+     },
+     "tray": {
+      "tessellation_ms": 51.9985,
+      "triangles": 1040
+     }
+    },
+    "process_id": 781,
+    "recompute_validate_ms": 16.553667,
+    "reopen_preview_ms": 141.919333,
+    "runtime_initialized": false,
+    "runtime_initialized_before": false,
+    "runtime_sources": {
+     "harness/checks.py": {
+      "bytes": 3053,
+      "sha256": "f98331366b156f36fcc8a708afec842d7d97796770563a58b57e812f783ae519"
+     },
+     "harness/inputs.py": {
+      "bytes": 2345,
+      "sha256": "f48d660987021e8def853b94e6de547e3d60ef34c2e8c56910386c2f0071630e"
+     },
+     "harness/model.py": {
+      "bytes": 6675,
+      "sha256": "ecb7e4c877abb51e20f6fca052746c4081c1622d88a5491e768fadc14f62b938"
+     },
+     "harness/session_runtime.py": {
+      "bytes": 18263,
+      "sha256": "3b0d9e3d8fe62eb42cc2a32b3600be1b7d4136531571a4ca722223319796b3fb"
+     },
+     "harness/upstream.json": {
+      "bytes": 709,
+      "sha256": "06623645779c44c4d03608935988dcab2098cf47849d6e7593fc001496795e0c"
+     }
+    },
+    "save_ms": 25.245042,
+    "schema": 1,
+    "settings_mm": {
+     "board_clearance": 2,
+     "floor": 2,
+     "lid_gap": 0.25,
+     "lid_thickness": 2,
+     "margin": 3,
+     "standoff_diameter": 6,
+     "standoff_height": 4,
+     "wall": 2
+    }
+   }
+  },
+  "roundtrip": {
+   "collection": {
+    "artifacts": {
+     "app-window.png": {
+      "bytes": 1056391,
+      "sha256": "eeb4f66d12b31097df91ca12d9e0ace5bff084a8b8b0ac3009d7e8e22be3894d"
+     },
+     "device-log.json": {
+      "bytes": 462782,
+      "sha256": "566321fe4f025173332b4cbdf8cdd87cd240c8ac439a9766bd5801e69fb147b2"
+     },
+     "device-report.json": {
+      "bytes": 5086,
+      "sha256": "50cd69ca99433f9d8c5c53fe0a7d4488fe49fc6959c04c00fb66b8dd1f8c8f60"
+     },
+     "enclosure.FCStd": {
+      "bytes": 37683,
+      "sha256": "1bad8b1b38d73404c8f5769eb5caa9fabb5f4037970aa94b3fad363708b52a61"
+     },
+     "identity-after.json": {
+      "bytes": 319,
+      "sha256": "06ce55e71cfc6cdb1bced166a2726537fb7ee2ce6e109a089f3546cb3807d28d"
+     },
+     "identity-before.json": {
+      "bytes": 319,
+      "sha256": "c07aa3e68de679369c0deb709a729c7f8158975d48633ce416e531680041fb5d"
+     },
+     "input.json": {
+      "bytes": 436,
+      "sha256": "2d488ab076d2cfba2d868d6254a644a21f34df48cc8c72eea0b5bde8c730568f"
+     },
+     "inputs/RoundTrip.kicad_pcb": {
+      "bytes": 3753,
+      "sha256": "b734c040c392df1ec18f1106315721b204fed68d77948674b85113f7ee896c63"
+     },
+     "inputs/RoundTrip.kicad_pro": {
+      "bytes": 3,
+      "sha256": "ca3d163bab055381827226140568f3bef7eaac187cebd76878e0b63e9e442356"
+     },
+     "inputs/RoundTrip.kicad_sch": {
+      "bytes": 4107,
+      "sha256": "763e0a5538f93540a6239ec8b69c7912fd3362fa9f7e9dec639fb52aeef809b8"
+     },
+     "inputs/expected-input.json": {
+      "bytes": 578,
+      "sha256": "49667f1dbef8c02bdf28353ed1f1df4707f00c093e51b60968fb44ba943e0acb"
+     },
+     "inputs/request.json": {
+      "bytes": 52,
+      "sha256": "9eb672064ac7a68072c4ed59af53e9f8571a7854dcd3ca5b8e87172de1bf416b"
+     },
+     "lid.step": {
+      "bytes": 6973,
+      "sha256": "fb91f31e8c91f7a2e3a955a6e3dc447e59feb3c41641b6ddbec9291cccfbfc89"
+     },
+     "lid.stl": {
+      "bytes": 684,
+      "sha256": "cd3bc4905a1b56d877796acbe6545f0f5387949b7c8b5e3ca5fa4c5e006386ef"
+     },
+     "memory-timeline.json": {
+      "bytes": 1678,
+      "sha256": "150a90401d6437e785c2f7142aceefc38e10f2d07d0b5febae497b2ab057aaa7"
+     },
+     "metrics-after.json": {
+      "bytes": 701,
+      "sha256": "dcb14c710b0c6814e4425d2d51c7cd3084e5dd84bc8de414cdc5438fe0cacd29"
+     },
+     "metrics-before.json": {
+      "bytes": 701,
+      "sha256": "87ba103f90ff4a14d32ef77dc95233ff4893df884d2264e20eb5e8968bb36092"
+     },
+     "packet.json": {
+      "bytes": 2900,
+      "sha256": "eaa6c7f57643e4232bb90761784d814429128f3b839c2d6cb0fe8a1e54f984ad"
+     },
+     "probe-reply.json": {
+      "bytes": 4750,
+      "sha256": "adf4bff67d2e4d2aed32d6ddcc3facc48a7c12413c4accf948e7321cab1fa536"
+     },
+     "tray.step": {
+      "bytes": 18229,
+      "sha256": "58821e2bc1b01fc7ea07efa660d926f1c307c9973481d0c5eaa501dd25b1da40"
+     },
+     "tray.stl": {
+      "bytes": 102684,
+      "sha256": "5bcbfd3d30de213c5f58f16bf9311d5e72021f83323ae8f743dca7d2815d58f0"
+     }
+    },
+    "case": "roundtrip",
+    "cold_runtime_observed": false,
+    "desktop_reimport": "pending",
+    "expected_hardware": "physical-device",
+    "f5_accepted": false,
+    "gate": "F5-preparation",
+    "hardware_class": "physical-device",
+    "manual_device_ui": "pending",
+    "operator_confirmed_fresh_launch": false,
+    "packet_sha256": "eaa6c7f57643e4232bb90761784d814429128f3b839c2d6cb0fe8a1e54f984ad",
+    "schema": 1,
+    "slicer_review": "pending",
+    "status": "collected; independent desktop and slicer/device review pending"
+   },
+   "desktop_reimport": {
+    "collection_sha256": "21cfe8768ded51be92eec211dab043cfe9d9a9e353132ab2decda65781b566d4",
+    "f5_accepted": false,
+    "fcstd": {
+     "Lid": {
+      "bounds_mm": [
+       -4.75,
+       -4.75,
+       9.85,
+       84.75,
+       64.75,
+       11.85
+      ],
+      "valid_solids": 1,
+      "volume_mm3": 12440.5
+     },
+     "Tray": {
+      "bounds_mm": [
+       -5.0,
+       -5.0,
+       0.0,
+       85.0,
+       65.0,
+       9.6
+      ],
+      "valid_solids": 1,
+      "volume_mm3": 17472.084944740196
+     }
+    },
+    "freecad_version": [
+     "1",
+     "1",
+     "4",
+     "20260928 (Git shallow)",
+     "Unknown",
+     "2026/09/28 13:46:34",
+     "(HEAD detached at 4fd3bf320)",
+     "4fd3bf320d9566a27e60069fc8387448aaa3a094"
+    ],
+    "hardware_class": "physical-device",
+    "manual_device_ui": "pending",
+    "occt_version": "7.8.1",
+    "schema": 1,
+    "slicer_review": "pending",
+    "status": "desktop reimport passed",
+    "step": {
+     "Lid": {
+      "bounds_mm": [
+       -4.75,
+       -4.75,
+       9.85,
+       84.75,
+       64.75,
+       11.85
+      ],
+      "valid_solids": 1,
+      "volume_mm3": 12440.5
+     },
+     "Tray": {
+      "bounds_mm": [
+       -5.0,
+       -5.0,
+       0.0,
+       85.0,
+       65.0,
+       9.6
+      ],
+      "valid_solids": 1,
+      "volume_mm3": 17472.084944740192
+     }
+    },
+    "stl": {
+     "Lid": {
+      "edges": 18,
+      "signed_volume_mm3": 12440.499999999996,
+      "triangles": 12
+     },
+     "Tray": {
+      "edges": 3078,
+      "signed_volume_mm3": 17472.031242761223,
+      "triangles": 2052
+     }
+    },
+    "validator_sha256": "9d3079d09b842cc5659f7310751b8d6ef05025c57d0cb408def1481477b9df74"
+   },
+   "device_report": {
+    "exports": {
+     "lid": {
+      "exact_step_ms": 37.455,
+      "stl_ms": 67.44525
+     },
+     "tray": {
+      "exact_step_ms": 42.749625,
+      "stl_ms": 103.983417
+     }
+    },
+    "f5_accepted": false,
+    "files": {
+     "enclosure.FCStd": {
+      "bytes": 37683,
+      "sha256": "1bad8b1b38d73404c8f5769eb5caa9fabb5f4037970aa94b3fad363708b52a61"
+     },
+     "input.json": {
+      "bytes": 436,
+      "sha256": "2d488ab076d2cfba2d868d6254a644a21f34df48cc8c72eea0b5bde8c730568f"
+     },
+     "lid.step": {
+      "bytes": 6973,
+      "sha256": "fb91f31e8c91f7a2e3a955a6e3dc447e59feb3c41641b6ddbec9291cccfbfc89"
+     },
+     "lid.stl": {
+      "bytes": 684,
+      "sha256": "cd3bc4905a1b56d877796acbe6545f0f5387949b7c8b5e3ca5fa4c5e006386ef"
+     },
+     "tray.step": {
+      "bytes": 18229,
+      "sha256": "58821e2bc1b01fc7ea07efa660d926f1c307c9973481d0c5eaa501dd25b1da40"
+     },
+     "tray.stl": {
+      "bytes": 102684,
+      "sha256": "5bcbfd3d30de213c5f58f16bf9311d5e72021f83323ae8f743dca7d2815d58f0"
+     }
+    },
+    "gate": "F5-preparation",
+    "hardware_class": "physical-device",
+    "input": {
+     "board_thickness": 1.6,
+     "bounds": [
+      0,
+      0,
+      80,
+      60
+     ],
+     "coordinate_system": "KiCad XY unchanged; enclosure Z up",
+     "mounting_holes": [
+      {
+       "diameter": 3.2,
+       "reference": "H1",
+       "x": 8,
+       "y": 52
+      },
+      {
+       "diameter": 3.2,
+       "reference": "H2",
+       "x": 72,
+       "y": 52
+      }
+     ],
+     "schema": 1,
+     "source": {
+      "kicad_version": "compatible parser",
+      "name": "RoundTrip.kicad_pcb",
+      "sha256": "b734c040c392df1ec18f1106315721b204fed68d77948674b85113f7ee896c63"
+     },
+     "units": "mm"
+    },
+    "kicad_board_backend": "kicad-10.0.6-native",
+    "native_available": true,
+    "open_measurement": "warm-runtime parse/open/preview",
+    "open_preview_ms": 273.116209,
+    "operations": {
+     "parameter_restore": true,
+     "redo": true,
+     "rejected_edit_rollback": true,
+     "save_reopen_byte_preservation": true,
+     "step": true,
+     "stl": true,
+     "undo": true
+    },
+    "parameter_timings": [
+     {
+      "edit_recompute_ms": 89.338333,
+      "parameter": "wall",
+      "restore_recompute_ms": 90.087208,
+      "value_mm": 2.6
+     },
+     {
+      "edit_recompute_ms": 89.442917,
+      "parameter": "floor",
+      "restore_recompute_ms": 90.771833,
+      "value_mm": 2.7
+     },
+     {
+      "edit_recompute_ms": 90.5365,
+      "parameter": "standoff_height",
+      "restore_recompute_ms": 91.128125,
+      "value_mm": 5.1
+     },
+     {
+      "edit_recompute_ms": 90.774208,
+      "parameter": "standoff_diameter",
+      "restore_recompute_ms": 90.342625,
+      "value_mm": 6.8
+     },
+     {
+      "edit_recompute_ms": 91.043333,
+      "parameter": "margin",
+      "restore_recompute_ms": 91.108209,
+      "value_mm": 4
+     },
+     {
+      "edit_recompute_ms": 90.408958,
+      "parameter": "board_clearance",
+      "restore_recompute_ms": 90.289083,
+      "value_mm": 3.1
+     },
+     {
+      "edit_recompute_ms": 91.180334,
+      "parameter": "lid_thickness",
+      "restore_recompute_ms": 91.311417,
+      "value_mm": 2.6
+     },
+     {
+      "edit_recompute_ms": 90.953291,
+      "parameter": "lid_gap",
+      "restore_recompute_ms": 90.589208,
+      "value_mm": 0.5
+     }
+    ],
+    "passed": true,
+    "preview": {
+     "lid": {
+      "tessellation_ms": 65.603375,
+      "triangles": 12
+     },
+     "tray": {
+      "tessellation_ms": 96.98525,
+      "triangles": 2052
+     }
+    },
+    "process_id": 781,
+    "recompute_validate_ms": 32.321541,
+    "reopen_preview_ms": 246.110125,
+    "runtime_initialized": true,
+    "runtime_initialized_before": true,
+    "runtime_sources": {
+     "harness/checks.py": {
+      "bytes": 3053,
+      "sha256": "f98331366b156f36fcc8a708afec842d7d97796770563a58b57e812f783ae519"
+     },
+     "harness/inputs.py": {
+      "bytes": 2345,
+      "sha256": "f48d660987021e8def853b94e6de547e3d60ef34c2e8c56910386c2f0071630e"
+     },
+     "harness/model.py": {
+      "bytes": 6675,
+      "sha256": "ecb7e4c877abb51e20f6fca052746c4081c1622d88a5491e768fadc14f62b938"
+     },
+     "harness/session_runtime.py": {
+      "bytes": 18263,
+      "sha256": "3b0d9e3d8fe62eb42cc2a32b3600be1b7d4136531571a4ca722223319796b3fb"
+     },
+     "harness/upstream.json": {
+      "bytes": 709,
+      "sha256": "06623645779c44c4d03608935988dcab2098cf47849d6e7593fc001496795e0c"
+     }
+    },
+    "save_ms": 40.827291,
+    "schema": 1,
+    "settings_mm": {
+     "board_clearance": 2,
+     "floor": 2,
+     "lid_gap": 0.25,
+     "lid_thickness": 2,
+     "margin": 3,
+     "standoff_diameter": 6,
+     "standoff_height": 4,
+     "wall": 2
+    }
+   }
+  }
+ },
+ "date": "2026-10-31",
+ "desktop_freecad": "FreeCAD 1.1.4 4fd3bf320 Windows x86_64 (upstream.json desktop_proof, sha256 verified)",
+ "gate": "STEP gate (F5 preparation; F5 itself not accepted)",
+ "pending": [
+  "slicer review",
+  "manual device UI checklist"
+ ],
+ "schema": 1
+}

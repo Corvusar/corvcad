@@ -1,0 +1,102 @@
+{
+  "schema": 1,
+  "provider": "Codemagic",
+  "app_id": "6adef14098c06b067e3a725c",
+  "build_id": "6ae08de59c9b17b232c52691",
+  "commit": "83b09a9718588d917349983cde38fb5a21536d03",
+  "run_url": "https://codemagic.io/app/6adef14098c06b067e3a725c/build/6ae08de59c9b17b232c52691",
+  "result": "failed",
+  "started_at": "2026-10-27T11:50:19.413000+00:00",
+  "finished_at": "2026-10-27T12:22:40.977000+00:00",
+  "scope": "F4 native targets compiled and linked, resources staged and F3 baseline runtime passed; packaged C ABI failed during initialization, before app build/tests",
+  "failure": "Initialize native runtime: Import mechanical session backend: No module named 'PartDesign'",
+  "native_adapter_compiled": true,
+  "f3_baseline_passed": true,
+  "native_session_accepted": false,
+  "app_executed": false,
+  "provider_actions": [
+    {
+      "name": "Preparing build machine",
+      "status": "success",
+      "startedAt": "2026-10-27T11:50:20.035000+00:00",
+      "finishedAt": "2026-10-27T11:51:46.199000+00:00"
+    },
+    {
+      "name": "Fetching app sources",
+      "status": "success",
+      "startedAt": "2026-10-27T11:51:46.199000+00:00",
+      "finishedAt": "2026-10-27T11:51:53.819000+00:00"
+    },
+    {
+      "name": "Restoring cache",
+      "status": "success",
+      "startedAt": "2026-10-27T11:51:53.819000+00:00",
+      "finishedAt": "2026-10-27T11:53:43.948000+00:00"
+    },
+    {
+      "name": "Record target and install host generators",
+      "status": "success",
+      "startedAt": "2026-10-27T11:53:43.948000+00:00",
+      "finishedAt": "2026-10-27T11:54:30.143000+00:00"
+    },
+    {
+      "name": "Source and runtime boundary regressions",
+      "status": "success",
+      "startedAt": "2026-10-27T11:54:30.143000+00:00",
+      "finishedAt": "2026-10-27T11:54:59.172000+00:00"
+    },
+    {
+      "name": "Static target dependencies and actual SDK inventory",
+      "status": "success",
+      "startedAt": "2026-10-27T11:54:59.172000+00:00",
+      "finishedAt": "2026-10-27T11:56:37.144000+00:00"
+    },
+    {
+      "name": "CPython using the same target dependency archives",
+      "status": "success",
+      "startedAt": "2026-10-27T11:56:37.144000+00:00",
+      "finishedAt": "2026-10-27T12:01:35.561000+00:00"
+    },
+    {
+      "name": "Static OCCT geometry and STEP closure",
+      "status": "success",
+      "startedAt": "2026-10-27T12:01:35.561000+00:00",
+      "finishedAt": "2026-10-27T12:02:20.907000+00:00"
+    },
+    {
+      "name": "Compile FreeCAD for the target SDK",
+      "status": "success",
+      "startedAt": "2026-10-27T12:02:20.907000+00:00",
+      "finishedAt": "2026-10-27T12:19:08.800000+00:00"
+    },
+    {
+      "name": "Stage reviewed resources and validate the runtime",
+      "status": "success",
+      "startedAt": "2026-10-27T12:19:08.800000+00:00",
+      "finishedAt": "2026-10-27T12:21:17.245000+00:00"
+    },
+    {
+      "name": "Native mechanical session and app edition (F4)",
+      "status": "failed",
+      "startedAt": "2026-10-27T12:21:17.245000+00:00",
+      "finishedAt": "2026-10-27T12:22:35.584000+00:00"
+    },
+    {
+      "name": "Publishing",
+      "status": "success",
+      "startedAt": "2026-10-27T12:22:35.584000+00:00",
+      "finishedAt": "2026-10-27T12:22:40.259000+00:00"
+    },
+    {
+      "name": "Cleaning up",
+      "status": "success",
+      "startedAt": "2026-10-27T12:22:40.259000+00:00",
+      "finishedAt": "2026-10-27T12:22:40.977000+00:00"
+    }
+  ],
+  "saved_decoded_log": {
+    "name": "6ae08de59c9b17b232c52691-step-10.log",
+    "bytes": 19016,
+    "sha256": "415479e58b958b85934e2ba934aca99ce10485d25af752add4b2330624a831b3"
+  }
+}

@@ -1,0 +1,283 @@
+CorvCAD patch series for KiCad 10.0.6 (caf7377), on top of 0008: let BOARD_NETLIST_UPDATER
+(Update PCB from Schematic) run without the board editor, for the headless board slice.
+
+Applied by integrations/kicad_core/fetch.py. With an editor frame nothing changes.
+
+1. SetFootprintLoader() supplies footprints when m_frame is null; the frame's LoadFootprint is
+   used otherwise.
+2. Every editor-frame call (loading and exchanging footprints, the ratsnest and field style
+   settings, the canvas view, OnModify, position text in display units) moves unchanged into
+   the BOARD_NETLIST_UPDATER_FRAME functions of a new board_netlist_updater_frame.cpp, listed
+   in pcbnew/CMakeLists.txt. The updater no longer references PCB_EDIT_FRAME members, so a
+   build without the editor links it by supplying its own version of that file
+   (integrations/kicad_core/headless/pcbnew/board_netlist_updater_frame.cpp).
+3. Pad ratsnest visibility is only set with a frame.
+4. Without a frame, a footprint whose library ID changed is exchanged through
+   BOARD_NETLIST_UPDATER_FRAME::ExchangeFootprint, which a headless build supplies.
+diff --git a/pcbnew/netlist_reader/board_netlist_updater.cpp b/pcbnew/netlist_reader/board_netlist_updater.cpp
+index 8c49e7f..b26154b 100644
+--- a/pcbnew/netlist_reader/board_netlist_updater.cpp
++++ b/pcbnew/netlist_reader/board_netlist_updater.cpp
+@@ -159,7 +159,8 @@ FOOTPRINT* BOARD_NETLIST_UPDATER::addNewFootprint( COMPONENT* aComponent, const
+         return nullptr;
+     }
+ 
+-    FOOTPRINT* footprint = m_frame->LoadFootprint( aFootprintId );
++    FOOTPRINT* footprint = m_frame ? BOARD_NETLIST_UPDATER_FRAME::LoadFootprint( m_frame, aFootprintId )
++                                   : m_footprintLoader ? m_footprintLoader( aFootprintId ) : nullptr;
+ 
+     if( footprint == nullptr )
+     {
+@@ -188,7 +189,8 @@ FOOTPRINT* BOARD_NETLIST_UPDATER::addNewFootprint( COMPONENT* aComponent, const
+         for( PAD* pad : footprint->Pads() )
+         {
+             // Set the pads ratsnest settings to the global settings
+-            pad->SetLocalRatsnestVisible( m_frame->GetPcbNewSettings()->m_Display.m_ShowGlobalRatsnest );
++            if( m_frame )
++                pad->SetLocalRatsnestVisible( BOARD_NETLIST_UPDATER_FRAME::ShowGlobalRatsnest( m_frame ) );
+ 
+             // Pads in the library all have orphaned nets.  Replace with Default.
+             pad->SetNetCode( 0 );
+@@ -324,7 +326,8 @@ FOOTPRINT* BOARD_NETLIST_UPDATER::replaceFootprint( NETLIST& aNetlist, FOOTPRINT
+         return nullptr;
+     }
+ 
+-    FOOTPRINT* newFootprint = m_frame->LoadFootprint( aNewComponent->GetFPID() );
++    FOOTPRINT* newFootprint = m_frame ? BOARD_NETLIST_UPDATER_FRAME::LoadFootprint( m_frame, aNewComponent->GetFPID() )
++                                      : m_footprintLoader ? m_footprintLoader( aNewComponent->GetFPID() ) : nullptr;
+ 
+     if( newFootprint == nullptr )
+     {
+@@ -379,7 +382,7 @@ FOOTPRINT* BOARD_NETLIST_UPDATER::replaceFootprint( NETLIST& aNetlist, FOOTPRINT
+              // Expand the footprint pad layers
+              newFootprint->FixUpPadsForBoard( m_board );
+ 
+-             m_frame->ExchangeFootprint( aFootprint, newFootprint, m_commit );
++             BOARD_NETLIST_UPDATER_FRAME::ExchangeFootprint( m_frame, aFootprint, newFootprint, m_commit );
+ 
+              msg.Printf( _( "Changed %s footprint from '%s' to '%s'."),
+                          aFootprint->GetReference(),
+@@ -618,7 +621,7 @@ bool BOARD_NETLIST_UPDATER::updateFootprintParameters( FOOTPRINT* aFootprint, CO
+                         newField->Rotate( aFootprint->GetPosition(), aFootprint->GetOrientation() );
+ 
+                         if( m_frame )
+-                            newField->StyleFromSettings( m_frame->GetDesignSettings(), true );
++                            BOARD_NETLIST_UPDATER_FRAME::StyleField( m_frame, newField );
+                     }
+                 }
+             }
+@@ -647,7 +650,7 @@ bool BOARD_NETLIST_UPDATER::updateFootprintParameters( FOOTPRINT* aFootprint, CO
+                         aFootprint->Remove( field );
+ 
+                         if( m_frame )
+-                            m_frame->GetCanvas()->GetView()->Remove( field );
++                            BOARD_NETLIST_UPDATER_FRAME::RemoveFromView( m_frame, field );
+ 
+                         delete field;
+                     }
+@@ -1864,22 +1867,10 @@ bool BOARD_NETLIST_UPDATER::updateCopperZoneNets( NETLIST& aNetlist )
+                     wxString layerNames = zone->LayerMaskDescribe();
+                     VECTOR2I         pt = zone->GetPosition();
+ 
+-                    if( m_frame && m_frame->GetPcbNewSettings() )
+-                    {
+-                        if( m_frame->GetPcbNewSettings()->m_Display.m_DisplayInvertXAxis )
+-                            pt.x *= -1;
+-
+-                        if( m_frame->GetPcbNewSettings()->m_Display.m_DisplayInvertYAxis )
+-                            pt.y *= -1;
+-                    }
++                    auto [x, y] = BOARD_NETLIST_UPDATER_FRAME::PositionText( m_frame, pt );
+ 
+                     msg.Printf( _( "Copper zone on %s at (%s, %s) has no pads connected to net \"%s\"." ),
+-                                EscapeHTML( layerNames ),
+-                                m_frame ? m_frame->MessageTextFromValue( pt.x )
+-                                        : EDA_UNIT_UTILS::UI::MessageTextFromValue( pcbIUScale, EDA_UNITS::MM, pt.x ),
+-                                m_frame ? m_frame->MessageTextFromValue( pt.y )
+-                                        : EDA_UNIT_UTILS::UI::MessageTextFromValue( pcbIUScale, EDA_UNITS::MM, pt.y ),
+-                                zone->GetNetname() );
++                                EscapeHTML( layerNames ), x, y, zone->GetNetname() );
+                 }
+ 
+                 m_reporter->Report( msg, RPT_SEVERITY_WARNING );
+@@ -2535,7 +2526,7 @@ bool BOARD_NETLIST_UPDATER::UpdateNetlist( NETLIST& aNetlist )
+         // Although m_commit will probably also set this, it's not guaranteed, and we need to make
+         // sure any modification to netclasses gets persisted to project settings through a save.
+         if( m_frame )
+-            m_frame->OnModify();
++            BOARD_NETLIST_UPDATER_FRAME::OnModify( m_frame );
+     }
+ 
+     if( m_isDryRun )
+diff --git a/pcbnew/netlist_reader/board_netlist_updater.h b/pcbnew/netlist_reader/board_netlist_updater.h
+index 78e829d..35d2c6d 100644
+--- a/pcbnew/netlist_reader/board_netlist_updater.h
++++ b/pcbnew/netlist_reader/board_netlist_updater.h
+@@ -41,6 +41,31 @@ class PCB_EDIT_FRAME;
+ class PCB_GROUP;
+ 
+ #include <board_commit.h>
++#include <math/vector2d.h>
++#include <wx/string.h>
++
++#include <functional>
++#include <utility>
++
++class EDA_ITEM;
++class PCB_FIELD;
++
++/**
++ * The board editor's part of an update, kept apart so a build without the editor can supply
++ * its own version of board_netlist_updater_frame.cpp. Each takes the (non-null) editor frame.
++ */
++namespace BOARD_NETLIST_UPDATER_FRAME
++{
++FOOTPRINT* LoadFootprint( PCB_EDIT_FRAME* aFrame, const LIB_ID& aFootprintId );
++void       ExchangeFootprint( PCB_EDIT_FRAME* aFrame, FOOTPRINT* aExisting, FOOTPRINT* aNew, BOARD_COMMIT& aCommit );
++bool       ShowGlobalRatsnest( PCB_EDIT_FRAME* aFrame );
++void       StyleField( PCB_EDIT_FRAME* aFrame, PCB_FIELD* aField );
++void       RemoveFromView( PCB_EDIT_FRAME* aFrame, EDA_ITEM* aItem );
++void       OnModify( PCB_EDIT_FRAME* aFrame );
++
++/// Position text in the user's units and axis directions; millimetres without a frame.
++std::pair<wxString, wxString> PositionText( PCB_EDIT_FRAME* aFrame, VECTOR2I aPosition );
++}
+ 
+ /**
+  * Update the #BOARD with a new netlist.
+@@ -112,6 +137,10 @@ public:
+ 
+     void SetRemoveExtraFields( bool aEnabled ) { m_removeExtraFields = aEnabled; }
+ 
++    /// Loads footprints when there is no editor frame (headless callers); the frame's
++    /// LoadFootprint is used otherwise.
++    void SetFootprintLoader( std::function<FOOTPRINT*( const LIB_ID& )> aLoader ) { m_footprintLoader = std::move( aLoader ); }
++
+     std::vector<FOOTPRINT*> GetAddedFootprints() const { return m_addedFootprints; }
+ 
+     std::vector<PCB_GROUP*> GetAddedGroups() const { return m_addedGroups; }
+@@ -154,6 +183,7 @@ private:
+     bool testConnectivity( NETLIST& aNetlist, std::map<COMPONENT*, FOOTPRINT*>& aFootprintMap );
+ 
+     PCB_EDIT_FRAME* m_frame;
++    std::function<FOOTPRINT*( const LIB_ID& )> m_footprintLoader;
+     BOARD_COMMIT    m_commit;
+     BOARD*          m_board;
+     REPORTER*       m_reporter;
+diff --git a/pcbnew/netlist_reader/board_netlist_updater_frame.cpp b/pcbnew/netlist_reader/board_netlist_updater_frame.cpp
+new file mode 100644
+--- /dev/null
++++ b/pcbnew/netlist_reader/board_netlist_updater_frame.cpp
+@@ -0,0 +1,101 @@
++/*
++ * This program source code file is part of KiCad, a free EDA CAD application.
++ *
++ * Copyright (C) 2015 Jean-Pierre Charras, jp.charras at wanadoo.fr
++ * Copyright (C) 2015 CERN
++ * Copyright (C) 2012 SoftPLC Corporation, Dick Hollenbeck <dick@softplc.com>
++ * Copyright (C) 2011 Wayne Stambaugh <stambaughw@gmail.com>
++ *
++ * Copyright The KiCad Developers, see AUTHORS.txt for contributors.
++ *
++ * This program is free software; you can redistribute it and/or
++ * modify it under the terms of the GNU General Public License
++ * as published by the Free Software Foundation; either version 2
++ * of the License, or (at your option) any later version.
++ *
++ * This program is distributed in the hope that it will be useful,
++ * but WITHOUT ANY WARRANTY; without even the implied warranty of
++ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
++ * GNU General Public License for more details.
++ *
++ * You should have received a copy of the GNU General Public License
++ * along with this program; if not, you may find one here:
++ * http://www.gnu.org/licenses/old-licenses/gpl-2.0.html
++ * or you may search the http://www.gnu.org website for the version 2 license,
++ * or you may write to the Free Software Foundation, Inc.,
++ * 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA
++ */
++
++// The board editor's part of BOARD_NETLIST_UPDATER, moved unchanged from
++// board_netlist_updater.cpp so the updater itself does not reference the editor frame. A
++// build without the editor supplies its own version of this file.
++
++#include "board_netlist_updater.h"
++
++#include <eda_units.h>
++#include <base_units.h>
++#include <pcb_draw_panel_gal.h>
++#include <pcb_edit_frame.h>
++#include <pcb_field.h>
++#include <pcbnew_settings.h>
++#include <view/view.h>
++
++
++namespace BOARD_NETLIST_UPDATER_FRAME
++{
++
++FOOTPRINT* LoadFootprint( PCB_EDIT_FRAME* aFrame, const LIB_ID& aFootprintId )
++{
++    return aFrame->LoadFootprint( aFootprintId );
++}
++
++
++void ExchangeFootprint( PCB_EDIT_FRAME* aFrame, FOOTPRINT* aExisting, FOOTPRINT* aNew, BOARD_COMMIT& aCommit )
++{
++    aFrame->ExchangeFootprint( aExisting, aNew, aCommit );
++}
++
++
++bool ShowGlobalRatsnest( PCB_EDIT_FRAME* aFrame )
++{
++    return aFrame->GetPcbNewSettings()->m_Display.m_ShowGlobalRatsnest;
++}
++
++
++void StyleField( PCB_EDIT_FRAME* aFrame, PCB_FIELD* aField )
++{
++    aField->StyleFromSettings( aFrame->GetDesignSettings(), true );
++}
++
++
++void RemoveFromView( PCB_EDIT_FRAME* aFrame, EDA_ITEM* aItem )
++{
++    aFrame->GetCanvas()->GetView()->Remove( aItem );
++}
++
++
++void OnModify( PCB_EDIT_FRAME* aFrame )
++{
++    aFrame->OnModify();
++}
++
++
++std::pair<wxString, wxString> PositionText( PCB_EDIT_FRAME* aFrame, VECTOR2I aPosition )
++{
++    if( aFrame && aFrame->GetPcbNewSettings() )
++    {
++        if( aFrame->GetPcbNewSettings()->m_Display.m_DisplayInvertXAxis )
++            aPosition.x *= -1;
++
++        if( aFrame->GetPcbNewSettings()->m_Display.m_DisplayInvertYAxis )
++            aPosition.y *= -1;
++    }
++
++    if( aFrame )
++        return { aFrame->MessageTextFromValue( aPosition.x ), aFrame->MessageTextFromValue( aPosition.y ) };
++
++    return { EDA_UNIT_UTILS::UI::MessageTextFromValue( pcbIUScale, EDA_UNITS::MM, aPosition.x ),
++             EDA_UNIT_UTILS::UI::MessageTextFromValue( pcbIUScale, EDA_UNITS::MM, aPosition.y ) };
++}
++
++} // namespace BOARD_NETLIST_UPDATER_FRAME
+diff --git a/pcbnew/CMakeLists.txt b/pcbnew/CMakeLists.txt
+--- a/pcbnew/CMakeLists.txt
++++ b/pcbnew/CMakeLists.txt
+@@ -360,6 +360,7 @@
+ 
+ set( PCBNEW_NETLIST_SRCS
+     netlist_reader/board_netlist_updater.cpp
++    netlist_reader/board_netlist_updater_frame.cpp
+     netlist_reader/netlist.cpp
+     )
+ 

@@ -1,0 +1,74 @@
+{
+  "schematic_source": {
+    "repository": "https://gitlab.com/kicad/code/kicad.git",
+    "tag": "10.0.6",
+    "commit": "caf7377e9cb6fa1535ec3596dcb8c99bf44a996e",
+    "license": "Predominantly GPL-3.0-or-later; inspect individual files",
+    "candidate_translation_units": [
+      "eeschema/sch_io/kicad_sexpr/sch_io_kicad_sexpr.cpp",
+      "eeschema/sch_io/kicad_sexpr/sch_io_kicad_sexpr_parser.cpp",
+      "eeschema/sch_io/kicad_sexpr/sch_io_kicad_sexpr_lib_cache.cpp",
+      "eeschema/schematic.cpp",
+      "eeschema/connection_graph.cpp",
+      "eeschema/erc/erc.cpp"
+    ]
+  },
+  "symbol_libraries": {
+    "repository": "https://gitlab.com/kicad/libraries/kicad-symbols.git",
+    "tag": "10.0.6",
+    "commit": "7800d91437ce44e2ed0928f2ad31a287457b8a68",
+    "license": "CC-BY-SA-4.0 with KiCad design exception",
+    "license_file": "licenses/KICAD-SYMBOLS.txt",
+    "license_sha256_lf": "45d2bce75e5a4208f5afb01b8fb2c406e700371c4fe2b5f5cd5c443d46db4d8f",
+    "library_count": 223,
+    "packer": "tools/kicad_lib_pack.py"
+  },
+  "footprint_libraries": {
+    "repository": "https://gitlab.com/kicad/libraries/kicad-footprints.git",
+    "tag": "10.0.6",
+    "commit": "819223b66f96508feaeaa305301b5e6bb5c1038b",
+    "license": "CC-BY-SA-4.0 with KiCad design exception",
+    "license_file": "licenses/KICAD-SYMBOLS.txt",
+    "license_sha256_lf": "45d2bce75e5a4208f5afb01b8fb2c406e700371c4fe2b5f5cd5c443d46db4d8f",
+    "library_count": 155
+  },
+  "newer_headless_reference": {
+    "repository": "https://gitlab.com/kicad/code/kicad.git",
+    "commit": "d9ec718c68b909e29e2566dc1942d2a4e0732055",
+    "purpose": "API design reference only; not the KiCad 10 writer"
+  },
+  "patches": ["patches/0001-headless-schematic-slice.patch", "patches/0002-wx-ios-schematic-slice.patch", "patches/0003-ios-kiplatform-environment.patch", "patches/0004-unused-git-curl-includes.patch", "patches/0005-erc-json-report-schematic-units.patch", "patches/0006-headless-board-dialog-helpers.patch", "patches/0007-tuning-pattern-model-split.patch", "patches/0008-wx-ios-board-slice.patch", "patches/0009-headless-netlist-updater.patch", "patches/0010-router-interface-view-split.patch", "patches/0011-static-ngspice.patch"],
+  "wxwidgets": {
+    "version": "3.3.4",
+    "url": "https://github.com/wxWidgets/wxWidgets/releases/download/v3.3.4/wxWidgets-3.3.4.tar.bz2",
+    "sha256": "815c16cafa4fcbfcf25c5c0a3418309c62257b8a3b6f91d85a1367a134f98c98",
+    "license": "wxWindows Library Licence 3.1",
+    "purpose": "iOS toolkit build (wx_ios.sh) and the version the desktop probes link"
+  },
+  "ngspice": {
+    "version": "46",
+    "url": "https://sourceforge.net/projects/ngspice/files/ng-spice-rework/old-releases/46/ngspice-46.tar.gz/download",
+    "sha256": "a0d1699af1940b06649276dcd6ff5a566c8c0cad01b2f7b5e99dedbb4d64c19b",
+    "upstream_checksums": {"sha1": "d9a4058f1509d3f2c8d47e892f0ea5c484ee0bab", "md5": "81377c33ceef2d8671bc1353a66c6953"},
+    "license": "Per file: mostly BSD-3-Clause, LGPL for numparam; see the ngspice rows of the gate 1 inventory",
+    "purpose": "SPICE engine behind KiCad's simulator (the version KiCad 10.0.6's vcpkg.json pins); static library without XSPICE code models, OSDI or ADMS (ngspice_ios.sh)"
+  },
+  "vcpkg": {
+    "repository": "https://github.com/microsoft/vcpkg.git",
+    "tag": "2026.07.29",
+    "commit": "9e593bb18ea69cc5095e012465dcd675a822ed0d",
+    "ports": ["zstd", "freetype", "harfbuzz[freetype]", "protobuf", "glm",
+              "boost-algorithm", "boost-bind", "boost-container", "boost-function", "boost-lexical-cast",
+              "boost-locale", "boost-mp11", "boost-ptr-container", "boost-random", "boost-range", "boost-uuid"],
+    "purpose": "iOS builds of the headless slice's third-party libraries (ios_deps.sh); each port keeps its own license"
+  },
+  "audit": {
+    "sources": "audit/sources.json",
+    "dependencies": "audit/dependencies.json",
+    "notice_checksums": "audit/notices.json",
+    "license_policy": "license-policy.json",
+    "verification": "audit.py verify --kicad <pinned-patched-checkout>",
+    "combined_native_distribution_license": "GPL-3.0-or-later"
+  },
+  "integration_status": "Gate 1 inventory covers the measured headless schematic, board and session sources, patch series, header dependencies and pinned iOS dependency recipes. Desktop/simulator/device probes are separate from app packaging; see docs/KICAD_CORE_PORT.md"
+}

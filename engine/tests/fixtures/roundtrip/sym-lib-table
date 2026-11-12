@@ -1,0 +1,4 @@
+(sym_lib_table
+  (version 7)
+  (lib (name "CorvCAD") (type "KiCad") (uri "${KIPRJMOD}/CorvCAD.kicad_sym") (options "") (descr "CorvCAD starter symbols"))
+)

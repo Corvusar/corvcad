@@ -1,0 +1,134 @@
+{
+  "status": "passed",
+  "freecad_version": [
+    "1",
+    "1",
+    "4",
+    "20260928 (Git shallow)",
+    "Unknown",
+    "2026/09/28 13:46:34",
+    "HEAD",
+    "4fd3bf320d9566a27e60069fc8387448aaa3a094"
+  ],
+  "suites": {
+    "BaseTests": {
+      "run": 48,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "expected_failures": 0,
+      "unexpected_successes": 0,
+      "passed": true
+    },
+    "UnitTests": {
+      "run": 12,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "expected_failures": 0,
+      "unexpected_successes": 0,
+      "passed": true
+    },
+    "Document": {
+      "run": 113,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "expected_failures": 0,
+      "unexpected_successes": 0,
+      "passed": true
+    },
+    "Metadata": {
+      "run": 12,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "expected_failures": 0,
+      "unexpected_successes": 0,
+      "passed": true
+    },
+    "StringHasher": {
+      "run": 4,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "expected_failures": 0,
+      "unexpected_successes": 0,
+      "passed": true
+    },
+    "UnicodeTests": {
+      "run": 2,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "expected_failures": 0,
+      "unexpected_successes": 0,
+      "passed": true
+    },
+    "TestPythonSyntax": {
+      "run": 1,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "expected_failures": 0,
+      "unexpected_successes": 0,
+      "passed": true
+    },
+    "TestPartApp": {
+      "run": 131,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 1,
+      "expected_failures": 0,
+      "unexpected_successes": 0,
+      "passed": true
+    },
+    "TestPartDesignApp": {
+      "run": 168,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "expected_failures": 0,
+      "unexpected_successes": 0,
+      "passed": true
+    },
+    "TestSketcherApp": {
+      "run": 33,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 1,
+      "expected_failures": 0,
+      "unexpected_successes": 0,
+      "passed": true
+    },
+    "TestSpreadsheet": {
+      "run": 86,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "expected_failures": 0,
+      "unexpected_successes": 0,
+      "passed": true
+    },
+    "MeshTestsApp": {
+      "run": 44,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 1,
+      "expected_failures": 0,
+      "unexpected_successes": 0,
+      "passed": true
+    },
+    "TestMaterialsApp": {
+      "run": 15,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "expected_failures": 0,
+      "unexpected_successes": 0,
+      "passed": true
+    }
+  },
+  "elapsed_seconds": 64.68016078899998,
+  "import_coverage": "No upstream Import App test suite at this pin; F1 checks STEP export/reimport"
+}

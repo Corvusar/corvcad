@@ -1,0 +1,18 @@
+{
+  "source": {
+    "repository": "https://github.com/FreeCAD/FreeCAD.git",
+    "tag": "1.1.4",
+    "commit": "4fd3bf320d9566a27e60069fc8387448aaa3a094",
+    "license": "LGPL-2.1-or-later; per-file review required for F2"
+  },
+  "desktop_proof": {
+    "linux-x86_64": {
+      "url": "https://github.com/FreeCAD/FreeCAD/releases/download/1.1.4/FreeCAD_1.1.4-Linux-x86_64-py311.AppImage",
+      "sha256": "f6dc6ba676e5ac96a565ebc8d657232f94c6158e85b4352141bd1a46f6b43434"
+    },
+    "windows-x86_64": {
+      "url": "https://github.com/FreeCAD/FreeCAD/releases/download/1.1.4/FreeCAD_1.1.4-Windows-x86_64-py311.7z",
+      "sha256": "4828741fc91ee37fafcdb97a1abacb18b04ba451ac4372d9ff7a7349b36f4d6d"
+    }
+  }
+}

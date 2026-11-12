@@ -1,0 +1,59 @@
+name: Verify KiCad schematic inputs
+# Manual only (owner's decision 2026-10-24): nothing runs on push, pull request or tag.
+# Start it from the Actions tab or the workflow_dispatch API.
+on:
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  source-inventory:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Test the source and notice verifier
+        run: python -m unittest discover -s integrations/kicad_core -p test_audit.py -v
+      - name: Recreate the pinned patched source
+        run: python integrations/kicad_core/fetch.py --output build/kicad-core --source-only
+      - name: Verify measured source, patch and license inventories
+        run: python integrations/kicad_core/audit.py verify --kicad build/kicad-core/kicad
+      - uses: actions/upload-artifact@v4
+        with:
+          name: kicad-gate1-inventory
+          path: integrations/kicad_core/audit/
+          if-no-files-found: error
+  pinned-inputs:
+    if: github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Fetch pinned KiCad source and pack official symbols
+        run: python integrations/kicad_core/fetch.py --output build/kicad-core
+      - name: Check schematic source candidates and bundle metadata
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          root = Path('build/kicad-core')
+          lock = json.loads(Path('integrations/kicad_core/upstream.json').read_text())
+          missing = [p for p in lock['schematic_source']['candidate_translation_units']
+                     if not (root / 'kicad' / p).is_file()]
+          assert not missing, missing
+          packed = root / 'symbols-packed'
+          manifest = json.loads((packed / 'manifest.json').read_text())
+          assert manifest['upstream_commit'] == lock['symbol_libraries']['commit']
+          assert len(manifest['libraries']) == lock['symbol_libraries']['library_count']
+          assert (packed / 'LICENSE-KICAD-SYMBOLS.md').is_file()
+          print('Verified source candidates and', len(manifest['libraries']), 'symbol libraries')
+          PY
+      - uses: actions/upload-artifact@v4
+        with:
+          name: kicad-10.0.6-packed-symbols
+          path: build/kicad-core/symbols-packed/
+          if-no-files-found: error
+          retention-days: 7

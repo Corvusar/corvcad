@@ -1,0 +1,307 @@
+{
+  "schema": 1,
+  "sdk": "iphonesimulator",
+  "architecture": "x86_64",
+  "system_links": [
+    "/usr/lib/libsqlite3.dylib",
+    "/usr/lib/libiconv.2.dylib",
+    "/usr/lib/libobjc.A.dylib",
+    "/System/Library/Frameworks/Foundation.framework/Foundation",
+    "/System/Library/Frameworks/UIKit.framework/UIKit",
+    "/System/Library/Frameworks/CoreServices.framework/CoreServices",
+    "/System/Library/Frameworks/IOKit.framework/Versions/A/IOKit",
+    "/System/Library/Frameworks/CoreFoundation.framework/CoreFoundation",
+    "/System/Library/Frameworks/UniformTypeIdentifiers.framework/UniformTypeIdentifiers",
+    "/usr/lib/libSystem.B.dylib",
+    "/System/Library/Frameworks/MobileCoreServices.framework/MobileCoreServices",
+    "/usr/lib/libc++.1.dylib"
+  ],
+  "probe_bytes": 94736216,
+  "probe_sha256": "34b3379b09a30ee80ac37926ae85c4419776c4570f834e66d7e9954dbb4fb27e",
+  "cases": {
+    "demo": {
+      "report": {
+        "schema": 1,
+        "passed": true,
+        "native_runtime": {
+          "platform": "ios",
+          "freecad_version": [
+            "1",
+            "1",
+            "4",
+            "20260928 (Git shallow)",
+            "Unknown",
+            "2026/09/28 13:46:34",
+            "HEAD",
+            "4fd3bf320d9566a27e60069fc8387448aaa3a094"
+          ],
+          "home_path": "/Users/<user>/corvcad-freecad-f4/build/freecad-ios-intel/package/sim/FreeCADRuntime//",
+          "resource_dir": "/Users/<user>/corvcad-freecad-f4/build/freecad-ios-intel/package/sim/FreeCADRuntime/data/",
+          "library_dir": "/Users/<user>/corvcad-freecad-f4/build/freecad-ios-intel/package/sim/FreeCADRuntime/lib/",
+          "partdesign_helper": "/Users/<user>/corvcad-freecad-f4/build/freecad-ios-intel/package/sim/FreeCADRuntime/Mod/PartDesign/__init__.py",
+          "builtin_origins": {
+            "FreeCAD": "built-in",
+            "__FreeCADBase__": "built-in",
+            "Materials": "built-in",
+            "Part": "built-in",
+            "Mesh": "built-in",
+            "Sketcher": "built-in",
+            "_PartDesign": "built-in",
+            "Spreadsheet": "built-in",
+            "Import": "built-in"
+          }
+        },
+        "operations": {
+          "initialize": true,
+          "create": true,
+          "invalid_change_rollback": true,
+          "recompute": true,
+          "undo": true,
+          "redo": true,
+          "save": true,
+          "reopen": true,
+          "multiple_sessions": true,
+          "duplicate_path_guard": true,
+          "stale_handle_guard": true,
+          "triangle_short_buffer": true,
+          "null_and_nonfinite_guards": true,
+          "save_external_change_guard": true,
+          "export_unknown_overwrite_guard": true,
+          "export_external_change_guard": true,
+          "step": true,
+          "stl": true
+        },
+        "triangle_counts": {
+          "tray": 1040,
+          "lid": 12
+        },
+        "preview_signed_volume_mm3": {
+          "tray": 8752.815782444086,
+          "lid": 4900.5
+        },
+        "files": {
+          "enclosure.FCStd": {
+            "bytes": 31573,
+            "sha256": "c68b63fad84085f3734eb34a58f0d15be9face3975e23815a6c83fbca82832f4"
+          },
+          "tray.step": {
+            "bytes": 15125,
+            "sha256": "70f7f6982d17f56ca057ee9745ca843c6d149aa5ac76285d92fbdb668b7b9c23"
+          },
+          "lid.step": {
+            "bytes": 6961,
+            "sha256": "6f5b07cfbffeecb721e188caaa67aaec6b29eefafe7c17f5322be35aa47de2f7"
+          },
+          "tray.stl": {
+            "bytes": 52084,
+            "sha256": "9a92b8f045963f6828530872809e32c62ea5b37830a3b343dfadfb094bc7f8b1"
+          },
+          "lid.stl": {
+            "bytes": 684,
+            "sha256": "ad34c69c0d602491ef614422b2fa1724b7f40f6d74fbc039453f21e47e4026f1"
+          }
+        }
+      },
+      "input_sha256": "07b02c7b5731fb28f0fa2326fa8c792fc3f2c7c39e2d7f496ecfb36d6db18911",
+      "exports": {
+        "enclosure.FCStd": {
+          "bytes": 31573,
+          "sha256": "c68b63fad84085f3734eb34a58f0d15be9face3975e23815a6c83fbca82832f4"
+        },
+        "tray.step": {
+          "bytes": 15125,
+          "sha256": "70f7f6982d17f56ca057ee9745ca843c6d149aa5ac76285d92fbdb668b7b9c23"
+        },
+        "lid.step": {
+          "bytes": 6961,
+          "sha256": "6f5b07cfbffeecb721e188caaa67aaec6b29eefafe7c17f5322be35aa47de2f7"
+        },
+        "tray.stl": {
+          "bytes": 52084,
+          "sha256": "9a92b8f045963f6828530872809e32c62ea5b37830a3b343dfadfb094bc7f8b1"
+        },
+        "lid.stl": {
+          "bytes": 684,
+          "sha256": "ad34c69c0d602491ef614422b2fa1724b7f40f6d74fbc039453f21e47e4026f1"
+        }
+      }
+    },
+    "roundtrip": {
+      "report": {
+        "schema": 1,
+        "passed": true,
+        "native_runtime": {
+          "platform": "ios",
+          "freecad_version": [
+            "1",
+            "1",
+            "4",
+            "20260928 (Git shallow)",
+            "Unknown",
+            "2026/09/28 13:46:34",
+            "HEAD",
+            "4fd3bf320d9566a27e60069fc8387448aaa3a094"
+          ],
+          "home_path": "/Users/<user>/corvcad-freecad-f4/build/freecad-ios-intel/package/sim/FreeCADRuntime//",
+          "resource_dir": "/Users/<user>/corvcad-freecad-f4/build/freecad-ios-intel/package/sim/FreeCADRuntime/data/",
+          "library_dir": "/Users/<user>/corvcad-freecad-f4/build/freecad-ios-intel/package/sim/FreeCADRuntime/lib/",
+          "partdesign_helper": "/Users/<user>/corvcad-freecad-f4/build/freecad-ios-intel/package/sim/FreeCADRuntime/Mod/PartDesign/__init__.py",
+          "builtin_origins": {
+            "FreeCAD": "built-in",
+            "__FreeCADBase__": "built-in",
+            "Materials": "built-in",
+            "Part": "built-in",
+            "Mesh": "built-in",
+            "Sketcher": "built-in",
+            "_PartDesign": "built-in",
+            "Spreadsheet": "built-in",
+            "Import": "built-in"
+          }
+        },
+        "operations": {
+          "initialize": true,
+          "create": true,
+          "invalid_change_rollback": true,
+          "recompute": true,
+          "undo": true,
+          "redo": true,
+          "save": true,
+          "reopen": true,
+          "multiple_sessions": true,
+          "duplicate_path_guard": true,
+          "stale_handle_guard": true,
+          "triangle_short_buffer": true,
+          "null_and_nonfinite_guards": true,
+          "save_external_change_guard": true,
+          "export_unknown_overwrite_guard": true,
+          "export_external_change_guard": true,
+          "step": true,
+          "stl": true
+        },
+        "triangle_counts": {
+          "tray": 2052,
+          "lid": 12
+        },
+        "preview_signed_volume_mm3": {
+          "tray": 19017.631534044634,
+          "lid": 12760.5
+        },
+        "files": {
+          "enclosure.FCStd": {
+            "bytes": 37860,
+            "sha256": "ae653574deb1d303f229467c4e5f1a6284ce768dbf1c0b6fe95cfc5235f2c382"
+          },
+          "tray.step": {
+            "bytes": 18253,
+            "sha256": "eabe72d567dd2dcb80fd771427660973ad35ae93a79a61d0cad35795e8717a41"
+          },
+          "lid.step": {
+            "bytes": 6973,
+            "sha256": "1144cc3466a20dfee4855f4af386a2ff187234450880ec3086cf3e4ffcc16f77"
+          },
+          "tray.stl": {
+            "bytes": 102684,
+            "sha256": "888747829e5e8af0d442c2d3364a53eab6c163fbb668548cdea64689a68c18e9"
+          },
+          "lid.stl": {
+            "bytes": 684,
+            "sha256": "4c8ef461e33af9b40ebf9d5ce3f0eaf1acdf9b28c987c67c0149ec896167977a"
+          }
+        }
+      },
+      "input_sha256": "aaa8a9873cec3df6a8fd284b6c3ad1dc9716f5e781c7222fcca6bc5f2d69eb70",
+      "exports": {
+        "enclosure.FCStd": {
+          "bytes": 37860,
+          "sha256": "ae653574deb1d303f229467c4e5f1a6284ce768dbf1c0b6fe95cfc5235f2c382"
+        },
+        "tray.step": {
+          "bytes": 18253,
+          "sha256": "eabe72d567dd2dcb80fd771427660973ad35ae93a79a61d0cad35795e8717a41"
+        },
+        "lid.step": {
+          "bytes": 6973,
+          "sha256": "1144cc3466a20dfee4855f4af386a2ff187234450880ec3086cf3e4ffcc16f77"
+        },
+        "tray.stl": {
+          "bytes": 102684,
+          "sha256": "888747829e5e8af0d442c2d3364a53eab6c163fbb668548cdea64689a68c18e9"
+        },
+        "lid.stl": {
+          "bytes": 684,
+          "sha256": "4c8ef461e33af9b40ebf9d5ce3f0eaf1acdf9b28c987c67c0149ec896167977a"
+        }
+      }
+    }
+  },
+  "app_ui_tests": "NativeFreeCADTests passed",
+  "default_app_ui_tests": "EnclosureUndoTests passed without native FreeCAD",
+  "status": "native mechanical C ABI fixtures and app simulator checks passed",
+  "source_revision": "d9d47c014a91b84a87a2aa14d68535117f80dad5",
+  "native_binary_sources_unchanged_since": "fba4dec",
+  "host": "Intel iMac, macOS 26.3.1, Xcode 26.2",
+  "scope": "Accepted F4 simulator native C ABI, portrait and landscape app UI flows, default-edition undo/redo; no physical iPad execution",
+  "simulator": {
+    "runtime": {
+      "identifier": "com.apple.CoreSimulator.SimRuntime.iOS-26-2",
+      "version": "26.2",
+      "buildversion": "23C54"
+    },
+    "device_type": "com.apple.CoreSimulator.SimDeviceType.iPad-Pro--12-9-inch---3rd-generation-"
+  },
+  "ui_test_counts": {
+    "native": {
+      "tests": 2,
+      "failures": 0
+    },
+    "default": {
+      "tests": 1,
+      "failures": 0
+    }
+  },
+  "cleanup": {
+    "device": "859EA8F6-AB0C-4E8A-856D-3D012C76D479",
+    "actions": {
+      "shutdown": {
+        "returncode": 0
+      },
+      "delete": {
+        "returncode": 0
+      }
+    }
+  },
+  "package": {
+    "core_sha256": "bc2ce71cd92651a340e8664ba088dc593567830dc77c46895656813bfc12d54b",
+    "dependencies_sha256": "eb1c278451adb8f16ed2ebb14d5a2f913256361f3c2a1f898bc110f6c58ca9df",
+    "resource_files": 1712,
+    "resource_bytes": 31624772,
+    "unchanged_after_validation": true
+  },
+  "exports_independently_verified": true,
+  "logs": {
+    "app-build.log": {
+      "bytes": 305735,
+      "sha256": "6f0fb50b85c2d42ee1f6838612c925ec5f05535daa57e1eff13731de9f48f556"
+    },
+    "app-tests.log": {
+      "bytes": 18388,
+      "sha256": "f844d405110289ef6f31bebb28c6c36519b1fdf1da1a2ebe9167135278d19b6b"
+    },
+    "default-app-build.log": {
+      "bytes": 210753,
+      "sha256": "d5afbcabec52027951ada164c667f94c91dd6f71cb5cbc7369583d120d5747df"
+    },
+    "default-app-tests.log": {
+      "bytes": 5741,
+      "sha256": "6fe005e809c9e43272688e37c668c14aed269c3a42e89c7f342112ed5bee8c49"
+    }
+  },
+  "source_files_sha256_lf": {
+    "app/Sources/WorkspaceView.swift": "5a2ad502e860504c3b4c2f505a77910c81fce064f771d95809a227a9f4e12f6c",
+    "app/UITests/NativeFreeCADTests.swift": "68cf632b31b692b3390eff0da6bcb14ecc9318eb82ff3d8be387972e51f35f0c",
+    "integrations/freecad_core/session/run.py": "3ca2dd8369745bf263deb5c494dba45f9f32b8d4e168fbca3185cba6f271be7e",
+    "integrations/freecad_core/session/mechanical_session.cpp": "f549aa7f32ca854d1dfc5603efd1113086911b31029c7bca4157854cadab194d",
+    "integrations/freecad_core/session/mechanical_session_test.cpp": "ca233a8c7ef2ed1170f15b694213e6622592b44edd88fe5b8f95f7e101942530",
+    "engine/include/corvcad/mechanical_session_c_api.h": "03a13c762692496a19f066594810c8749d66b4483f5f20d485c8112b70ac0d80"
+  }
+}

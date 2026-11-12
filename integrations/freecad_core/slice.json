@@ -1,0 +1,61 @@
+{
+  "schema": 1,
+  "status": "F2 investigation; not a release profile",
+  "enabled_modules": [
+    "BUILD_IMPORT",
+    "BUILD_MATERIAL",
+    "BUILD_MESH",
+    "BUILD_PART",
+    "BUILD_PART_DESIGN",
+    "BUILD_SKETCHER",
+    "BUILD_SPREADSHEET",
+    "BUILD_TEST"
+  ],
+  "patches": [
+    {
+      "path": "patches/0001-headless-spreadsheet-and-translations.patch",
+      "sha256": "5b651ef3914933188c1d798b86ccb298e3ea9d69f3b7c061f88032c03d13c89d",
+      "files": {
+        "cMake/FreeCAD_Helpers/CheckInterModuleDependencies.cmake": {
+          "before_sha256_lf": "8b31ef7f2b2106fa17694759aa32875596f153cdf771bb2b1cc48f0f9526f46e",
+          "after_sha256_lf": "38cc5c51c843892f9917056f6b0fecba71d316ac413f9e3fd55dabfa40155455"
+        },
+        "cMake/FreeCAD_Helpers/SetupQt.cmake": {
+          "before_sha256_lf": "6d12115c0661d18e1acb6724fd4ce7983e07e42a89eb1aaf04cd17dbe283ded0",
+          "after_sha256_lf": "eee5398a459ae52a4dfa8207561de6af9f0849790a71cd1063095a4cd9a72be7"
+        }
+      }
+    },
+    {
+      "path": "patches/0002-headless-app-test-imports.patch",
+      "sha256": "1c66697db8533123d977c2565bc0a32a28120457ffad1e00732e6636c3f42b6c",
+      "files": {
+        "src/Mod/Part/parttests/TestPartMirror.py": {
+          "before_sha256_lf": "e3f44c7b1ee6a775e657ea3d12ed1e2d37b4659263b52bfb7da04d78413141e0",
+          "after_sha256_lf": "91d7ce2b38187b0487912ff7c866a1911687c7263240e4f457005533210df047"
+        },
+        "src/Mod/PartDesign/PartDesignTests/TestBoolean.py": {
+          "before_sha256_lf": "13bfd33434d339fd2a363a0b5e1ff74fb94c4f75b503f8c52acf8589ce65b99e",
+          "after_sha256_lf": "25741b7ebb30d372b5c84efc9e45d97ef31f9c804459b2d5c83ee32ad4890e09"
+        },
+        "src/Mod/PartDesign/CMakeLists.txt": {
+          "before_sha256_lf": "f1b12c403d71d58de40731b05d036b82d4fa4b86c25b2eae78656e84b9b7b1ed",
+          "after_sha256_lf": "449bd20c2196254c6afeb875e19aeaa8fa794187306fbd54fe0a95ac7e51c8e6"
+        },
+        "src/Mod/PartDesign/InvoluteGearFeature.py": {
+          "before_sha256_lf": "6771ef3a9f8051b5a004994d8c9f1fed42cee73c97c848d24c0776446f631b0f",
+          "after_sha256_lf": "37ebbf1a0fd69b86f2e30a179b6af371cb4b2df4f0b9318ece423bc74435105f"
+        },
+        "src/Mod/Sketcher/ProfileLib/RegularPolygon.py": {
+          "before_sha256_lf": "9c0556a10185b27e6237793ed75d707cf2a866875ee22057d697524622ddef6e",
+          "after_sha256_lf": "8c5ff9213080d9c8822ec1550af7c716424c0c1919479fbee44d6a64cf39c66d"
+        }
+      }
+    }
+  ],
+  "retained_license": {
+    "path": "licenses/FREECAD-LGPL-2.1.txt",
+    "source": "FreeCAD LICENSE at pinned commit; line endings normalized to LF",
+    "sha256_lf": "20c17d8b8c48a600800dfd14f95d5cb9ff47066a9641ddeab48dc54aec96e331"
+  }
+}

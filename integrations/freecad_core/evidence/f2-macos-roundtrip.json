@@ -1,0 +1,431 @@
+{
+  "status": "passed",
+  "gate": "F1-desktop-model",
+  "platform": "macOS-15.7.9-arm64-arm-64bit",
+  "freecad_version": [
+    "1",
+    "1",
+    "4",
+    "20260928 (Git shallow)",
+    "Unknown",
+    "2026/09/28 13:46:34",
+    "HEAD",
+    "4fd3bf320d9566a27e60069fc8387448aaa3a094"
+  ],
+  "occt_version": "7.9.3",
+  "input_sha256": "aaa8a9873cec3df6a8fd284b6c3ad1dc9716f5e781c7222fcca6bc5f2d69eb70",
+  "board_source": {
+    "name": "RoundTrip.kicad_pcb",
+    "sha256": "b734c040c392df1ec18f1106315721b204fed68d77948674b85113f7ee896c63",
+    "kicad_version": "10.0.7-10.0.7~ubuntu24.04.1"
+  },
+  "settings_mm": {
+    "margin": 3.0,
+    "wall": 2.0,
+    "floor": 2.0,
+    "board_clearance": 2.0,
+    "standoff_height": 4.0,
+    "standoff_diameter": 6.0,
+    "lid_thickness": 2.0,
+    "lid_gap": 0.25
+  },
+  "tools_sha256": {
+    "fetch.py": "2ccf47ad8e82a82cf5e499753fdac7e3d23ad6f7993e5e3f989205a84d13f6d8",
+    "prepare.py": "1236e61ad4dd0cef8eed43ae4e01a9f4afe5d753dcd6a1b04c2cac8ad49d9972",
+    "inputs.py": "f48d660987021e8def853b94e6de547e3d60ef34c2e8c56910386c2f0071630e",
+    "model.py": "ecb7e4c877abb51e20f6fca052746c4081c1622d88a5491e768fadc14f62b938",
+    "checks.py": "f98331366b156f36fcc8a708afec842d7d97796770563a58b57e812f783ae519",
+    "proof.py": "9f00253316677690c8278e2854d07ce5734724b2370d2c2fc0171897d1fccab3",
+    "run.py": "2db45f184c4d81587b28d2ea2724f9d275f0c479d3d67f6ded2c2ac5235d2a91",
+    "upstream.json": "06623645779c44c4d03608935988dcab2098cf47849d6e7593fc001496795e0c"
+  },
+  "parts": {
+    "Tray": {
+      "bounds_mm": [
+        -5.0,
+        -5.0,
+        0.0,
+        85.0,
+        65.0,
+        9.6
+      ],
+      "volume_mm3": 17472.084944740196,
+      "valid_solids": 1
+    },
+    "Lid": {
+      "bounds_mm": [
+        -4.75,
+        -4.75,
+        9.85,
+        84.75,
+        64.75,
+        11.85
+      ],
+      "volume_mm3": 12440.5,
+      "valid_solids": 1
+    }
+  },
+  "bore_count": 2,
+  "save_reopen_recompute": "passed",
+  "parameter_recomputes": [
+    {
+      "parameter": "wall",
+      "value_mm": 2.6,
+      "parts": {
+        "Tray": {
+          "bounds_mm": [
+            -5.6,
+            -5.6,
+            0.0,
+            85.60000000000001,
+            65.60000000000001,
+            9.6
+          ],
+          "volume_mm3": 19329.108944740212,
+          "valid_solids": 1
+        },
+        "Lid": {
+          "bounds_mm": [
+            -5.35,
+            -5.35,
+            9.85,
+            85.35000000000001,
+            65.35000000000001,
+            11.85
+          ],
+          "volume_mm3": 12824.980000000003,
+          "valid_solids": 1
+        }
+      }
+    },
+    {
+      "parameter": "floor",
+      "value_mm": 2.7,
+      "parts": {
+        "Tray": {
+          "bounds_mm": [
+            -5.0,
+            -5.0,
+            0.0,
+            85.0,
+            65.0,
+            10.299999999999999
+          ],
+          "volume_mm3": 21870.82547666972,
+          "valid_solids": 1
+        },
+        "Lid": {
+          "bounds_mm": [
+            -4.75,
+            -4.75,
+            10.549999999999999,
+            84.75,
+            64.75,
+            12.549999999999999
+          ],
+          "volume_mm3": 12440.5,
+          "valid_solids": 1
+        }
+      }
+    },
+    {
+      "parameter": "standoff_height",
+      "value_mm": 5.1,
+      "parts": {
+        "Tray": {
+          "bounds_mm": [
+            -5.0,
+            -5.0,
+            0.0,
+            85.0,
+            65.0,
+            10.7
+          ],
+          "volume_mm3": 18202.995029456237,
+          "valid_solids": 1
+        },
+        "Lid": {
+          "bounds_mm": [
+            -4.75,
+            -4.75,
+            10.95,
+            84.75,
+            64.75,
+            12.95
+          ],
+          "volume_mm3": 12440.5,
+          "valid_solids": 1
+        }
+      }
+    },
+    {
+      "parameter": "standoff_diameter",
+      "value_mm": 6.8,
+      "parts": {
+        "Tray": {
+          "bounds_mm": [
+            -5.0,
+            -5.0,
+            0.0,
+            85.0,
+            65.0,
+            9.6
+          ],
+          "volume_mm3": 17536.424762285707,
+          "valid_solids": 1
+        },
+        "Lid": {
+          "bounds_mm": [
+            -4.75,
+            -4.75,
+            9.85,
+            84.75,
+            64.75,
+            11.85
+          ],
+          "volume_mm3": 12440.5,
+          "valid_solids": 1
+        }
+      }
+    },
+    {
+      "parameter": "margin",
+      "value_mm": 4.0,
+      "parts": {
+        "Tray": {
+          "bounds_mm": [
+            -6.0,
+            -6.0,
+            0.0,
+            86.0,
+            66.0,
+            9.6
+          ],
+          "volume_mm3": 18241.684944740206,
+          "valid_solids": 1
+        },
+        "Lid": {
+          "bounds_mm": [
+            -5.75,
+            -5.75,
+            9.85,
+            85.75,
+            65.75,
+            11.85
+          ],
+          "volume_mm3": 13084.5,
+          "valid_solids": 1
+        }
+      }
+    },
+    {
+      "parameter": "board_clearance",
+      "value_mm": 3.1,
+      "parts": {
+        "Tray": {
+          "bounds_mm": [
+            -5.0,
+            -5.0,
+            0.0,
+            85.0,
+            65.0,
+            10.7
+          ],
+          "volume_mm3": 18158.484944740194,
+          "valid_solids": 1
+        },
+        "Lid": {
+          "bounds_mm": [
+            -4.75,
+            -4.75,
+            10.95,
+            84.75,
+            64.75,
+            12.95
+          ],
+          "volume_mm3": 12440.5,
+          "valid_solids": 1
+        }
+      }
+    },
+    {
+      "parameter": "lid_thickness",
+      "value_mm": 2.6,
+      "parts": {
+        "Tray": {
+          "bounds_mm": [
+            -5.0,
+            -5.0,
+            0.0,
+            85.0,
+            65.0,
+            9.6
+          ],
+          "volume_mm3": 17472.084944740196,
+          "valid_solids": 1
+        },
+        "Lid": {
+          "bounds_mm": [
+            -4.75,
+            -4.75,
+            9.85,
+            84.75,
+            64.75,
+            12.45
+          ],
+          "volume_mm3": 16172.649999999998,
+          "valid_solids": 1
+        }
+      }
+    },
+    {
+      "parameter": "lid_gap",
+      "value_mm": 0.5,
+      "parts": {
+        "Tray": {
+          "bounds_mm": [
+            -5.0,
+            -5.0,
+            0.0,
+            85.0,
+            65.0,
+            9.6
+          ],
+          "volume_mm3": 17472.084944740196,
+          "valid_solids": 1
+        },
+        "Lid": {
+          "bounds_mm": [
+            -4.5,
+            -4.5,
+            10.1,
+            84.5,
+            64.5,
+            12.1
+          ],
+          "volume_mm3": 12282.0,
+          "valid_solids": 1
+        }
+      }
+    }
+  ],
+  "stl": {
+    "Tray": {
+      "triangles": 2052,
+      "edges": 3078,
+      "signed_volume_mm3": 17472.031242761223
+    },
+    "Lid": {
+      "triangles": 12,
+      "edges": 18,
+      "signed_volume_mm3": 12440.499999999996
+    }
+  },
+  "step_reimport": {
+    "Tray": {
+      "bounds_mm": [
+        -5.0,
+        -5.0,
+        0.0,
+        85.0,
+        65.0,
+        9.6
+      ],
+      "volume_mm3": 17472.084944740192,
+      "valid_solids": 1
+    },
+    "Lid": {
+      "bounds_mm": [
+        -4.75,
+        -4.75,
+        9.85,
+        84.75,
+        64.75,
+        11.85
+      ],
+      "volume_mm3": 12440.5,
+      "valid_solids": 1
+    }
+  },
+  "files": {
+    "enclosure.FCStd": {
+      "bytes": 37548,
+      "sha256": "a8ea0ab0ba93826ec3cd64ddd37b9fc64e477081da9c5801987dbe89afb679c9"
+    },
+    "enclosure.step": {
+      "bytes": 26898,
+      "sha256": "274b691a3288faae318f8a926d17eac39eec7dfad90032765eb95341c3520424"
+    },
+    "tray.step": {
+      "bytes": 18229,
+      "sha256": "0277cbafcf52fde946c1faf6012219b7d27b486d8e41985d63cbdd1cc5c97fd5"
+    },
+    "lid.step": {
+      "bytes": 6973,
+      "sha256": "4bde4d4b58796be65af99aa1c87515977711f8c85822ae5c65072e04e34d90ed"
+    },
+    "tray.stl": {
+      "bytes": 102684,
+      "sha256": "5bcbfd3d30de213c5f58f16bf9311d5e72021f83323ae8f743dca7d2815d58f0"
+    },
+    "lid.stl": {
+      "bytes": 684,
+      "sha256": "cd3bc4905a1b56d877796acbe6545f0f5387949b7c8b5e3ca5fa4c5e006386ef"
+    }
+  },
+  "synthetic_model_regressions": {
+    "no_mounts": {
+      "Tray": {
+        "bounds_mm": [
+          -35.0,
+          -25.0,
+          0.0,
+          35.0,
+          25.0,
+          9.6
+        ],
+        "volume_mm3": 10526.400000000001,
+        "valid_solids": 1
+      },
+      "Lid": {
+        "bounds_mm": [
+          -34.75,
+          -24.75,
+          9.85,
+          34.75,
+          24.75,
+          11.85
+        ],
+        "volume_mm3": 6880.5,
+        "valid_solids": 1
+      }
+    },
+    "mixed_bores_and_negative_origin": {
+      "Tray": {
+        "bounds_mm": [
+          -35.0,
+          -25.0,
+          0.0,
+          35.0,
+          25.0,
+          9.6
+        ],
+        "volume_mm3": 10674.88737677192,
+        "valid_solids": 1
+      },
+      "Lid": {
+        "bounds_mm": [
+          -34.75,
+          -24.75,
+          9.85,
+          34.75,
+          24.75,
+          11.85
+        ],
+        "volume_mm3": 6880.5,
+        "valid_solids": 1
+      }
+    }
+  },
+  "elapsed_seconds": 1.8091357499999958
+}

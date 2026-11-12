@@ -1,0 +1,85 @@
+{
+  "homebrew_version": "6.0.18-9-gac983be",
+  "used_options": [],
+  "unused_options": [],
+  "built_as_bottle": true,
+  "built_prefix": "/opt/homebrew",
+  "poured_from_bottle": true,
+  "loaded_from_api": true,
+  "loaded_from_internal_api": true,
+  "installed_on_request": false,
+  "changed_files": [
+    "bin/gdbus-codegen",
+    "bin/glib-gettextize",
+    "lib/pkgconfig/gio-2.0.pc",
+    "lib/pkgconfig/gio-unix-2.0.pc",
+    "lib/pkgconfig/girepository-2.0.pc",
+    "lib/pkgconfig/glib-2.0.pc",
+    "lib/pkgconfig/gmodule-2.0.pc",
+    "lib/pkgconfig/gmodule-export-2.0.pc",
+    "lib/pkgconfig/gmodule-no-export-2.0.pc",
+    "lib/pkgconfig/gobject-2.0.pc",
+    "lib/pkgconfig/gthread-2.0.pc",
+    "share/gdb/auto-load/opt/homebrew/Cellar/glib/2.88.3/lib/libglib-2.0.so.0.8800.3-gdb.py",
+    "share/gdb/auto-load/opt/homebrew/Cellar/glib/2.88.3/lib/libgobject-2.0.so.0.8800.3-gdb.py"
+  ],
+  "time": 1788753917,
+  "source_modified_time": 1785331056,
+  "compiler": "clang",
+  "aliases": [],
+  "runtime_dependencies": [
+    {
+      "full_name": "pcre2",
+      "version": "10.48",
+      "revision": 0,
+      "bottle_rebuild": 0,
+      "pkg_version": "10.48",
+      "declared_directly": true
+    },
+    {
+      "full_name": "json-c",
+      "version": "0.19",
+      "revision": 0,
+      "bottle_rebuild": 1,
+      "pkg_version": "0.19",
+      "declared_directly": false
+    },
+    {
+      "full_name": "libunistring",
+      "version": "1.4.2",
+      "revision": 0,
+      "bottle_rebuild": 0,
+      "pkg_version": "1.4.2",
+      "declared_directly": false
+    },
+    {
+      "full_name": "gettext",
+      "version": "1.0",
+      "revision": 0,
+      "bottle_rebuild": 1,
+      "pkg_version": "1.0",
+      "declared_directly": true
+    }
+  ],
+  "source": {
+    "spec": "stable",
+    "versions": {
+      "stable": "2.88.3",
+      "head": null,
+      "version_scheme": 0,
+      "compatibility_version": null
+    },
+    "path": "/Users/runner/Library/Caches/Homebrew/api/internal/packages.arm64_sequoia.jws.json",
+    "tap_git_head": "a7496e08a4f47d93bf30ba518e3dfae9f1dbab3b",
+    "tap": "homebrew/core"
+  },
+  "arch": "arm64",
+  "built_on": {
+    "os": "Macintosh",
+    "os_version": "macOS 15.7",
+    "cpu_family": "dunno",
+    "xcode": "26.3",
+    "clt": "26.3.0.0.1.1771626560",
+    "preferred_perl": "5.34"
+  }
+}

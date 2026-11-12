@@ -1,0 +1,16 @@
+{
+  "schema": 1,
+  "minimum_ios": "17.0",
+  "python": {
+    "version": "3.13.7",
+    "url": "https://www.python.org/ftp/python/3.13.7/Python-3.13.7.tar.xz",
+    "sha256": "5462f9099dfd30e238def83c71d91897d8caa5ff6ebc7a50f14d4802cdaaa79a",
+    "license": "PSF-2.0 and bundled component notices in LICENSE"
+  },
+  "vcpkg": {
+    "repository": "https://github.com/microsoft/vcpkg.git",
+    "commit": "9e593bb18ea69cc5095e012465dcd675a822ed0d",
+    "manifest": "vcpkg.json",
+    "purpose": "Same registry baseline as KiCad. Per-SDK packages may be shared only when their ABI hashes and features agree. OCCT is deliberately not taken from this baseline (8.0 is outside the reviewed FreeCAD range)."
+  }
+}

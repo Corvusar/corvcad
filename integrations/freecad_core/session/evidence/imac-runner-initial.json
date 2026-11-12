@@ -1,0 +1,47 @@
+{
+  "schema": 1,
+  "source_revision": "54e2a6412700103c38e1ef0e0b9da669e9dedcab",
+  "host_architecture": "x86_64",
+  "xcode": "26.2 (17C52)",
+  "scope": "Intel runner preparation and source regressions; no native FreeCAD execution acceptance",
+  "source_regressions": {
+    "tests": 109,
+    "passed": 109,
+    "skipped": 0
+  },
+  "package_regressions": {
+    "tests": 7,
+    "passed": 7,
+    "skipped": 0
+  },
+  "portable_engine_regressions": {
+    "tests": 6,
+    "passed": 6,
+    "note": "Engine source unchanged from 83b09a9; git-archive CRLF fixture normalized as a normal checkout before tests"
+  },
+  "source_test_log": {
+    "name": "source-tests-python314.log",
+    "bytes": 15274,
+    "sha256": "e9ff9d94d2ce39ec88e39cb3b55d1bc70047561d8c7431f387ff3cf7009cd241"
+  },
+  "simulator_process_smoke": {
+    "passed": true,
+    "architecture": "x86_64",
+    "runtime": {
+      "identifier": "com.apple.CoreSimulator.SimRuntime.iOS-26-2",
+      "version": "26.2",
+      "buildversion": "23C54",
+      "supportedArchitectures": [
+        "x86_64",
+        "arm64"
+      ]
+    },
+    "device_type": "com.apple.CoreSimulator.SimDeviceType.iPad-Pro--12-9-inch---3rd-generation-",
+    "cleanup": {
+      "shutdown": 0,
+      "delete": 0
+    }
+  },
+  "native_freecad_tested": false,
+  "native_app_tested": false
+}

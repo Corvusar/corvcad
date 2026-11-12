@@ -1,0 +1,61 @@
+name: FreeCAD F1 desktop model proof
+# Manual only, matching the owner's 2026-10-24 workflow policy.
+on:
+  workflow_dispatch:
+    inputs:
+      source_slice:
+        description: Run the experimental F2 source build instead of stock F1
+        type: boolean
+        default: false
+      source_platform:
+        description: F2 source-build platform
+        type: choice
+        options: [all, linux, macos]
+        default: all
+permissions:
+  contents: read
+jobs:
+  model:
+    if: ${{ !inputs.source_slice }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install the independent KiCad input adapter
+        run: |
+          sudo add-apt-repository -y ppa:kicad/kicad-10.0-releases
+          sudo apt-get update -q
+          sudo apt-get install -y -q --no-install-recommends kicad
+      - name: Contract and board extraction regression tests
+        run: |
+          /usr/bin/python3 -m unittest discover -s integrations/freecad_core -p 'test_*.py' -v
+      - name: Fetch and verify stock FreeCAD 1.1.4
+        run: |
+          /usr/bin/python3 integrations/freecad_core/fetch.py linux-x86_64
+          chmod +x build/freecad-core/FreeCAD_1.1.4-Linux-x86_64-py311.AppImage
+          cd build/freecad-core
+          ./FreeCAD_1.1.4-Linux-x86_64-py311.AppImage --appimage-extract > extraction.log
+      - name: Prepare board inputs and run headless model proof
+        env:
+          QT_QPA_PLATFORM: offscreen
+        run: |
+          /usr/bin/python3 integrations/freecad_core/prepare.py engine/tests/fixtures/demo.kicad_pcb build/freecad-core/demo.json
+          /usr/bin/python3 integrations/freecad_core/prepare.py engine/tests/fixtures/roundtrip/RoundTrip.kicad_pcb build/freecad-core/roundtrip.json
+          # The upstream AppRun accepts a bundled command as its first argument
+          # and establishes that binary's Python/library paths.
+          /usr/bin/python3 integrations/freecad_core/run.py --freecad build/freecad-core/squashfs-root/AppRun --freecad-arg freecadcmd --input build/freecad-core/demo.json --output build/freecad-core/demo-proof
+          /usr/bin/python3 integrations/freecad_core/run.py --freecad build/freecad-core/squashfs-root/AppRun --freecad-arg freecadcmd --input build/freecad-core/roundtrip.json --output build/freecad-core/roundtrip-proof
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: freecad-f1-desktop-evidence
+          path: |
+            build/freecad-core/*.json
+            build/freecad-core/*-proof/
+          if-no-files-found: error
+          retention-days: 7
+  source-slice:
+    if: ${{ inputs.source_slice }}
+    uses: ./.github/workflows/freecad-slice.yml
+    with:
+      platform: ${{ inputs.source_platform || 'all' }}

@@ -1,0 +1,43 @@
+name: Touch-authored round-trip project
+# Builds the RoundTrip project by touch in an iPad simulator (RoundTripTests) and pushes the
+# project folder, screenshots and test log to the ci/round-trip branch. Check it on a desktop
+# with KiCad 10: python integrations/kicad_cli/round_trip.py <project> <work>.
+# Manual only (owner's decision 2026-10-24): nothing runs on push, pull request or tag.
+# Start it from the Actions tab or the workflow_dispatch API.
+on:
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  author:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install XcodeGen
+        run: brew install xcodegen
+      - name: Author the project in the simulator
+        id: author
+        continue-on-error: true
+        run: |
+          xcodegen generate --spec app/project.yml
+          UDID=$(xcrun simctl list devices available -j | python3 -c "import json, sys; d = json.load(sys.stdin)['devices']; print(next(x['udid'] for k in sorted(d, reverse=True) if 'iOS' in k for x in d[k] if x['name'].startswith('iPad Pro')))")
+          echo "udid=$UDID" >> "$GITHUB_OUTPUT"
+          mkdir -p out/shots
+          set -o pipefail
+          xcodebuild test -project app/CorvCAD.xcodeproj -scheme CorvCAD -destination "id=$UDID" \
+            -derivedDataPath build/DerivedData -only-testing:CorvCADUITests/RoundTripTests \
+            TEST_RUNNER_SNAPSHOT_DIR="$PWD/out/shots" 2>&1 | tee out/xcodebuild.log | tail -40
+      - name: Push results to ci/round-trip
+        run: |
+          UDID="${{ steps.author.outputs.udid }}"
+          xcrun simctl io "$UDID" screenshot out/final.png || true
+          FOUND=$(find ~/Library/Developer/CoreSimulator/Devices/"$UDID"/data -type d -name RoundTrip 2>/dev/null | tee out/found.txt | head -1)
+          [ -n "$FOUND" ] && cp -R "$FOUND" out/project || true
+          echo "test outcome: ${{ steps.author.outcome }}, commit ${GITHUB_SHA}" > out/STATUS
+          git config user.name "corvcad-ci"
+          git config user.email "corvcad-ci@users.noreply.github.com"
+          git checkout --orphan ci/round-trip
+          git rm -rq --cached .
+          git add -f out
+          git commit -qm "Round-trip authoring run for ${GITHUB_SHA}"
+          git push -f origin HEAD:refs/heads/ci/round-trip

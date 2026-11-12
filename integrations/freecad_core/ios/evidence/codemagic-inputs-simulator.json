@@ -1,0 +1,2947 @@
+{
+  "schema": 1,
+  "provider": "Codemagic",
+  "app_id": "6adef14098c06b067e3a725c",
+  "build_id": "6adf082b1977246ed8d507da",
+  "commit": "31bed0d7bcfa9edd49eb320444c2c0f6a8e740d7",
+  "run_url": "https://codemagic.io/app/6adef14098c06b067e3a725c/build/6adf082b1977246ed8d507da",
+  "scope": "Simulator dependency, CPython embedding/POSIX fallback and35-toolkit OCCT input checks only; FreeCAD compile/runtime deliberately skipped by inputs stage",
+  "artifact": {
+    "name": "corvcad_3_artifacts.zip",
+    "bytes": 1847294,
+    "sha256": "4ebf0c9772d8ee5b8daa9de391b58837aacd307222a5af54bf533c018064bf8d"
+  },
+  "report_sha256": {
+    "job": "5cc8c8f906f13542fd1d6b47e01cc735d28e02d1084fe81d3700cb6517434b1e",
+    "dependency_inventory": "e291dcad1c2f2686ece1ceba88996bc4a2d0ff2de0556bad99796af13a434dc9",
+    "dependency_macho": "1c1c7b2f0fc56fa84684386f79d45b96a4e414daccce40dcaeedbfcd132dd1b9",
+    "python_build": "0527182e67dac0bcd8fe9e51755fdf369ce53015bf02b1d611e80249b71cf745",
+    "python_probe": "1a050df2e6b1187881a23dae39b5456cbfcf67ee96aa6d746ad018df9d2aa78c",
+    "python_binary": "dcb3157f8670bdc0089a8da247fc8689f8486b0d882b31f433ff6f87c0092309",
+    "simulator": "38aa9de88a84eb0583ec2ae4b10f6a9866173da95b0ad439a9195c8141db647b",
+    "occt": "4bd9b75bed7c80646d8f2ec72af4c27e9c3c4e59132f2f1807c573ffdc76626f"
+  },
+  "reports": {
+    "job": {
+      "schema": 1,
+      "scope": "inputs",
+      "sdk": "iphonesimulator",
+      "commit": "31bed0d7bcfa9edd49eb320444c2c0f6a8e740d7"
+    },
+    "dependency_inventory": {
+      "schema": 1,
+      "triplet": "arm64-ios-simulator",
+      "packages": [
+        {
+          "Package": "boost-uninstall",
+          "Version": "1.91.0",
+          "Architecture": "arm64-ios-simulator",
+          "Multi-Arch": "same",
+          "Abi": "def071e10e7e6209f38cf9e9d5e63318407e5c64f577d3c3a564ceb33e0832ae",
+          "Description": "Internal vcpkg port used to uninstall Boost",
+          "Status": "install ok installed"
+        },
+        {
+          "Package": "boost-cmake",
+          "Version": "1.91.0",
+          "Depends": "boost-uninstall, vcpkg-boost:arm64-osx",
+          "Architecture": "arm64-ios-simulator",
+          "Multi-Arch": "same",
+          "Abi": "24d6924610910532a43dc0afeef9aced6062369c417207a1ab236394a80aff01",
+          "Description": "Boost cmake module",
+          "Status": "install ok installed"
+        },
+        {
+          "Package": "boost-headers",
+          "Version": "1.91.0",
+          "Depends": "boost-cmake",
+          "Architecture": "arm64-ios-simulator",
+          "Multi-Arch": "same",
+          "Abi": "8b013fbfe6225cc04b074581b6797081cc28959fb8928495dfec029fa3d30e37",
+          "Description": "Boost headers module",
+          "Status": "install ok installed"
+        },
+        {
+          "Package": "boost-config",
+          "Version": "1.91.0",
+          "Depends": "boost-cmake, boost-headers",
+          "Architecture": "arm64-ios-simulator",
+          "Multi-Arch": "same",
+          "Abi": "b0ecac372fab808c6e19da73cd2ecfc89969691c73d0677a37aa71e02af718aa",
+          "Description": "Boost config module",
+          "Status": "install ok installed"
+        },
+        {
+          "Package": "boost-type-traits",
+          "Version": "1.91.0",
+          "Depends": "boost-cmake, boost-config, boost-headers",
+          "Architecture": "arm64-ios-simulator",
+          "Multi-Arch": "same",
+          "Abi": "ac93647db778c4c89e0cb8a3c657d8fb8355cf168ecd72ec3389ff2637dbacb9",
+          "Description": "Boost type_traits module",
+          "Status": "install ok installed"
+        },
+        {
+          "Package": "boost-assert",
+          "Version": "1.91.0",
+          "Depends": "boost-cmake, boost-config, boost-headers",
+          "Architecture": "arm64-ios-simulator",
+          "Multi-Arch": "same",
+          "Abi": "4199781ef0d409d13e66d6def4fe5a40dae410c7944b4c82757ed179fe988686",
+          "Description": "Boost assert module",
+          "Status": "install ok installed"
+        },
+        {
+          "Package": "boost-throw-exception",
+          "Version": "1.91.0",
+          "Depends": "boost-assert, boost-cmake, boost-config, boost-headers",
+          "Architecture": "arm64-ios-simulator",
+          "Multi-Arch": "same",
+          "Abi": "d1aff27f5baeb54fdc8f9d848c72d846fad55806dd83a45a51f1bf653c043ea7",
+          "Description": "Boost throw_exception module",
+          "Status": "install ok installed"
+        },
+        {
+          "Package": "boost-preprocessor",
+          "Version": "1.91.0",
+          "Depends": "boost-cmake, boost-config, boost-headers",
+          "Architecture": "arm64-ios-simulator",
+          "Multi-Arch": "same",
+          "Abi": "a32e82bf94fde47c8e5963d8c58e3fa4280d18e2f0ff3253f36073f6a57cdb50",
+          "Description": "Boost preprocessor module",
+          "Status": "install ok installed"
+        },
+        {
+          "Package": "boost-io",
+          "Version": "1.91.0",
+          "Depends": "boost-cmake, boost-config, boost-headers",
+          "Architecture": "arm64-ios-simulator",
+          "Multi-Arch": "same",
+          "Abi": "e4d3b6dfb294638aa084e5a2d69c4eb6d3cf71218d8d9be4f7a949ce3678f306",
+          "Description": "Boost io module",
+          "Status": "install ok installed"
+        },
+        {
+          "Package": "boost-core",
+          "Version": "1.91.0",
+          "Depends": "boost-assert, boost-cmake, boost-config, boost-headers, boost-throw-exception",
+          "Architecture": "arm64-ios-simulator",
+          "Multi-Arch": "same",
+          "Abi": "25550ec186ed91ed1c44332b4bf172b265106e9c2953caee86a6be4a0e9234cf",
+          "Description": "Boost core module",
+          "Status": "install ok installed"
+        },
+        {
+          "Package": "boost-utility",
+          "Version": "1.91.0",
+          "Depends": "boost-assert, boost-cmake, boost-config, boost-core, boost-headers, boost-io, boost-preprocessor, boost-throw-exception, boost-type-traits",
+          "Architecture": "arm64-ios-simulator",
+          "Multi-Arch": "same",
+          "Abi": "c5767fb731d1e241c0f276aeaac5d69e659834efe27d74c780ea765b5c01ec95",
+          "Description": "Boost utility module",
+          "Status": "install ok installed"
+        },
+        {
+          "Package": "boost-mp11",
+          "Version": "1.91.0",
+          "Depends": "boost-cmake, boost-config, boost-headers",
+          "Architecture": "arm64-ios-simulator",
+          "Multi-Arch": "same",
+          "Abi": "823cdca1af79199c2c8bec299dc799d36912f7291ff22ecef85737371438381f",
+          "Description": "Boost mp11 module",
+          "Status": "install ok installed"
+        },
+        {
+          "Package": "boost-describe",
+          "Version": "1.91.0",
+          "Depends": "boost-cmake, boost-config, boost-headers, boost-mp11",
+          "Architecture": "arm64-ios-simulator",
+          "Multi-Arch": "same",
+          "Abi": "c4676cd38ce9293810ebbe78b44fd7329864cbab8ffe89dda6beeafc2d729c7f",
+          "Description": "Boost describe module",
+          "Status": "install ok installed"
+        },
+        {
+          "Package": "boost-container-hash",
+          "Version": "1.91.0",
+          "Depends": "boost-cmake, boost-config, boost-describe, boost-headers, boost-mp11",
+          "Architecture": "arm64-ios-simulator",
+          "Multi-Arch": "same",
+          "Abi": "74723687accae5faa80e222c8ea73db5c8fd2571b5c48ca7faf9bbd3c7e56af1",
+          "Description": "Boost container_hash module",
+          "Status": "install ok installed"
+        },
+        {
+          "Package": "boost-type-index",
+          "Version": "1.91.0",
+          "Depends": "boost-cmake, boost-config, boost-container-hash, boost-headers, boost-throw-exception",
+          "Architecture": "arm64-ios-simulator",
+          "Multi-Arch": "same",
+          "Abi": "d7c454ea34c6383baab3497c23ae066a5744dc4a3606e22b2d08c00d13e9c845",
+          "Description": "Boost type_index module",
+          "Status": "install ok installed"
+        },
+        {
+          "Package": "boost-static-assert",
+          "Version": "1.91.0",
+          "Depends": "boost-cmake, boost-config, boost-headers",
+          "Architecture": "arm64-ios-simulator",
+          "Multi-Arch": "same",
+          "Abi": "0ffc61e3bce8c8bf7cc93acbae4f6b196c3cd5e78e2705c16ba20e96680ba562",
+          "Description": "Boost static_assert module",
+          "Status": "install ok installed"
+        },
+        {
+          "Package": "boost-predef",
+          "Version": "1.91.0",
+          "Depends": "boost-cmake, boost-config, boost-headers",
+          "Architecture": "arm64-ios-simulator",
+          "Multi-Arch": "same",
+          "Abi": "8456dc564ded3d6361e83c836e3037f2ffdda4a15d908b7e47c02df8b2f5da2b",
+          "Description": "Boost predef module",
+          "Status": "install ok installed"
+        },
+        {
+          "Package": "boost-mpl",
+          "Version": "1.91.0",
+          "Depends": "boost-cmake, boost-config, boost-core, boost-headers, boost-predef, boost-preprocessor, boost-type-traits, boost-utility",
+          "Architecture": "arm64-ios-simulator",
+          "Multi-Arch": "same",
+          "Abi": "3f417cc7df98e363ddd005c0d534ad74515a68d5767cace99a43c4861122ef2f",
+          "Description": "Boost mpl module",
+          "Status": "install ok installed"
+        },
+        {
+          "Package": "boost-integer",
+          "Version": "1.91.0",
+          "Depends": "boost-assert, boost-cmake, boost-config, boost-core, boost-headers, boost-throw-exception, boost-type-traits",
+          "Architecture": "arm64-ios-simulator",
+          "Multi-Arch": "same",
+          "Abi": "5223a59918929f2eca596daf8f0540684c4999de6833b868494af78fb9f7c27a",
+          "Description": "Boost integer module",
+          "Status": "install ok installed"
+        },
+        {
+          "Package": "boost-detail",
+          "Version": "1.91.0",
+          "Depends": "boost-cmake, boost-config, boost-core, boost-headers, boost-preprocessor, boost-type-traits",
+          "Architecture": "arm64-ios-simulator",
+          "Multi-Arch": "same",
+          "Abi": "77ec8a45debe82cfcda280dec74c371f847f5cef651cc5598f0cf052301d38c9",
+          "Description": "Boost detail module",
+          "Status": "install ok installed"
+        },
+        {
+          "Package": "boost-variant",
+          "Version": "1.91.0",
+          "Depends": "boost-assert, boost-cmake, boost-config, boost-container-hash, boost-core, boost-detail, boost-headers, boost-integer, boost-mpl, boost-preprocessor, boost-static-assert, boost-throw-exception, boost-type-index, boost-type-traits, boost-utility",
+          "Architecture": "arm64-ios-simulator",
+          "Multi-Arch": "same",
+          "Abi": "fee3e56df8ca24cb89ac72660a5c700b32647cd32a6efba1445193eacdf321ca",
+          "Description": "Boost variant module",
+          "Status": "install ok installed"
+        },
+        {
+          "Package": "boost-unordered",
+          "Version": "1.91.0",
+          "Depends": "boost-assert, boost-cmake, boost-config, boost-container-hash, boost-core, boost-headers, boost-mp11, boost-predef, boost-throw-exception",
+          "Architecture": "arm64-ios-simulator",
+          "Multi-Arch": "same",
+          "Abi": "4527d7a106f95189040cb36ec037479141dfe7630f9b7f448527ab0589980602",
+          "Description": "Boost unordered module",
+          "Status": "install ok installed"
+        },
+        {
+          "Package": "boost-typeof",
+          "Version": "1.91.0",
+          "Depends": "boost-cmake, boost-config, boost-headers",
+          "Architecture": "arm64-ios-simulator",
+          "Multi-Arch": "same",
+          "Abi": "0be95748ae21028cedab3596a27ba823c7525ca8665c274c21a1da91d0d8aaaf",
+          "Description": "Boost typeof module",
+          "Status": "install ok installed"
+        },
+        {
+          "Package": "boost-winapi",
+          "Version": "1.91.0",
+          "Depends": "boost-cmake, boost-config, boost-headers, boost-predef",
+          "Architecture": "arm64-ios-simulator",
+          "Multi-Arch": "same",
+          "Abi": "b0eaaec74a9e1d939f9f8b4034db6ee9f307a0fc26538e12ec94efc9344bbe7a",
+          "Description": "Boost winapi module",
+          "Status": "install ok installed"
+        },
+        {
+          "Package": "boost-tuple",
+          "Version": "1.91.0",
+          "Depends": "boost-cmake, boost-config, boost-core, boost-headers, boost-type-traits",
+          "Architecture": "arm64-ios-simulator",
+          "Multi-Arch": "same",
+          "Abi": "8cdf6bfd72f859b23eff10576c119c47ff7d9a05cb44b4dd2339f15caeea15ab",
+          "Description": "Boost tuple module",
+          "Status": "install ok installed"
+        },
+        {
+          "Package": "boost-variant2",
+          "Version": "1.91.0",
+          "Depends": "boost-assert, boost-cmake, boost-config, boost-headers, boost-mp11",
+          "Architecture": "arm64-ios-simulator",
+          "Multi-Arch": "same",
+          "Abi": "59d06d5ec26b2075207e77f006583de251810ad16031cd4da386c19ff5fed908",
+          "Description": "Boost variant2 module",
+          "Status": "install ok installed"
+        },
+        {
+          "Package": "boost-compat",
+          "Version": "1.91.0",
+          "Depends": "boost-assert, boost-cmake, boost-config, boost-headers, boost-throw-exception",
+          "Architecture": "arm64-ios-simulator",
+          "Multi-Arch": "same",
+          "Abi": "62a4c309536c3592ae036d2d28b0302ce230c4594b178cd883f6e666c6b754a7",
+          "Description": "Boost compat module",
+          "Status": "install ok installed"
+        },
+        {
+          "Package": "boost-system",
+          "Version": "1.91.0",
+          "Depends": "boost-assert, boost-cmake, boost-compat, boost-config, boost-headers, boost-mp11, boost-throw-exception, boost-variant2, boost-winapi",
+          "Architecture": "arm64-ios-simulator",
+          "Multi-Arch": "same",
+          "Abi": "88486b58ee0dc1761a8daa741bcacec6d15d2c2363a025a2919f8c403f3c7676",
+          "Description": "Boost system module",
+          "Status": "install ok installed"
+        },
+        {
+          "Package": "boost-smart-ptr",
+          "Version": "1.91.0",
+          "Depends": "boost-assert, boost-cmake, boost-config, boost-core, boost-headers, boost-throw-exception",
+          "Architecture": "arm64-ios-simulator",
+          "Multi-Arch": "same",
+          "Abi": "1258a53280a511198d33221fdc7f67445858c2f58f13109e94de2c48602b6c1e",
+          "Description": "Boost smart_ptr module",
+          "Status": "install ok installed"
+        },
+        {
+          "Package": "boost-optional",
+          "Version": "1.91.0",
+          "Depends": "boost-assert, boost-cmake, boost-config, boost-core, boost-headers, boost-throw-exception, boost-type-traits",
+          "Architecture": "arm64-ios-simulator",
+          "Multi-Arch": "same",
+          "Abi": "22ba1502ac1520b534b05c98f81db4121048fd266e6b5a606613c7087629514d",
+          "Description": "Boost optional module",
+          "Status": "install ok installed"
+        },
+        {
+          "Package": "boost-move",
+          "Version": "1.91.0",
+          "Depends": "boost-cmake, boost-config, boost-headers",
+          "Architecture": "arm64-ios-simulator",
+          "Multi-Arch": "same",
+          "Abi": "6b363630c34b9fa57766abd637c15b1b9bec2e1efdb8a115c6ab7f02cce66391",
+          "Description": "Boost move module",
+          "Status": "install ok installed"
+        },
+        {
+          "Package": "boost-bind",
+          "Version": "1.91.0",
+          "Depends": "boost-cmake, boost-config, boost-core, boost-headers",
+          "Architecture": "arm64-ios-simulator",
+          "Multi-Arch": "same",
+          "Abi": "69d311193a0bf6806f2d513ade78e772e6adaf349274cf6c3a06681037acc30d",
+          "Description": "Boost bind module",
+          "Status": "install ok installed"
+        },
+        {
+          "Package": "boost-function",
+          "Version": "1.91.0",
+          "Depends": "boost-assert, boost-bind, boost-cmake, boost-config, boost-core, boost-headers, boost-throw-exception",
+          "Architecture": "arm64-ios-simulator",
+          "Multi-Arch": "same",
+          "Abi": "0d67ce121f99f9f61540924028b554bd24c58dffeca204b3fd7746a80328154f",
+          "Description": "Boost function module",
+          "Status": "install ok installed"
+        },
+        {
+          "Package": "boost-exception",
+          "Version": "1.91.0",
+          "Depends": "boost-assert, boost-cmake, boost-config, boost-core, boost-headers, boost-smart-ptr, boost-throw-exception, boost-tuple, boost-type-traits",
+          "Architecture": "arm64-ios-simulator",
+          "Multi-Arch": "same",
+          "Abi": "65d946b4366507a8b08ba786b6042af7d4cfe14b34446402148de8d6f78b9341",
+          "Description": "Boost exception module",
+          "Status": "install ok installed"
+        },
+        {
+          "Package": "boost-function-types",
+          "Version": "1.91.0",
+          "Depends": "boost-cmake, boost-config, boost-core, boost-detail, boost-headers, boost-mpl, boost-preprocessor, boost-type-traits",
+          "Architecture": "arm64-ios-simulator",
+          "Multi-Arch": "same",
+          "Abi": "a748b7e212469fddf63a17ec88f81b33c6fdf74c758e74019544b1ba6772f9b8",
+          "Description": "Boost function_types module",
+          "Status": "install ok installed"
+        },
+        {
+          "Package": "boost-functional",
+          "Version": "1.91.0",
+          "Depends": "boost-cmake, boost-config, boost-core, boost-function, boost-function-types, boost-headers, boost-mpl, boost-preprocessor, boost-type-traits, boost-typeof, boost-utility",
+          "Architecture": "arm64-ios-simulator",
+          "Multi-Arch": "same",
+          "Abi": "fdf4be0fb7188ced4b1dcc37be78ab7138d83f00c1a68507029215b1fa90941c",
+          "Description": "Boost functional module",
+          "Status": "install ok installed"
+        },
+        {
+          "Package": "boost-fusion",
+          "Version": "1.91.0",
+          "Depends": "boost-cmake, boost-config, boost-container-hash, boost-core, boost-function-types, boost-functional, boost-headers, boost-mpl, boost-preprocessor, boost-tuple, boost-type-traits, boost-typeof, boost-utility",
+          "Architecture": "arm64-ios-simulator",
+          "Multi-Arch": "same",
+          "Abi": "8e098b638755efcbda8a0245e0c34c2c4595956da6b6c66513f6e957072ac67f",
+          "Description": "Boost fusion module",
+          "Status": "install ok installed"
+        },
+        {
+          "Package": "boost-concept-check",
+          "Version": "1.91.0",
+          "Depends": "boost-cmake, boost-config, boost-headers, boost-preprocessor, boost-type-traits",
+          "Architecture": "arm64-ios-simulator",
+          "Multi-Arch": "same",
+          "Abi": "cb0832f632066666689251f3d74559f1224a2d9d2f1f25d45231327151c90181",
+          "Description": "Boost concept_check module",
+          "Status": "install ok installed"
+        },
+        {
+          "Package": "boost-iterator",
+          "Version": "1.91.0",
+          "Depends": "boost-cmake, boost-concept-check, boost-config, boost-core, boost-detail, boost-fusion, boost-headers, boost-mp11, boost-mpl, boost-optional, boost-type-traits, boost-utility",
+          "Architecture": "arm64-ios-simulator",
+          "Multi-Arch": "same",
+          "Abi": "7fe94213968e02211a7d577bd0e8761ebe2f9f5ffa84bcbf86ce55fa967690db",
+          "Description": "Boost iterator module",
+          "Status": "install ok installed"
+        },
+        {
+          "Package": "boost-tokenizer",
+          "Version": "1.91.0",
+          "Depends": "boost-assert, boost-cmake, boost-config, boost-core, boost-headers, boost-iterator, boost-throw-exception, boost-type-traits",
+          "Architecture": "arm64-ios-simulator",
+          "Multi-Arch": "same",
+          "Abi": "0056d4e8fbf736fe7c55039d7943cdf2bc73fa7ee7fa03d9d293cdd401583566",
+          "Description": "Boost tokenizer module",
+          "Status": "install ok installed"
+        },
+        {
+          "Package": "boost-regex",
+          "Version": "1.91.0",
+          "Depends": "boost-assert, boost-cmake, boost-concept-check, boost-config, boost-core, boost-headers, boost-predef, boost-throw-exception, boost-type-traits",
+          "Architecture": "arm64-ios-simulator",
+          "Multi-Arch": "same",
+          "Abi": "b46e5b36aa65eb2965fc98e3660f7bc2f30cf3295c9a97853e3e256d32224acf",
+          "Description": "Boost regex module",
+          "Status": "install ok installed"
+        },
+        {
+          "Package": "boost-conversion",
+          "Version": "1.91.0",
+          "Depends": "boost-assert, boost-cmake, boost-config, boost-headers, boost-smart-ptr, boost-throw-exception",
+          "Architecture": "arm64-ios-simulator",
+          "Multi-Arch": "same",
+          "Abi": "c8ff99f12f3fa38f63b7bdf5b45f3257ea7f3c82c1c1ef2c09f2b3e80a4daa58",
+          "Description": "Boost conversion module",
+          "Status": "install ok installed"
+        },
+        {
+          "Package": "boost-array",
+          "Version": "1.91.0",
+          "Depends": "boost-assert, boost-cmake, boost-config, boost-headers, boost-throw-exception",
+          "Architecture": "arm64-ios-simulator",
+          "Multi-Arch": "same",
+          "Abi": "31f2a29138ea78c457fe730734895206baf04e8418b6df023f277554205980c6",
+          "Description": "Boost array module",
+          "Status": "install ok installed"
+        },
+        {
+          "Package": "boost-range",
+          "Version": "1.91.0",
+          "Depends": "boost-array, boost-assert, boost-cmake, boost-concept-check, boost-config, boost-container-hash, boost-conversion, boost-core, boost-detail, boost-headers, boost-iterator, boost-mpl, boost-optional, boost-preprocessor, boost-regex, boost-tuple, boost-type-traits, boost-utility",
+          "Architecture": "arm64-ios-simulator",
+          "Multi-Arch": "same",
+          "Abi": "87798ee66248d63f68cdb7675e220e8de6b60411d75d2d68f17522d6a6323dd6",
+          "Description": "Boost range module",
+          "Status": "install ok installed"
+        },
+        {
+          "Package": "boost-numeric-conversion",
+          "Version": "1.91.0",
+          "Depends": "boost-cmake, boost-config, boost-conversion, boost-core, boost-headers, boost-mpl, boost-preprocessor, boost-throw-exception, boost-type-traits",
+          "Architecture": "arm64-ios-simulator",
+          "Multi-Arch": "same",
+          "Abi": "3175242c4f0fc5580112f6729cd251ebeeca7a0eb3641009cb600d657d2262a5",
+          "Description": "Boost numeric_conversion module",
+          "Status": "install ok installed"
+        },
+        {
+          "Package": "boost-intrusive",
+          "Version": "1.91.0",
+          "Depends": "boost-assert, boost-cmake, boost-config, boost-headers, boost-move",
+          "Architecture": "arm64-ios-simulator",
+          "Multi-Arch": "same",
+          "Abi": "b1f312a3f8f99ea56c88025cbfc901736bb7b8f270ee0dda0ff2a87c0c307e08",
+          "Description": "Boost intrusive module",
+          "Status": "install ok installed"
+        },
+        {
+          "Package": "boost-container",
+          "Version": "1.91.0",
+          "Depends": "boost-assert, boost-cmake, boost-config, boost-core, boost-headers, boost-intrusive, boost-move",
+          "Architecture": "arm64-ios-simulator",
+          "Multi-Arch": "same",
+          "Abi": "6de1a9ea900377da69cc5564cef5e838479af973372aa7adbe6b99242ff17669",
+          "Description": "Boost container module",
+          "Status": "install ok installed"
+        },
+        {
+          "Package": "boost-lexical-cast",
+          "Version": "1.91.0",
+          "Depends": "boost-cmake, boost-config, boost-container, boost-core, boost-headers, boost-throw-exception",
+          "Architecture": "arm64-ios-simulator",
+          "Multi-Arch": "same",
+          "Abi": "8623de5b892008cfc6cee4b1069de65e515b703ddb9138a907364a8be6e7f552",
+          "Description": "Boost lexical_cast module",
+          "Status": "install ok installed"
+        },
+        {
+          "Package": "boost-algorithm",
+          "Version": "1.91.0",
+          "Depends": "boost-array, boost-assert, boost-bind, boost-cmake, boost-concept-check, boost-config, boost-core, boost-exception, boost-function, boost-headers, boost-iterator, boost-mpl, boost-range, boost-regex, boost-throw-exception, boost-tuple, boost-type-traits, boost-unordered",
+          "Architecture": "arm64-ios-simulator",
+          "Multi-Arch": "same",
+          "Abi": "f779a611f815cca8575b63402eb76946df2cf1a04c4a65e4bf2aa5646b4e999f",
+          "Description": "Boost algorithm module",
+          "Status": "install ok installed"
+        },
+        {
+          "Package": "boost-date-time",
+          "Version": "1.91.0",
+          "Depends": "boost-algorithm, boost-assert, boost-cmake, boost-config, boost-core, boost-headers, boost-io, boost-lexical-cast, boost-numeric-conversion, boost-range, boost-smart-ptr, boost-static-assert, boost-throw-exception, boost-tokenizer, boost-type-traits, boost-utility, boost-winapi",
+          "Architecture": "arm64-ios-simulator",
+          "Multi-Arch": "same",
+          "Abi": "51f7cca7f18e143541d3c2f35ee35b36e6ca6cdca3f1ce6ae762a4769c0bc3e5",
+          "Description": "Boost date_time module",
+          "Status": "install ok installed"
+        },
+        {
+          "Package": "boost-ratio",
+          "Version": "1.91.0",
+          "Depends": "boost-cmake, boost-config, boost-headers",
+          "Architecture": "arm64-ios-simulator",
+          "Multi-Arch": "same",
+          "Abi": "8acc46c4d9410ae54d54b4bbe641cb748c1f405f76ed8afdc95f39c34851a41c",
+          "Description": "Boost ratio module",
+          "Status": "install ok installed"
+        },
+        {
+          "Package": "boost-chrono",
+          "Version": "1.91.0",
+          "Depends": "boost-assert, boost-cmake, boost-config, boost-core, boost-headers, boost-integer, boost-move, boost-mpl, boost-predef, boost-ratio, boost-system, boost-throw-exception, boost-type-traits, boost-typeof, boost-utility, boost-winapi",
+          "Architecture": "arm64-ios-simulator",
+          "Multi-Arch": "same",
+          "Abi": "a79af4c245796e1233caa576d2dce4525dab32ffdb470cf23cb907d96b595647",
+          "Description": "Boost chrono module",
+          "Status": "install ok installed"
+        },
+        {
+          "Package": "boost-align",
+          "Version": "1.91.0",
+          "Depends": "boost-assert, boost-cmake, boost-config, boost-core, boost-headers",
+          "Architecture": "arm64-ios-simulator",
+          "Multi-Arch": "same",
+          "Abi": "78e88ad164be2a7adc2bd9722ffaa769883da6c2e38f468d6f1834ff420916dc",
+          "Description": "Boost align module",
+          "Status": "install ok installed"
+        },
+        {
+          "Package": "boost-atomic",
+          "Version": "1.91.0",
+          "Depends": "boost-align, boost-assert, boost-cmake, boost-config, boost-headers, boost-predef, boost-preprocessor, boost-type-traits, boost-winapi",
+          "Architecture": "arm64-ios-simulator",
+          "Multi-Arch": "same",
+          "Abi": "959cf0f2dbfa6590136f107e5cd7f2fdfe721b39c4286b37a29f55da4f485968",
+          "Description": "Boost atomic module",
+          "Status": "install ok installed"
+        },
+        {
+          "Package": "boost-thread",
+          "Version": "1.91.0",
+          "Depends": "boost-assert, boost-atomic, boost-bind, boost-chrono, boost-cmake, boost-concept-check, boost-config, boost-container, boost-container-hash, boost-core, boost-date-time, boost-exception, boost-function, boost-headers, boost-io, boost-move, boost-optional, boost-predef, boost-preprocessor, boost-smart-ptr, boost-system, boost-throw-exception, boost-tuple, boost-type-traits, boost-utility, boost-winapi",
+          "Architecture": "arm64-ios-simulator",
+          "Multi-Arch": "same",
+          "Abi": "9c19b87c83d46f6e69b491b8b5447cd847c3e717f4686b3f68f0acae6701cbe7",
+          "Description": "Boost thread module",
+          "Status": "install ok installed"
+        },
+        {
+          "Package": "boost-proto",
+          "Version": "1.91.0",
+          "Depends": "boost-cmake, boost-config, boost-core, boost-fusion, boost-headers, boost-mpl, boost-preprocessor, boost-range, boost-type-traits, boost-typeof, boost-utility",
+          "Architecture": "arm64-ios-simulator",
+          "Multi-Arch": "same",
+          "Abi": "647f1a45ca61d2084602670c42abe353f23e1e54590a3c0e5ceb4c9294e4b64d",
+          "Description": "Boost proto module",
+          "Status": "install ok installed"
+        },
+        {
+          "Package": "boost-pool",
+          "Version": "1.91.0",
+          "Depends": "boost-assert, boost-cmake, boost-config, boost-headers, boost-integer, boost-throw-exception, boost-type-traits, boost-winapi",
+          "Architecture": "arm64-ios-simulator",
+          "Multi-Arch": "same",
+          "Abi": "da9506ebb895e051b500576e4d36948840594abb6a07f273fd5a69f94c3ddf43",
+          "Description": "Boost pool module",
+          "Status": "install ok installed"
+        },
+        {
+          "Package": "boost-phoenix",
+          "Version": "1.91.0",
+          "Depends": "boost-assert, boost-bind, boost-cmake, boost-config, boost-core, boost-function, boost-fusion, boost-headers, boost-mpl, boost-predef, boost-preprocessor, boost-proto, boost-range, boost-smart-ptr, boost-type-traits, boost-utility",
+          "Architecture": "arm64-ios-simulator",
+          "Multi-Arch": "same",
+          "Abi": "3b7835c898976e6d43ab3e78ac81b19deb2c045722184d59cbd704e4953b7505",
+          "Description": "Boost phoenix module",
+          "Status": "install ok installed"
+        },
+        {
+          "Package": "boost-endian",
+          "Version": "1.91.0",
+          "Depends": "boost-cmake, boost-config, boost-headers",
+          "Architecture": "arm64-ios-simulator",
+          "Multi-Arch": "same",
+          "Abi": "01549d486686544920dedff8d669a01d4521205529878c38274074deea1ed0ed",
+          "Description": "Boost endian module",
+          "Status": "install ok installed"
+        },
+        {
+          "Package": "boost-spirit",
+          "Version": "1.91.0",
+          "Depends": "boost-array, boost-assert, boost-cmake, boost-config, boost-core, boost-endian, boost-function, boost-function-types, boost-fusion, boost-headers, boost-integer, boost-io, boost-iterator, boost-move, boost-mpl, boost-optional, boost-phoenix, boost-pool, boost-preprocessor, boost-proto, boost-range, boost-regex, boost-smart-ptr, boost-static-assert, boost-thread, boost-throw-exception, boost-type-traits, boost-typeof, boost-unordered, boost-utility, boost-variant",
+          "Architecture": "arm64-ios-simulator",
+          "Multi-Arch": "same",
+          "Abi": "319d1ea6e978f673d0b2a1de95837cdc478d6a3d8458edd3897ea173c1e509c8",
+          "Description": "Boost spirit module",
+          "Status": "install ok installed"
+        },
+        {
+          "Package": "boost-parameter",
+          "Version": "1.91.0",
+          "Depends": "boost-cmake, boost-config, boost-core, boost-function, boost-fusion, boost-headers, boost-mp11, boost-mpl, boost-optional, boost-preprocessor, boost-type-traits, boost-utility",
+          "Architecture": "arm64-ios-simulator",
+          "Multi-Arch": "same",
+          "Abi": "6858f27b146ccde19cf1194010be9967df9ef34f9dc2c0f93e919b8ef84782d6",
+          "Description": "Boost parameter module",
+          "Status": "install ok installed"
+        },
+        {
+          "Package": "boost-dynamic-bitset",
+          "Version": "1.91.0",
+          "Depends": "boost-assert, boost-cmake, boost-config, boost-container-hash, boost-core, boost-headers, boost-throw-exception",
+          "Architecture": "arm64-ios-simulator",
+          "Multi-Arch": "same",
+          "Abi": "a5a78d29d23e7b5b8a8eb5a93d43551907cc5970d2ab0587d15ff9b1a8611824",
+          "Description": "Boost dynamic_bitset module",
+          "Status": "install ok installed"
+        },
+        {
+          "Package": "boost-random",
+          "Version": "1.91.0",
+          "Depends": "boost-assert, boost-cmake, boost-config, boost-core, boost-dynamic-bitset, boost-headers, boost-integer, boost-io, boost-system, boost-throw-exception, boost-type-traits, boost-utility",
+          "Architecture": "arm64-ios-simulator",
+          "Multi-Arch": "same",
+          "Abi": "f3e888c48c698fd6e30f9a24ede8e00bec37f4cdb42f8666b8526d5dc40a0996",
+          "Description": "Boost random module",
+          "Status": "install ok installed"
+        },
+        {
+          "Package": "boost-math",
+          "Version": "1.91.0",
+          "Depends": "boost-assert, boost-cmake, boost-concept-check, boost-config, boost-core, boost-headers, boost-integer, boost-lexical-cast, boost-predef, boost-random, boost-throw-exception",
+          "Architecture": "arm64-ios-simulator",
+          "Multi-Arch": "same",
+          "Abi": "6a60a7b962835f4c5de0299d111d30569343167b9dcbe5333dcf8b756142bdf7",
+          "Description": "Boost math module",
+          "Status": "install ok installed"
+        },
+        {
+          "Package": "boost-convert",
+          "Version": "1.91.0",
+          "Depends": "boost-cmake, boost-config, boost-core, boost-function-types, boost-headers, boost-lexical-cast, boost-math, boost-mpl, boost-optional, boost-parameter, boost-range, boost-spirit, boost-type-traits",
+          "Architecture": "arm64-ios-simulator",
+          "Multi-Arch": "same",
+          "Abi": "68ea8b4739941cafedccad0e5e2decd2976b1043950db27d9189343d28151825",
+          "Description": "Boost convert module",
+          "Status": "install ok installed"
+        },
+        {
+          "Package": "boost-format",
+          "Version": "1.91.0",
+          "Depends": "boost-assert, boost-cmake, boost-config, boost-core, boost-headers, boost-optional, boost-smart-ptr, boost-throw-exception, boost-utility",
+          "Architecture": "arm64-ios-simulator",
+          "Multi-Arch": "same",
+          "Abi": "b9e094689c6ea69e6d53a5ac1ec7ceee3da4dbe340f91ab13557cb157da7e8f8",
+          "Description": "Boost format module",
+          "Status": "install ok installed"
+        },
+        {
+          "Package": "boost-serialization",
+          "Version": "1.91.0",
+          "Depends": "boost-array, boost-assert, boost-cmake, boost-config, boost-core, boost-detail, boost-function, boost-headers, boost-integer, boost-io, boost-iterator, boost-move, boost-mp11, boost-mpl, boost-optional, boost-predef, boost-preprocessor, boost-smart-ptr, boost-spirit, boost-static-assert, boost-throw-exception, boost-type-traits, boost-utility, boost-variant, boost-variant2",
+          "Architecture": "arm64-ios-simulator",
+          "Multi-Arch": "same",
+          "Abi": "271573ad39943ff4493737f1c515c69c9f987849807ba58a047fdbe93452a798",
+          "Description": "Boost serialization module",
+          "Status": "install ok installed"
+        },
+        {
+          "Package": "boost-rational",
+          "Version": "1.91.0",
+          "Depends": "boost-assert, boost-cmake, boost-config, boost-core, boost-headers, boost-integer, boost-throw-exception, boost-type-traits, boost-utility",
+          "Architecture": "arm64-ios-simulator",
+          "Multi-Arch": "same",
+          "Abi": "92eedb1d02b7615c5e6fc21a8f5b9f4f39bec5f31c917bf01374382a5aa86cf4",
+          "Description": "Boost rational module",
+          "Status": "install ok installed"
+        },
+        {
+          "Package": "boost-qvm",
+          "Version": "1.91.0",
+          "Depends": "boost-cmake, boost-config, boost-headers",
+          "Architecture": "arm64-ios-simulator",
+          "Multi-Arch": "same",
+          "Abi": "1f464b30050a815b5c6f03f4202ce04167e4dc8f21e75abc33404fe1a0458ac5",
+          "Description": "Boost qvm module",
+          "Status": "install ok installed"
+        },
+        {
+          "Package": "boost-any",
+          "Version": "1.91.0",
+          "Depends": "boost-assert, boost-cmake, boost-config, boost-headers, boost-throw-exception, boost-type-index",
+          "Architecture": "arm64-ios-simulator",
+          "Multi-Arch": "same",
+          "Abi": "37a061ff07dc96f80e4757983eee2401c2e12f5fab1c923ba49f241a0b31e432",
+          "Description": "Boost any module",
+          "Status": "install ok installed"
+        },
+        {
+          "Package": "boost-program-options",
+          "Version": "1.91.0",
+          "Depends": "boost-any, boost-bind, boost-cmake, boost-config, boost-core, boost-detail, boost-function, boost-headers, boost-iterator, boost-lexical-cast, boost-smart-ptr, boost-static-assert, boost-throw-exception, boost-tokenizer, boost-type-traits",
+          "Architecture": "arm64-ios-simulator",
+          "Multi-Arch": "same",
+          "Abi": "958b1bbfa6f3e1345983a556cd2015ec87c1bef5ec9bf35024a954139ea90b04",
+          "Description": "Boost program_options module",
+          "Status": "install ok installed"
+        },
+        {
+          "Package": "boost-polygon",
+          "Version": "1.91.0",
+          "Depends": "boost-cmake, boost-config, boost-headers",
+          "Architecture": "arm64-ios-simulator",
+          "Multi-Arch": "same",
+          "Abi": "de3c6b20133c162ce878cb1d999aa308c87376eb08ab46c253609006b21fdebf",
+          "Description": "Boost polygon module",
+          "Status": "install ok installed"
+        },
+        {
+          "Package": "boost-multiprecision",
+          "Version": "1.91.0",
+          "Depends": "boost-assert, boost-cmake, boost-config, boost-core, boost-headers, boost-integer, boost-lexical-cast, boost-math, boost-predef, boost-random, boost-throw-exception",
+          "Architecture": "arm64-ios-simulator",
+          "Multi-Arch": "same",
+          "Abi": "1e6bb7d8befbd8780167e2feb4ae88f8b4b780bd0b82beaa39a7f95e11a45be1",
+          "Description": "Boost multiprecision module",
+          "Status": "install ok installed"
+        },
+        {
+          "Package": "boost-xpressive",
+          "Version": "1.91.0",
+          "Depends": "boost-assert, boost-cmake, boost-config, boost-conversion, boost-core, boost-exception, boost-fusion, boost-headers, boost-integer, boost-iterator, boost-lexical-cast, boost-mpl, boost-numeric-conversion, boost-optional, boost-preprocessor, boost-proto, boost-range, boost-smart-ptr, boost-spirit, boost-throw-exception, boost-type-traits, boost-typeof, boost-utility",
+          "Architecture": "arm64-ios-simulator",
+          "Multi-Arch": "same",
+          "Abi": "ae9e4c0dc158fb30febf9651d8b71a4dda5d621d7e171f740e3666fa7399a91d",
+          "Description": "Boost xpressive module",
+          "Status": "install ok installed"
+        },
+        {
+          "Package": "boost-tti",
+          "Version": "1.91.0",
+          "Depends": "boost-cmake, boost-config, boost-function-types, boost-headers, boost-mpl, boost-preprocessor, boost-type-traits",
+          "Architecture": "arm64-ios-simulator",
+          "Multi-Arch": "same",
+          "Abi": "879753f9abd51bbc65361f326d7da3247cd44e2578ccb4f3faf8a712fc479301",
+          "Description": "Boost tti module",
+          "Status": "install ok installed"
+        },
+        {
+          "Package": "boost-multi-index",
+          "Version": "1.91.0",
+          "Depends": "boost-assert, boost-bind, boost-cmake, boost-config, boost-container-hash, boost-core, boost-headers, boost-integer, boost-mp11, boost-preprocessor, boost-smart-ptr, boost-throw-exception, boost-tuple, boost-type-traits, boost-utility",
+          "Architecture": "arm64-ios-simulator",
+          "Multi-Arch": "same",
+          "Abi": "660826c919d14dabee2d6125d6781f35d7fa53b02f316c6c68a984bafb64ee27",
+          "Description": "Boost multi_index module",
+          "Status": "install ok installed"
+        },
+        {
+          "Package": "boost-property-tree",
+          "Version": "1.91.0",
+          "Depends": "boost-any, boost-assert, boost-bind, boost-cmake, boost-config, boost-core, boost-headers, boost-iterator, boost-mpl, boost-multi-index, boost-optional, boost-range, boost-serialization, boost-throw-exception, boost-type-traits",
+          "Architecture": "arm64-ios-simulator",
+          "Multi-Arch": "same",
+          "Abi": "32fe4827950bd3c60a6ba315bb747eb9a3347e9cab612deea7d57241ad84b48b",
+          "Description": "Boost property_tree module",
+          "Status": "install ok installed"
+        },
+        {
+          "Package": "boost-property-map",
+          "Version": "1.91.0",
+          "Depends": "boost-any, boost-assert, boost-cmake, boost-concept-check, boost-config, boost-core, boost-function, boost-headers, boost-iterator, boost-lexical-cast, boost-mpl, boost-smart-ptr, boost-throw-exception, boost-type-index, boost-type-traits, boost-utility",
+          "Architecture": "arm64-ios-simulator",
+          "Multi-Arch": "same",
+          "Abi": "f6ae78cfc2e71ff643673bd8e6f783d9f842ac65fb8eb46c362fd3aca5c5f476",
+          "Description": "Boost property_map module",
+          "Status": "install ok installed"
+        },
+        {
+          "Package": "boost-foreach",
+          "Version": "1.91.0",
+          "Depends": "boost-cmake, boost-config, boost-core, boost-headers, boost-iterator, boost-mpl, boost-range, boost-type-traits",
+          "Architecture": "arm64-ios-simulator",
+          "Multi-Arch": "same",
+          "Abi": "ce45f5572c732f02e8e2aa3fccb5867817230d8ef21d51633d0bca719950b232",
+          "Description": "Boost foreach module",
+          "Status": "install ok installed"
+        },
+        {
+          "Package": "boost-lambda",
+          "Version": "1.91.0",
+          "Depends": "boost-bind, boost-cmake, boost-config, boost-core, boost-detail, boost-headers, boost-iterator, boost-mpl, boost-preprocessor, boost-tuple, boost-type-traits, boost-utility",
+          "Architecture": "arm64-ios-simulator",
+          "Multi-Arch": "same",
+          "Abi": "1bab15b3cef27d53d271069ec968a2a517c4be70dc1bb099682b61a56a253fa6",
+          "Description": "Boost lambda module",
+          "Status": "install ok installed"
+        },
+        {
+          "Package": "boost-bimap",
+          "Version": "1.91.0",
+          "Depends": "boost-cmake, boost-concept-check, boost-config, boost-container-hash, boost-core, boost-headers, boost-iterator, boost-lambda, boost-mp11, boost-mpl, boost-multi-index, boost-preprocessor, boost-throw-exception, boost-type-traits, boost-utility",
+          "Architecture": "arm64-ios-simulator",
+          "Multi-Arch": "same",
+          "Abi": "b0eab551cd1f126a2e9c7bbc17a8a4e3edf5a01bfb4019614c99f90249bb3110",
+          "Description": "Boost bimap module",
+          "Status": "install ok installed"
+        },
+        {
+          "Package": "boost-graph",
+          "Version": "1.91.0",
+          "Depends": "boost-algorithm, boost-any, boost-array, boost-assert, boost-bimap, boost-bind, boost-cmake, boost-concept-check, boost-config, boost-container-hash, boost-conversion, boost-core, boost-detail, boost-foreach, boost-function, boost-headers, boost-integer, boost-iterator, boost-lexical-cast, boost-math, boost-move, boost-mpl, boost-multi-index, boost-numeric-conversion, boost-optional, boost-parameter, boost-preprocessor, boost-property-map, boost-property-tree, boost-random, boost-range, boost-regex, boost-serialization, boost-smart-ptr, boost-spirit, boost-static-assert, boost-throw-exception, boost-tti, boost-tuple, boost-type-traits, boost-typeof, boost-unordered, boost-utility, boost-xpressive",
+          "Architecture": "arm64-ios-simulator",
+          "Multi-Arch": "same",
+          "Abi": "43d56b7fd56fa64efeb8cd70bae084e6c207369fb767b87d6f5e055008fa174c",
+          "Description": "Boost graph module",
+          "Status": "install ok installed"
+        },
+        {
+          "Package": "boost-crc",
+          "Version": "1.91.0",
+          "Depends": "boost-cmake, boost-config, boost-headers",
+          "Architecture": "arm64-ios-simulator",
+          "Multi-Arch": "same",
+          "Abi": "617571092888e7b0c25f408a787fe8487785ded63f62ad01ae910a4d0347d509",
+          "Description": "Boost crc module",
+          "Status": "install ok installed"
+        },
+        {
+          "Package": "boost-geometry",
+          "Version": "1.91.0",
+          "Depends": "boost-algorithm, boost-any, boost-array, boost-assert, boost-cmake, boost-concept-check, boost-config, boost-container, boost-core, boost-crc, boost-function-types, boost-fusion, boost-graph, boost-headers, boost-integer, boost-iterator, boost-lexical-cast, boost-math, boost-mpl, boost-multiprecision, boost-numeric-conversion, boost-polygon, boost-program-options, boost-qvm, boost-range, boost-rational, boost-serialization, boost-static-assert, boost-thread, boost-throw-exception, boost-tokenizer, boost-tuple, boost-type-traits, boost-variant, boost-variant2",
+          "Architecture": "arm64-ios-simulator",
+          "Multi-Arch": "same",
+          "Abi": "f9491f11438177687d7ecc8213cc732b17bdaa17cf0662c161100825c09517e9",
+          "Description": "Boost geometry module",
+          "Status": "install ok installed"
+        },
+        {
+          "Package": "zstd",
+          "Version": "1.5.7",
+          "Depends": "vcpkg-cmake:arm64-osx, vcpkg-cmake-config:arm64-osx",
+          "Architecture": "arm64-ios-simulator",
+          "Multi-Arch": "same",
+          "Abi": "d38e21a74e8ab406054ca43160418e568e0f86afc0c25940175b5d1fd679dbcc",
+          "Description": "Zstandard - Fast real-time compression algorithm",
+          "Status": "install ok installed"
+        },
+        {
+          "Package": "zlib",
+          "Version": "1.3.2",
+          "Port-Version": "1",
+          "Depends": "vcpkg-cmake:arm64-osx, vcpkg-cmake-config:arm64-osx",
+          "Architecture": "arm64-ios-simulator",
+          "Multi-Arch": "same",
+          "Abi": "34e0f77acec1bca9d52c3e50974edb8907ef512b24ead589781e11265126c112",
+          "Description": "A compression library",
+          "Status": "install ok installed"
+        },
+        {
+          "Package": "liblzma",
+          "Version": "5.8.3",
+          "Depends": "vcpkg-cmake:arm64-osx, vcpkg-cmake-config:arm64-osx",
+          "Architecture": "arm64-ios-simulator",
+          "Multi-Arch": "same",
+          "Abi": "eb541d4bc2862609284f5f7051c154d30eb309ffffad9a6a5313b66287f40598",
+          "Description": "Compression library with an API similar to that of zlib.",
+          "Status": "install ok installed"
+        },
+        {
+          "Package": "bzip2",
+          "Version": "1.0.8",
+          "Port-Version": "6",
+          "Depends": "vcpkg-cmake:arm64-osx",
+          "Architecture": "arm64-ios-simulator",
+          "Multi-Arch": "same",
+          "Abi": "a2b3469446aaf99ffe5f5bf23e32d093c06da8e3ade29a20f6b69d0b845c6dd0",
+          "Description": "bzip2 is a freely available, patent free, high-quality data compressor. It typically compresses files to within 10% to 15% of the best available techniques (the PPM family of statistical compressors), whilst being around twice as fast at compression and six times faster at decompression.",
+          "Default-Features": "tool",
+          "Status": "install ok installed"
+        },
+        {
+          "Package": "bzip2",
+          "Feature": "tool",
+          "Architecture": "arm64-ios-simulator",
+          "Multi-Arch": "same",
+          "Description": "Builds bzip2 executable",
+          "Status": "install ok installed"
+        },
+        {
+          "Package": "boost-iostreams",
+          "Version": "1.91.0",
+          "Depends": "boost-assert, boost-cmake, boost-config, boost-core, boost-detail, boost-function, boost-headers, boost-integer, boost-iterator, boost-mpl, boost-numeric-conversion, boost-preprocessor, boost-random, boost-range, boost-regex, boost-smart-ptr, boost-throw-exception, boost-type-traits, boost-utility",
+          "Architecture": "arm64-ios-simulator",
+          "Multi-Arch": "same",
+          "Abi": "162d7bda5444b5b16f98ad638c30c698825552c7bedd781087e981ed74de7f9c",
+          "Description": "Boost iostreams module",
+          "Default-Features": "bzip2, lzma, zlib, zstd",
+          "Status": "install ok installed"
+        },
+        {
+          "Package": "boost-iostreams",
+          "Feature": "bzip2",
+          "Depends": "bzip2",
+          "Architecture": "arm64-ios-simulator",
+          "Multi-Arch": "same",
+          "Description": "Support bzip2 filters",
+          "Status": "install ok installed"
+        },
+        {
+          "Package": "boost-iostreams",
+          "Feature": "lzma",
+          "Depends": "liblzma",
+          "Architecture": "arm64-ios-simulator",
+          "Multi-Arch": "same",
+          "Description": "Support LZMA/xz filters",
+          "Status": "install ok installed"
+        },
+        {
+          "Package": "boost-iostreams",
+          "Feature": "zlib",
+          "Depends": "zlib",
+          "Architecture": "arm64-ios-simulator",
+          "Multi-Arch": "same",
+          "Description": "Support zlib filters",
+          "Status": "install ok installed"
+        },
+        {
+          "Package": "boost-iostreams",
+          "Feature": "zstd",
+          "Depends": "zstd",
+          "Architecture": "arm64-ios-simulator",
+          "Multi-Arch": "same",
+          "Description": "Support zstd filters",
+          "Status": "install ok installed"
+        },
+        {
+          "Package": "boost-scope-exit",
+          "Version": "1.91.0",
+          "Depends": "boost-cmake, boost-config, boost-function, boost-headers, boost-preprocessor, boost-type-traits, boost-typeof",
+          "Architecture": "arm64-ios-simulator",
+          "Multi-Arch": "same",
+          "Abi": "6cccc9d7925f5b09ffb812c0c01640354fbf497c5993cbb06e9b07af3756a0c3",
+          "Description": "Boost scope_exit module",
+          "Status": "install ok installed"
+        },
+        {
+          "Package": "boost-signals2",
+          "Version": "1.91.0",
+          "Depends": "boost-assert, boost-bind, boost-cmake, boost-config, boost-core, boost-function, boost-headers, boost-iterator, boost-move, boost-mpl, boost-optional, boost-parameter, boost-preprocessor, boost-smart-ptr, boost-throw-exception, boost-tuple, boost-type-traits, boost-variant",
+          "Architecture": "arm64-ios-simulator",
+          "Multi-Arch": "same",
+          "Abi": "64fdcdb74877618f458d4e07ae9dd6bfd8539be01651dc996c48c0a9f24fd309",
+          "Description": "Boost signals2 module",
+          "Status": "install ok installed"
+        },
+        {
+          "Package": "boost-uuid",
+          "Version": "1.91.0",
+          "Depends": "boost-assert, boost-cmake, boost-config, boost-headers, boost-throw-exception, boost-type-traits",
+          "Architecture": "arm64-ios-simulator",
+          "Multi-Arch": "same",
+          "Abi": "f8df65a36ade3779802be19f720ec0a2af731e3086ce75c27324c67f024a7ece",
+          "Description": "Boost uuid module",
+          "Status": "install ok installed"
+        },
+        {
+          "Package": "eigen3",
+          "Version": "3.4.0",
+          "Port-Version": "5",
+          "Depends": "vcpkg-cmake:arm64-osx, vcpkg-cmake-config:arm64-osx",
+          "Architecture": "arm64-ios-simulator",
+          "Multi-Arch": "same",
+          "Abi": "54c6b2608643578c8e8b70c7a62697c30c63aa03d61602b74156a016f9e0b934",
+          "Description": "C++ template library for linear algebra: matrices, vectors, numerical solvers, and related algorithms.",
+          "Status": "install ok installed"
+        },
+        {
+          "Package": "fmt",
+          "Version": "12.2.0",
+          "Port-Version": "1",
+          "Depends": "vcpkg-cmake:arm64-osx, vcpkg-cmake-config:arm64-osx",
+          "Architecture": "arm64-ios-simulator",
+          "Multi-Arch": "same",
+          "Abi": "b50c574a07bca7bcd95385ab4ef93438314a5126873f0b89ced72775d6f5fe62",
+          "Description": "{fmt} is an open-source formatting library providing a fast and safe alternative to C stdio and C++ iostreams.",
+          "Status": "install ok installed"
+        },
+        {
+          "Package": "libpng",
+          "Version": "1.6.58",
+          "Depends": "vcpkg-cmake:arm64-osx, vcpkg-cmake-config:arm64-osx, zlib",
+          "Architecture": "arm64-ios-simulator",
+          "Multi-Arch": "same",
+          "Abi": "ce1c555e7a8b4d0f84878d22b51860e0bef87498b8d15d22cd9604806dd05928",
+          "Description": "libpng is a library implementing an interface for reading and writing PNG (Portable Network Graphics) format files",
+          "Status": "install ok installed"
+        },
+        {
+          "Package": "brotli",
+          "Version": "1.2.0",
+          "Depends": "vcpkg-cmake:arm64-osx, vcpkg-cmake-config:arm64-osx",
+          "Architecture": "arm64-ios-simulator",
+          "Multi-Arch": "same",
+          "Abi": "2040ab0b9b5156eeb8427820fa5d015d6f829605339a29e532ec4addd2f04cfd",
+          "Description": "a generic-purpose lossless compression algorithm that compresses data using a combination of a modern variant of the LZ77 algorithm, Huffman coding and 2nd order context modeling.",
+          "Status": "install ok installed"
+        },
+        {
+          "Package": "freetype",
+          "Version": "2.14.3",
+          "Depends": "vcpkg-cmake:arm64-osx, vcpkg-cmake-config:arm64-osx",
+          "Architecture": "arm64-ios-simulator",
+          "Multi-Arch": "same",
+          "Abi": "ad50a0cb10dc83e8d10cf1a04978f997d004f87d87039656c79e95ef6a5db8f7",
+          "Description": "A library to render fonts.",
+          "Default-Features": "brotli, bzip2, png, zlib",
+          "Status": "install ok installed"
+        },
+        {
+          "Package": "freetype",
+          "Feature": "brotli",
+          "Depends": "brotli",
+          "Architecture": "arm64-ios-simulator",
+          "Multi-Arch": "same",
+          "Description": "Support decompression of WOFF2 streams",
+          "Status": "install ok installed"
+        },
+        {
+          "Package": "freetype",
+          "Feature": "bzip2",
+          "Depends": "bzip2",
+          "Architecture": "arm64-ios-simulator",
+          "Multi-Arch": "same",
+          "Description": "Support bzip2 compressed fonts.",
+          "Status": "install ok installed"
+        },
+        {
+          "Package": "freetype",
+          "Feature": "png",
+          "Depends": "libpng",
+          "Architecture": "arm64-ios-simulator",
+          "Multi-Arch": "same",
+          "Description": "Support PNG compressed OpenType embedded bitmaps.",
+          "Status": "install ok installed"
+        },
+        {
+          "Package": "freetype",
+          "Feature": "zlib",
+          "Depends": "zlib",
+          "Architecture": "arm64-ios-simulator",
+          "Multi-Arch": "same",
+          "Description": "Use zlib instead of internal library for DEFLATE",
+          "Status": "install ok installed"
+        },
+        {
+          "Package": "icu",
+          "Version": "78.3",
+          "Port-Version": "1",
+          "Depends": "icu:arm64-osx, vcpkg-cmake-get-vars:arm64-osx, vcpkg-make:arm64-osx",
+          "Architecture": "arm64-ios-simulator",
+          "Multi-Arch": "same",
+          "Abi": "2699006bedee540227983af2b80f8c2b44fb20e4f98c67bc2c3641549b2b599c",
+          "Description": "Mature and widely used Unicode and localization library.",
+          "Status": "install ok installed"
+        },
+        {
+          "Package": "libffi",
+          "Version": "3.7.1",
+          "Depends": "vcpkg-cmake-get-vars:arm64-osx, vcpkg-make:arm64-osx",
+          "Architecture": "arm64-ios-simulator",
+          "Multi-Arch": "same",
+          "Abi": "b7ce5cc2c7097eaf52d637f863a93ffd6004a3a87643350e6d66cb195f89a3ab",
+          "Description": "Portable, high level programming interface to various calling conventions",
+          "Status": "install ok installed"
+        },
+        {
+          "Package": "double-conversion",
+          "Version": "3.4.0",
+          "Depends": "vcpkg-cmake:arm64-osx, vcpkg-cmake-config:arm64-osx",
+          "Architecture": "arm64-ios-simulator",
+          "Multi-Arch": "same",
+          "Abi": "ca63945578f5365901e4b7e5bf367f616273d67ad860649e68258ccf5e7a0b18",
+          "Description": "Efficient binary-decimal and decimal-binary conversion routines for IEEE doubles.",
+          "Status": "install ok installed"
+        },
+        {
+          "Package": "pcre2",
+          "Version": "10.47",
+          "Port-Version": "1",
+          "Depends": "vcpkg-cmake:arm64-osx, vcpkg-cmake-config:arm64-osx",
+          "Architecture": "arm64-ios-simulator",
+          "Multi-Arch": "same",
+          "Abi": "8d9089188028678349cd59485678679ffe982dac0cd79499da4a55d0414b37c1",
+          "Description": "Regular Expression pattern matching using the same syntax and semantics as Perl 5.",
+          "Default-Features": "platform-default-features",
+          "Status": "install ok installed"
+        },
+        {
+          "Package": "pcre2",
+          "Feature": "platform-default-features",
+          "Architecture": "arm64-ios-simulator",
+          "Multi-Arch": "same",
+          "Description": "Enable default features",
+          "Status": "install ok installed"
+        },
+        {
+          "Package": "md4c",
+          "Version": "0.5.3",
+          "Depends": "vcpkg-cmake:arm64-osx, vcpkg-cmake-config:arm64-osx",
+          "Architecture": "arm64-ios-simulator",
+          "Multi-Arch": "same",
+          "Abi": "e73e70bb212b5be68f1694f188cd9056a68d14817807f63433bfc118703d5041",
+          "Description": "MD4C is a C library providing a Markdown parser.",
+          "Status": "install ok installed"
+        },
+        {
+          "Package": "libb2",
+          "Version": "0.98.1",
+          "Port-Version": "7",
+          "Depends": "vcpkg-make:arm64-osx",
+          "Architecture": "arm64-ios-simulator",
+          "Multi-Arch": "same",
+          "Abi": "93cf13bdfa2a9303aa9714c1d594c1a6eacc1de486a66a1f38afea349fae4281",
+          "Description": "C library providing BLAKE2b, BLAKE2s, BLAKE2bp, BLAKE2sp",
+          "Status": "install ok installed"
+        },
+        {
+          "Package": "qtbase",
+          "Version": "6.11.1",
+          "Port-Version": "1",
+          "Depends": "libb2, md4c, pcre2, qtbase:arm64-osx, vcpkg-cmake:arm64-osx, vcpkg-cmake-config:arm64-osx, zlib",
+          "Architecture": "arm64-ios-simulator",
+          "Multi-Arch": "same",
+          "Abi": "280b1bdc7aa528169fa89a43ef476b40560696862014b48ba8fd48462fef75f2",
+          "Description": "Qt Base (Core, Gui, Widgets, Network, ...)",
+          "Default-Features": "async-io, brotli, concurrent, dbus, dnslookup, doubleconversion, freetype, gui, harfbuzz, icu, jpeg, network, pcre2, png, securetransport, sessionmanager, sql, sql-psql, sql-sqlite, testlib, thread, widgets, zstd",
+          "Status": "install ok installed"
+        },
+        {
+          "Package": "qtbase",
+          "Feature": "appstore-compliant",
+          "Architecture": "arm64-ios-simulator",
+          "Multi-Arch": "same",
+          "Description": "Disable code that is not allowed in platform app stores. This is on by default for platforms which require distribution through an app store by default, in particular Android, iOS, tvOS, and watchOS.",
+          "Status": "install ok installed"
+        },
+        {
+          "Package": "qtbase",
+          "Feature": "concurrent",
+          "Architecture": "arm64-ios-simulator",
+          "Multi-Arch": "same",
+          "Description": "Provides a high-level multi-threading API. Qt Concurrent",
+          "Status": "install ok installed"
+        },
+        {
+          "Package": "qtbase",
+          "Feature": "doubleconversion",
+          "Depends": "double-conversion",
+          "Architecture": "arm64-ios-simulator",
+          "Multi-Arch": "same",
+          "Description": "Enable double conversion support",
+          "Status": "install ok installed"
+        },
+        {
+          "Package": "qtbase",
+          "Feature": "future",
+          "Architecture": "arm64-ios-simulator",
+          "Multi-Arch": "same",
+          "Description": "Qt Future (QFuture) support",
+          "Status": "install ok installed"
+        },
+        {
+          "Package": "qtbase",
+          "Feature": "network",
+          "Architecture": "arm64-ios-simulator",
+          "Multi-Arch": "same",
+          "Description": "Qt Network",
+          "Status": "install ok installed"
+        },
+        {
+          "Package": "qtbase",
+          "Feature": "thread",
+          "Architecture": "arm64-ios-simulator",
+          "Multi-Arch": "same",
+          "Description": "Thread support; provides QThread and related classes.",
+          "Status": "install ok installed"
+        },
+        {
+          "Package": "libiconv",
+          "Version": "1.19",
+          "Depends": "vcpkg-make:arm64-osx",
+          "Architecture": "arm64-ios-simulator",
+          "Multi-Arch": "same",
+          "Abi": "64e16f61edc9f1fb9fb26b97b8c6cc4c4641862f6079a6a909fa61ad8b139de3",
+          "Description": "iconv() text conversion.",
+          "Status": "install ok installed"
+        },
+        {
+          "Package": "xerces-c",
+          "Version": "3.3.0",
+          "Port-Version": "1",
+          "Depends": "libiconv, vcpkg-cmake:arm64-osx, vcpkg-cmake-config:arm64-osx",
+          "Architecture": "arm64-ios-simulator",
+          "Multi-Arch": "same",
+          "Abi": "740f62efc06e1657f25d39f8f2d22c2337df8e46cb06ab84f87119e0a490c99f",
+          "Description": "Xerces-C++ is a XML parser, for parsing, generating, manipulating, and validating XML documents using the DOM, SAX, and SAX2 APIs.",
+          "Default-Features": "network",
+          "Status": "install ok installed"
+        },
+        {
+          "Package": "yaml-cpp",
+          "Version": "0.9.0",
+          "Port-Version": "1",
+          "Depends": "vcpkg-cmake:arm64-osx, vcpkg-cmake-config:arm64-osx",
+          "Architecture": "arm64-ios-simulator",
+          "Multi-Arch": "same",
+          "Abi": "f03ec933acdf07b82c45fbeae1243de5904d7bfbb308e13f8f7d3c0c00fcba42",
+          "Description": "yaml-cpp is a YAML parser and emitter in C++ matching the YAML 1.2 spec.",
+          "Status": "install ok installed"
+        }
+      ],
+      "archives": {
+        "lib/libyaml-cpp.a": {
+          "sha256": "a924a6ee096ace3556a14eb9e449b27d9c9b6f269dbb2b74a91ab16a332853b4",
+          "bytes": 632608
+        },
+        "lib/libbz2.a": {
+          "sha256": "b89869046bc647831ea7d0f2c9cb30f331eaf24386fef20b29801b58510c6c3c",
+          "bytes": 84896
+        },
+        "lib/libicui18n.a": {
+          "sha256": "7d896e53a9ee483121cfcc3561ae6b56b2d984e2dc51be18d8a8c6871ccaf4f0",
+          "bytes": 6137592
+        },
+        "lib/libboost_container.a": {
+          "sha256": "322a89f8b63e188aef7c080c51fc5ff2dfa1d038ec6b64284d49b4faa34ab25a",
+          "bytes": 116192
+        },
+        "lib/libfreetype.a": {
+          "sha256": "b6a39d5d91b5d8deb88b31d8b29ba1bb1dcfca2bb3efc24e604d6668cbc3c880",
+          "bytes": 951088
+        },
+        "lib/libboost_iostreams.a": {
+          "sha256": "c13ef9531d570733880fe23c7c3c7fa3ccdb82f632b169edbdeeb9696c6dd475",
+          "bytes": 168680
+        },
+        "lib/libicuio.a": {
+          "sha256": "46a0fdf11350ad814cefe7bb96fe2f04f62dca78c5e79012792265ee0c29c146",
+          "bytes": 70136
+        },
+        "lib/libboost_thread.a": {
+          "sha256": "a87af8b656d3db3acfdf3f9a60ae9d68ca488ece52ac9f953197a81f8243b537",
+          "bytes": 124248
+        },
+        "lib/libboost_program_options.a": {
+          "sha256": "1ce8147424dd44cb1cca9ce2ddaae1127fc948a8cbfa7967534a42584158f461",
+          "bytes": 676648
+        },
+        "lib/libpng16.a": {
+          "sha256": "5244be1a72a5bcf78bd24b911f5193cb34ebadf1d9b3aa8a3accea6497710484",
+          "bytes": 301568
+        },
+        "lib/libicudata.a": {
+          "sha256": "d0e03c50a38d044796e7c8ab95b657108020928741145d7a98f79b57c092d1c6",
+          "bytes": 33108000
+        },
+        "lib/libz.a": {
+          "sha256": "b32b4faa9ef84db2f3591f38ee38ccdfb32b19b1d373bbb0a60f9a39563d7f75",
+          "bytes": 105208
+        },
+        "lib/libbrotlienc.a": {
+          "sha256": "8d5abf13bdfd57fde89b0afe33e76a86b9c45d515a84b03fcde1710ce0638faf",
+          "bytes": 741016
+        },
+        "lib/libmd4c.a": {
+          "sha256": "e4b819ae1a5e7631fc157ecec49be1c4d0cd98dc02401c1469c165b9d1730ca3",
+          "bytes": 74080
+        },
+        "lib/libboost_atomic.a": {
+          "sha256": "1d715a34b8d2be67f882b837c182cad0b72f04fa1b9b496c0fd336b73f1e0c86",
+          "bytes": 42744
+        },
+        "lib/libbrotlidec.a": {
+          "sha256": "a9600b790fdc99c86bb69a6e0c1aa0050b5bb44b53bbb391a8eb1df992033645",
+          "bytes": 50336
+        },
+        "lib/libb2.a": {
+          "sha256": "9af252d304d037bfa1a662a93216c5443db5f79ef83a33fda7787dfbe2357573",
+          "bytes": 34512
+        },
+        "lib/libboost_random.a": {
+          "sha256": "1665fdd7581a5dd3207880ca09683bac37140a2253788f83da6ab4ad6574b485",
+          "bytes": 25024
+        },
+        "lib/libboost_date_time.a": {
+          "sha256": "d3a1ffa9df9c9c1861c6c3ea4f36022dfb98c974f96247e5e9d0a2864d55ea0c",
+          "bytes": 808
+        },
+        "lib/libfmt.a": {
+          "sha256": "6d39cecda6ca611532d56728f96a7a381cdd82d9def2f3078716cfd4bdaf3605",
+          "bytes": 190408
+        },
+        "lib/libpng.a": {
+          "sha256": "5244be1a72a5bcf78bd24b911f5193cb34ebadf1d9b3aa8a3accea6497710484",
+          "bytes": 301568
+        },
+        "lib/libQt6Concurrent.a": {
+          "sha256": "df631e020ec36f13730350c6a49c04222ae21f7a8165f2c42e558b0aab56b4be",
+          "bytes": 17104
+        },
+        "lib/libpcre2-posix.a": {
+          "sha256": "40175b28619bc97483c99935c193fa7a378783c1ea356ce0da51acb4038856fd",
+          "bytes": 5152
+        },
+        "lib/libxerces-c.a": {
+          "sha256": "9a775e87fc2861df4a44f9d824c2ee72e902bb68aee3b6e876bfc171c1a140b3",
+          "bytes": 6822144
+        },
+        "lib/libpcre2-16.a": {
+          "sha256": "dbf1c77ea0d3b69c83b58bcbb13a440d42e3e785def07b950add388cc35ad7ad",
+          "bytes": 419488
+        },
+        "lib/liblzma.a": {
+          "sha256": "eed3a8711ce50f17ec4b371fa7a1a56d9527f8d6dc5530481ab56a7decaef36b",
+          "bytes": 251208
+        },
+        "lib/libQt6Core.a": {
+          "sha256": "7798c415d05a94be186015e952b737071521c7016e9b38b6815421ab6d099c8a",
+          "bytes": 11495952
+        },
+        "lib/libbrotlicommon.a": {
+          "sha256": "8ef69f524d5c10868502b54447f0c7ee48272dc71955abe1b61b8c0e582bccf0",
+          "bytes": 133256
+        },
+        "lib/libpcre2-8.a": {
+          "sha256": "67a4146ed159204710dcdf8187f33ca61d5dd094d248dfed830d8ec84f3ab3a5",
+          "bytes": 445344
+        },
+        "lib/libicuuc.a": {
+          "sha256": "7a5d6409cd71046158acabde76972e11372882a87f9ac7513ebff8d42af30ee7",
+          "bytes": 3216432
+        },
+        "lib/libpcre2-32.a": {
+          "sha256": "8b66944df5d5b41db980c18bd5fa5b404c2afe1da237d72d94a0587868a8b141",
+          "bytes": 415296
+        },
+        "lib/libfmt-c.a": {
+          "sha256": "03e35bd6ae46bd2eba67523fa18e9cc27a25da12ea786eb5cc706e6acccfc8a3",
+          "bytes": 3240
+        },
+        "lib/libmd4c-html.a": {
+          "sha256": "8faaae05506c9d06ea76e8c2ebca16fe6cc3cf62cceb3970165e45f566430689",
+          "bytes": 145808
+        },
+        "lib/libQt6Network.a": {
+          "sha256": "3980e7a0dbceb670df0ecc33095f44921623625d6e7b10f1d9b21249d0e3dacc",
+          "bytes": 3222544
+        },
+        "lib/libzstd.a": {
+          "sha256": "e62e05772bfb8657e27324bbadbda7760d985bbaa831a670f732bfc8965c5c1e",
+          "bytes": 908880
+        },
+        "lib/libboost_graph.a": {
+          "sha256": "4cf41b99ae8ae14b927e68e0b26f4994e1ef84bbdd9cf1daeabecc9e85061fb0",
+          "bytes": 658760
+        },
+        "lib/libffi.a": {
+          "sha256": "6205d6b6e36a88c564a66721dd5d6b9e59fe6a27675780aaf9d751d874f3455b",
+          "bytes": 56400
+        },
+        "lib/libboost_wserialization.a": {
+          "sha256": "976bc3a91b38b7a626f517a288918d9bd7eaee2fa370a09cf382786e8ea3cb25",
+          "bytes": 536232
+        },
+        "lib/libdouble-conversion.a": {
+          "sha256": "906a67cec1b22347661ee5be07f94b686032bb95daced05752b90c1e790ea5f6",
+          "bytes": 70800
+        },
+        "lib/libQt6Xml.a": {
+          "sha256": "165fa61e61eab15d476f7fb981b6cb53fa76246bff4345e15b2fd0f3ddb5e7ea",
+          "bytes": 221824
+        },
+        "lib/libboost_chrono.a": {
+          "sha256": "82a79d6797e46f02e99c82cb2c1437902ce5c2d481d884c5b9a865fb448f0834",
+          "bytes": 70840
+        },
+        "lib/libboost_serialization.a": {
+          "sha256": "c2b726bddcbf62182353d442a884123b864645060de2e029a290501676383639",
+          "bytes": 686112
+        },
+        "Qt6/plugins/permissions/libqdarwinlocationpermission.a": {
+          "sha256": "8e219433559343d9706e62e72ea3d7741a19d04b9f199bef045325a66ee7b1e2",
+          "bytes": 63680
+        },
+        "Qt6/plugins/permissions/libqdarwinbluetoothpermission.a": {
+          "sha256": "68ef2e76d8badfb69e264ccfbd909871e2d6a7e2dc33968a3c3eb9f19e0c010f",
+          "bytes": 39136
+        },
+        "Qt6/plugins/permissions/libqdarwincontactspermission.a": {
+          "sha256": "b18059dc07e1b04768d61f8ca85394a68e7d295514e378ed0d20bf3475e1780d",
+          "bytes": 20456
+        },
+        "Qt6/plugins/permissions/libqdarwincamerapermission.a": {
+          "sha256": "92d17093dd862e5830650b186e27de055242c3b8819012ab863f1015b34d5754",
+          "bytes": 23320
+        },
+        "Qt6/plugins/permissions/libqdarwincalendarpermission.a": {
+          "sha256": "6b19f21cf0eb4bfb39f320823844c2ffdb807a9f0479c9132c49f98ead525710",
+          "bytes": 20216
+        },
+        "Qt6/plugins/permissions/libqdarwinmicrophonepermission.a": {
+          "sha256": "14c03af2dafb592099ce5c821a2400ec3966081e78135f2ed4968334fb37a5f3",
+          "bytes": 23600
+        },
+        "Qt6/plugins/tls/libqcertonlybackend.a": {
+          "sha256": "60f29f64a891ef3680a9bb427aa1b33505556d00c97287ab83cce24191c2354f",
+          "bytes": 118000
+        },
+        "Qt6/plugins/networkinformation/libqapplenetworkinformation.a": {
+          "sha256": "618b43cb2bbc7bd8b87064a3fd6b0ab70e82ae3d4d8dca7e87fbc21ad35f9091",
+          "bytes": 37104
+        }
+      },
+      "notices": {
+        "share/boost-algorithm/copyright": "c9bff75738922193e67fa726fa225535870d2aa1059f91452c411736284ad566",
+        "share/boost-align/copyright": "c9bff75738922193e67fa726fa225535870d2aa1059f91452c411736284ad566",
+        "share/boost-any/copyright": "c9bff75738922193e67fa726fa225535870d2aa1059f91452c411736284ad566",
+        "share/boost-array/copyright": "c9bff75738922193e67fa726fa225535870d2aa1059f91452c411736284ad566",
+        "share/boost-assert/copyright": "c9bff75738922193e67fa726fa225535870d2aa1059f91452c411736284ad566",
+        "share/boost-atomic/copyright": "c9bff75738922193e67fa726fa225535870d2aa1059f91452c411736284ad566",
+        "share/boost-bimap/copyright": "c9bff75738922193e67fa726fa225535870d2aa1059f91452c411736284ad566",
+        "share/boost-bind/copyright": "c9bff75738922193e67fa726fa225535870d2aa1059f91452c411736284ad566",
+        "share/boost-chrono/copyright": "c9bff75738922193e67fa726fa225535870d2aa1059f91452c411736284ad566",
+        "share/boost-cmake/copyright": "c9bff75738922193e67fa726fa225535870d2aa1059f91452c411736284ad566",
+        "share/boost-compat/copyright": "c9bff75738922193e67fa726fa225535870d2aa1059f91452c411736284ad566",
+        "share/boost-concept-check/copyright": "c9bff75738922193e67fa726fa225535870d2aa1059f91452c411736284ad566",
+        "share/boost-config/copyright": "c9bff75738922193e67fa726fa225535870d2aa1059f91452c411736284ad566",
+        "share/boost-container/copyright": "c9bff75738922193e67fa726fa225535870d2aa1059f91452c411736284ad566",
+        "share/boost-container-hash/copyright": "c9bff75738922193e67fa726fa225535870d2aa1059f91452c411736284ad566",
+        "share/boost-conversion/copyright": "c9bff75738922193e67fa726fa225535870d2aa1059f91452c411736284ad566",
+        "share/boost-convert/copyright": "c9bff75738922193e67fa726fa225535870d2aa1059f91452c411736284ad566",
+        "share/boost-core/copyright": "c9bff75738922193e67fa726fa225535870d2aa1059f91452c411736284ad566",
+        "share/boost-crc/copyright": "c9bff75738922193e67fa726fa225535870d2aa1059f91452c411736284ad566",
+        "share/boost-date-time/copyright": "c9bff75738922193e67fa726fa225535870d2aa1059f91452c411736284ad566",
+        "share/boost-describe/copyright": "c9bff75738922193e67fa726fa225535870d2aa1059f91452c411736284ad566",
+        "share/boost-detail/copyright": "c9bff75738922193e67fa726fa225535870d2aa1059f91452c411736284ad566",
+        "share/boost-dynamic-bitset/copyright": "c9bff75738922193e67fa726fa225535870d2aa1059f91452c411736284ad566",
+        "share/boost-endian/copyright": "c9bff75738922193e67fa726fa225535870d2aa1059f91452c411736284ad566",
+        "share/boost-exception/copyright": "c9bff75738922193e67fa726fa225535870d2aa1059f91452c411736284ad566",
+        "share/boost-foreach/copyright": "c9bff75738922193e67fa726fa225535870d2aa1059f91452c411736284ad566",
+        "share/boost-format/copyright": "c9bff75738922193e67fa726fa225535870d2aa1059f91452c411736284ad566",
+        "share/boost-function/copyright": "c9bff75738922193e67fa726fa225535870d2aa1059f91452c411736284ad566",
+        "share/boost-function-types/copyright": "c9bff75738922193e67fa726fa225535870d2aa1059f91452c411736284ad566",
+        "share/boost-functional/copyright": "c9bff75738922193e67fa726fa225535870d2aa1059f91452c411736284ad566",
+        "share/boost-fusion/copyright": "c9bff75738922193e67fa726fa225535870d2aa1059f91452c411736284ad566",
+        "share/boost-geometry/copyright": "c9bff75738922193e67fa726fa225535870d2aa1059f91452c411736284ad566",
+        "share/boost-graph/copyright": "c9bff75738922193e67fa726fa225535870d2aa1059f91452c411736284ad566",
+        "share/boost-headers/copyright": "c9bff75738922193e67fa726fa225535870d2aa1059f91452c411736284ad566",
+        "share/boost-integer/copyright": "c9bff75738922193e67fa726fa225535870d2aa1059f91452c411736284ad566",
+        "share/boost-intrusive/copyright": "c9bff75738922193e67fa726fa225535870d2aa1059f91452c411736284ad566",
+        "share/boost-io/copyright": "c9bff75738922193e67fa726fa225535870d2aa1059f91452c411736284ad566",
+        "share/boost-iostreams/copyright": "c9bff75738922193e67fa726fa225535870d2aa1059f91452c411736284ad566",
+        "share/boost-iterator/copyright": "c9bff75738922193e67fa726fa225535870d2aa1059f91452c411736284ad566",
+        "share/boost-lambda/copyright": "c9bff75738922193e67fa726fa225535870d2aa1059f91452c411736284ad566",
+        "share/boost-lexical-cast/copyright": "c9bff75738922193e67fa726fa225535870d2aa1059f91452c411736284ad566",
+        "share/boost-math/copyright": "c9bff75738922193e67fa726fa225535870d2aa1059f91452c411736284ad566",
+        "share/boost-move/copyright": "c9bff75738922193e67fa726fa225535870d2aa1059f91452c411736284ad566",
+        "share/boost-mp11/copyright": "c9bff75738922193e67fa726fa225535870d2aa1059f91452c411736284ad566",
+        "share/boost-mpl/copyright": "c9bff75738922193e67fa726fa225535870d2aa1059f91452c411736284ad566",
+        "share/boost-multi-index/copyright": "c9bff75738922193e67fa726fa225535870d2aa1059f91452c411736284ad566",
+        "share/boost-multiprecision/copyright": "c9bff75738922193e67fa726fa225535870d2aa1059f91452c411736284ad566",
+        "share/boost-numeric-conversion/copyright": "c9bff75738922193e67fa726fa225535870d2aa1059f91452c411736284ad566",
+        "share/boost-optional/copyright": "c9bff75738922193e67fa726fa225535870d2aa1059f91452c411736284ad566",
+        "share/boost-parameter/copyright": "c9bff75738922193e67fa726fa225535870d2aa1059f91452c411736284ad566",
+        "share/boost-phoenix/copyright": "c9bff75738922193e67fa726fa225535870d2aa1059f91452c411736284ad566",
+        "share/boost-polygon/copyright": "c9bff75738922193e67fa726fa225535870d2aa1059f91452c411736284ad566",
+        "share/boost-pool/copyright": "c9bff75738922193e67fa726fa225535870d2aa1059f91452c411736284ad566",
+        "share/boost-predef/copyright": "c9bff75738922193e67fa726fa225535870d2aa1059f91452c411736284ad566",
+        "share/boost-preprocessor/copyright": "c9bff75738922193e67fa726fa225535870d2aa1059f91452c411736284ad566",
+        "share/boost-program-options/copyright": "c9bff75738922193e67fa726fa225535870d2aa1059f91452c411736284ad566",
+        "share/boost-property-map/copyright": "c9bff75738922193e67fa726fa225535870d2aa1059f91452c411736284ad566",
+        "share/boost-property-tree/copyright": "c9bff75738922193e67fa726fa225535870d2aa1059f91452c411736284ad566",
+        "share/boost-proto/copyright": "c9bff75738922193e67fa726fa225535870d2aa1059f91452c411736284ad566",
+        "share/boost-qvm/copyright": "c9bff75738922193e67fa726fa225535870d2aa1059f91452c411736284ad566",
+        "share/boost-random/copyright": "c9bff75738922193e67fa726fa225535870d2aa1059f91452c411736284ad566",
+        "share/boost-range/copyright": "c9bff75738922193e67fa726fa225535870d2aa1059f91452c411736284ad566",
+        "share/boost-ratio/copyright": "c9bff75738922193e67fa726fa225535870d2aa1059f91452c411736284ad566",
+        "share/boost-rational/copyright": "c9bff75738922193e67fa726fa225535870d2aa1059f91452c411736284ad566",
+        "share/boost-regex/copyright": "c9bff75738922193e67fa726fa225535870d2aa1059f91452c411736284ad566",
+        "share/boost-scope-exit/copyright": "c9bff75738922193e67fa726fa225535870d2aa1059f91452c411736284ad566",
+        "share/boost-serialization/copyright": "c9bff75738922193e67fa726fa225535870d2aa1059f91452c411736284ad566",
+        "share/boost-signals2/copyright": "c9bff75738922193e67fa726fa225535870d2aa1059f91452c411736284ad566",
+        "share/boost-smart-ptr/copyright": "c9bff75738922193e67fa726fa225535870d2aa1059f91452c411736284ad566",
+        "share/boost-spirit/copyright": "c9bff75738922193e67fa726fa225535870d2aa1059f91452c411736284ad566",
+        "share/boost-static-assert/copyright": "c9bff75738922193e67fa726fa225535870d2aa1059f91452c411736284ad566",
+        "share/boost-system/copyright": "c9bff75738922193e67fa726fa225535870d2aa1059f91452c411736284ad566",
+        "share/boost-thread/copyright": "c9bff75738922193e67fa726fa225535870d2aa1059f91452c411736284ad566",
+        "share/boost-throw-exception/copyright": "c9bff75738922193e67fa726fa225535870d2aa1059f91452c411736284ad566",
+        "share/boost-tokenizer/copyright": "c9bff75738922193e67fa726fa225535870d2aa1059f91452c411736284ad566",
+        "share/boost-tti/copyright": "c9bff75738922193e67fa726fa225535870d2aa1059f91452c411736284ad566",
+        "share/boost-tuple/copyright": "c9bff75738922193e67fa726fa225535870d2aa1059f91452c411736284ad566",
+        "share/boost-type-index/copyright": "c9bff75738922193e67fa726fa225535870d2aa1059f91452c411736284ad566",
+        "share/boost-type-traits/copyright": "c9bff75738922193e67fa726fa225535870d2aa1059f91452c411736284ad566",
+        "share/boost-typeof/copyright": "c9bff75738922193e67fa726fa225535870d2aa1059f91452c411736284ad566",
+        "share/boost-unordered/copyright": "c9bff75738922193e67fa726fa225535870d2aa1059f91452c411736284ad566",
+        "share/boost-utility/copyright": "c9bff75738922193e67fa726fa225535870d2aa1059f91452c411736284ad566",
+        "share/boost-uuid/copyright": "c9bff75738922193e67fa726fa225535870d2aa1059f91452c411736284ad566",
+        "share/boost-variant/copyright": "c9bff75738922193e67fa726fa225535870d2aa1059f91452c411736284ad566",
+        "share/boost-variant2/copyright": "c9bff75738922193e67fa726fa225535870d2aa1059f91452c411736284ad566",
+        "share/boost-winapi/copyright": "c9bff75738922193e67fa726fa225535870d2aa1059f91452c411736284ad566",
+        "share/boost-xpressive/copyright": "c9bff75738922193e67fa726fa225535870d2aa1059f91452c411736284ad566",
+        "share/brotli/copyright": "3d180008e36922a4e8daec11c34c7af264fed5962d07924aea928c38e8663c94",
+        "share/bzip2/copyright": "c6dbbf828498be844a89eaa3b84adbab3199e342eb5cb2ed2f0d4ba7ec0f38a3",
+        "share/double-conversion/copyright": "4af93c12062c58058378de2397dc1c92bbff9ddfb1d583a01c84127557ce97ca",
+        "share/eigen3/copyright": "c83230b770f17ef1386ea1fd3681271dd98aa93646bdbfb5bff3a1b7050fff9d",
+        "share/fmt/copyright": "a65fcc5a1095fc33cc37e4fff69366e49d7e92f613558a2b95ed1b70e33758b4",
+        "share/freetype/copyright": "4a306736bcff9a5a3972e906df70cfe931f8ee36ec408a33507bc5becf891009",
+        "share/icu/copyright": "e55522d81edc687a341a4411e0776e54ca654e90147f354a90458aaced4116af",
+        "share/libb2/copyright": "6a1ee543e5282cd9061881edf462e6fdab181f328da71fc2c9a6950a80e94d01",
+        "share/libffi/copyright": "17b64dc60f3b6897a60f971e288b973f655c2edcdf08b25f3c3dd5549857881c",
+        "share/liblzma/copyright": "616a3ad264ce29b8f1cb97e53037b139d406899ca8d1f799651e17bfa09830b8",
+        "share/libpng/copyright": "bdb0a645ea18c60507d0368379b1ac5474b92255fcc2d115e07486a7672ba526",
+        "share/md4c/copyright": "d30937367d5413e7eaa218b1640b8946ff76fd34d97152f6979fd96169d5d0fc",
+        "share/pcre2/copyright": "99272c55f3dcfa07a8a7e15a5c1a33096e4727de74241d65fa049fccfdd59507",
+        "share/qtbase/copyright": "fab86c5bea527eb9cefafdbf917bd1af53fd49bd0c44518fa70d350e097f8a6e",
+        "share/xerces-c/copyright": "cfc7749b96f63bd31c3c42b5c471bf756814053e847c10f3eb003417bc523d30",
+        "share/yaml-cpp/copyright": "aa6fcc27be034e41e21dd832f9175bfe694a48491d9e14ff0fa278e19ad14f1b",
+        "share/zlib/copyright": "e32ff4e00d9d94930537635291da39e7e612703334bf6fde8c7f1686fe8a45a2",
+        "share/zstd/copyright": "ae73833b0ceb843626baec97a749ebc5c4df2bd4c09c3866a62ef263ce666a22"
+      },
+      "sharing_rule": "Reuse the same target package only when registry, triplet, features and ABI match. Link each common archive once; do not combine independently bundled dependency archives."
+    },
+    "dependency_macho": {
+      "schema": 1,
+      "sdk": "iphonesimulator",
+      "architecture": "arm64",
+      "minimum_ios": "17.0",
+      "archives": {
+        "lib/libyaml-cpp.a": {
+          "sha256": "a924a6ee096ace3556a14eb9e449b27d9c9b6f269dbb2b74a91ab16a332853b4",
+          "verified_build_versions": 32
+        },
+        "lib/libbz2.a": {
+          "sha256": "b89869046bc647831ea7d0f2c9cb30f331eaf24386fef20b29801b58510c6c3c",
+          "verified_build_versions": 7
+        },
+        "lib/libicui18n.a": {
+          "sha256": "7d896e53a9ee483121cfcc3561ae6b56b2d984e2dc51be18d8a8c6871ccaf4f0",
+          "verified_build_versions": 254
+        },
+        "lib/libboost_container.a": {
+          "sha256": "322a89f8b63e188aef7c080c51fc5ff2dfa1d038ec6b64284d49b4faa34ab25a",
+          "verified_build_versions": 7
+        },
+        "lib/libfreetype.a": {
+          "sha256": "b6a39d5d91b5d8deb88b31d8b29ba1bb1dcfca2bb3efc24e604d6668cbc3c880",
+          "verified_build_versions": 42
+        },
+        "lib/libboost_iostreams.a": {
+          "sha256": "c13ef9531d570733880fe23c7c3c7fa3ccdb82f632b169edbdeeb9696c6dd475",
+          "verified_build_versions": 7
+        },
+        "lib/libicuio.a": {
+          "sha256": "46a0fdf11350ad814cefe7bb96fe2f04f62dca78c5e79012792265ee0c29c146",
+          "verified_build_versions": 12
+        },
+        "lib/libboost_thread.a": {
+          "sha256": "a87af8b656d3db3acfdf3f9a60ae9d68ca488ece52ac9f953197a81f8243b537",
+          "verified_build_versions": 3
+        },
+        "lib/libboost_program_options.a": {
+          "sha256": "1ce8147424dd44cb1cca9ce2ddaae1127fc948a8cbfa7967534a42584158f461",
+          "verified_build_versions": 11
+        },
+        "lib/libpng16.a": {
+          "sha256": "5244be1a72a5bcf78bd24b911f5193cb34ebadf1d9b3aa8a3accea6497710484",
+          "verified_build_versions": 15
+        },
+        "lib/libicudata.a": {
+          "sha256": "d0e03c50a38d044796e7c8ab95b657108020928741145d7a98f79b57c092d1c6",
+          "verified_build_versions": 1
+        },
+        "lib/libz.a": {
+          "sha256": "b32b4faa9ef84db2f3591f38ee38ccdfb32b19b1d373bbb0a60f9a39563d7f75",
+          "verified_build_versions": 15
+        },
+        "lib/libbrotlienc.a": {
+          "sha256": "8d5abf13bdfd57fde89b0afe33e76a86b9c45d515a84b03fcde1710ce0638faf",
+          "verified_build_versions": 23
+        },
+        "lib/libmd4c.a": {
+          "sha256": "e4b819ae1a5e7631fc157ecec49be1c4d0cd98dc02401c1469c165b9d1730ca3",
+          "verified_build_versions": 1
+        },
+        "lib/libboost_atomic.a": {
+          "sha256": "1d715a34b8d2be67f882b837c182cad0b72f04fa1b9b496c0fd336b73f1e0c86",
+          "verified_build_versions": 1
+        },
+        "lib/libbrotlidec.a": {
+          "sha256": "a9600b790fdc99c86bb69a6e0c1aa0050b5bb44b53bbb391a8eb1df992033645",
+          "verified_build_versions": 6
+        },
+        "lib/libb2.a": {
+          "sha256": "9af252d304d037bfa1a662a93216c5443db5f79ef83a33fda7787dfbe2357573",
+          "verified_build_versions": 4
+        },
+        "lib/libboost_random.a": {
+          "sha256": "1665fdd7581a5dd3207880ca09683bac37140a2253788f83da6ab4ad6574b485",
+          "verified_build_versions": 1
+        },
+        "lib/libboost_date_time.a": {
+          "sha256": "d3a1ffa9df9c9c1861c6c3ea4f36022dfb98c974f96247e5e9d0a2864d55ea0c",
+          "verified_build_versions": 1
+        },
+        "lib/libfmt.a": {
+          "sha256": "6d39cecda6ca611532d56728f96a7a381cdd82d9def2f3078716cfd4bdaf3605",
+          "verified_build_versions": 2
+        },
+        "lib/libpng.a": {
+          "sha256": "5244be1a72a5bcf78bd24b911f5193cb34ebadf1d9b3aa8a3accea6497710484",
+          "verified_build_versions": 15
+        },
+        "lib/libQt6Concurrent.a": {
+          "sha256": "df631e020ec36f13730350c6a49c04222ae21f7a8165f2c42e558b0aab56b4be",
+          "verified_build_versions": 6
+        },
+        "lib/libpcre2-posix.a": {
+          "sha256": "40175b28619bc97483c99935c193fa7a378783c1ea356ce0da51acb4038856fd",
+          "verified_build_versions": 1
+        },
+        "lib/libxerces-c.a": {
+          "sha256": "9a775e87fc2861df4a44f9d824c2ee72e902bb68aee3b6e876bfc171c1a140b3",
+          "verified_build_versions": 299
+        },
+        "lib/libpcre2-16.a": {
+          "sha256": "dbf1c77ea0d3b69c83b58bcbb13a440d42e3e785def07b950add388cc35ad7ad",
+          "verified_build_versions": 31
+        },
+        "lib/liblzma.a": {
+          "sha256": "eed3a8711ce50f17ec4b371fa7a1a56d9527f8d6dc5530481ab56a7decaef36b",
+          "verified_build_versions": 79
+        },
+        "lib/libQt6Core.a": {
+          "sha256": "7798c415d05a94be186015e952b737071521c7016e9b38b6815421ab6d099c8a",
+          "verified_build_versions": 241
+        },
+        "lib/libbrotlicommon.a": {
+          "sha256": "8ef69f524d5c10868502b54447f0c7ee48272dc71955abe1b61b8c0e582bccf0",
+          "verified_build_versions": 6
+        },
+        "lib/libpcre2-8.a": {
+          "sha256": "67a4146ed159204710dcdf8187f33ca61d5dd094d248dfed830d8ec84f3ab3a5",
+          "verified_build_versions": 31
+        },
+        "lib/libicuuc.a": {
+          "sha256": "7a5d6409cd71046158acabde76972e11372882a87f9ac7513ebff8d42af30ee7",
+          "verified_build_versions": 202
+        },
+        "lib/libpcre2-32.a": {
+          "sha256": "8b66944df5d5b41db980c18bd5fa5b404c2afe1da237d72d94a0587868a8b141",
+          "verified_build_versions": 31
+        },
+        "lib/libfmt-c.a": {
+          "sha256": "03e35bd6ae46bd2eba67523fa18e9cc27a25da12ea786eb5cc706e6acccfc8a3",
+          "verified_build_versions": 1
+        },
+        "lib/libmd4c-html.a": {
+          "sha256": "8faaae05506c9d06ea76e8c2ebca16fe6cc3cf62cceb3970165e45f566430689",
+          "verified_build_versions": 2
+        },
+        "lib/libQt6Network.a": {
+          "sha256": "3980e7a0dbceb670df0ecc33095f44921623625d6e7b10f1d9b21249d0e3dacc",
+          "verified_build_versions": 80
+        },
+        "lib/libzstd.a": {
+          "sha256": "e62e05772bfb8657e27324bbadbda7760d985bbaa831a670f732bfc8965c5c1e",
+          "verified_build_versions": 37
+        },
+        "lib/libboost_graph.a": {
+          "sha256": "4cf41b99ae8ae14b927e68e0b26f4994e1ef84bbdd9cf1daeabecc9e85061fb0",
+          "verified_build_versions": 2
+        },
+        "lib/libffi.a": {
+          "sha256": "6205d6b6e36a88c564a66721dd5d6b9e59fe6a27675780aaf9d751d874f3455b",
+          "verified_build_versions": 8
+        },
+        "lib/libboost_wserialization.a": {
+          "sha256": "976bc3a91b38b7a626f517a288918d9bd7eaee2fa370a09cf382786e8ea3cb25",
+          "verified_build_versions": 13
+        },
+        "lib/libdouble-conversion.a": {
+          "sha256": "906a67cec1b22347661ee5be07f94b686032bb95daced05752b90c1e790ea5f6",
+          "verified_build_versions": 8
+        },
+        "lib/libQt6Xml.a": {
+          "sha256": "165fa61e61eab15d476f7fb981b6cb53fa76246bff4345e15b2fd0f3ddb5e7ea",
+          "verified_build_versions": 4
+        },
+        "lib/libboost_chrono.a": {
+          "sha256": "82a79d6797e46f02e99c82cb2c1437902ce5c2d481d884c5b9a865fb448f0834",
+          "verified_build_versions": 3
+        },
+        "lib/libboost_serialization.a": {
+          "sha256": "c2b726bddcbf62182353d442a884123b864645060de2e029a290501676383639",
+          "verified_build_versions": 35
+        },
+        "Qt6/plugins/permissions/libqdarwinlocationpermission.a": {
+          "sha256": "8e219433559343d9706e62e72ea3d7741a19d04b9f199bef045325a66ee7b1e2",
+          "verified_build_versions": 2
+        },
+        "Qt6/plugins/permissions/libqdarwinbluetoothpermission.a": {
+          "sha256": "68ef2e76d8badfb69e264ccfbd909871e2d6a7e2dc33968a3c3eb9f19e0c010f",
+          "verified_build_versions": 2
+        },
+        "Qt6/plugins/permissions/libqdarwincontactspermission.a": {
+          "sha256": "b18059dc07e1b04768d61f8ca85394a68e7d295514e378ed0d20bf3475e1780d",
+          "verified_build_versions": 2
+        },
+        "Qt6/plugins/permissions/libqdarwincamerapermission.a": {
+          "sha256": "92d17093dd862e5830650b186e27de055242c3b8819012ab863f1015b34d5754",
+          "verified_build_versions": 3
+        },
+        "Qt6/plugins/permissions/libqdarwincalendarpermission.a": {
+          "sha256": "6b19f21cf0eb4bfb39f320823844c2ffdb807a9f0479c9132c49f98ead525710",
+          "verified_build_versions": 2
+        },
+        "Qt6/plugins/permissions/libqdarwinmicrophonepermission.a": {
+          "sha256": "14c03af2dafb592099ce5c821a2400ec3966081e78135f2ed4968334fb37a5f3",
+          "verified_build_versions": 3
+        },
+        "Qt6/plugins/tls/libqcertonlybackend.a": {
+          "sha256": "60f29f64a891ef3680a9bb427aa1b33505556d00c97287ab83cce24191c2354f",
+          "verified_build_versions": 5
+        },
+        "Qt6/plugins/networkinformation/libqapplenetworkinformation.a": {
+          "sha256": "618b43cb2bbc7bd8b87064a3fd6b0ab70e82ae3d4d8dca7e87fbc21ad35f9091",
+          "verified_build_versions": 2
+        }
+      }
+    },
+    "python_build": {
+      "schema": 1,
+      "sdk": "iphonesimulator",
+      "target": "arm64-apple-ios17.0-simulator",
+      "source": {
+        "version": "3.13.7",
+        "url": "https://www.python.org/ftp/python/3.13.7/Python-3.13.7.tar.xz",
+        "sha256": "5462f9099dfd30e238def83c71d91897d8caa5ff6ebc7a50f14d4802cdaaa79a",
+        "license": "PSF-2.0 and bundled component notices in LICENSE"
+      },
+      "configure_cache": {
+        "ac_cv_func_dup3": "no",
+        "ac_cv_func_pipe2": "no"
+      },
+      "pyconfig_sha256": "b4c1756ea365d55855196a51704d58a6b8f1345283df155150dd793d79142be6",
+      "archive_bytes": 47281760,
+      "archive_sha256": "1006b19db9a39d63423414f03634537c2576019d5f99519963c188fadde1d450",
+      "libffi_sha256": "6205d6b6e36a88c564a66721dd5d6b9e59fe6a27675780aaf9d751d874f3455b",
+      "dependency_archives": {
+        "libffi.a": "6205d6b6e36a88c564a66721dd5d6b9e59fe6a27675780aaf9d751d874f3455b",
+        "libz.a": "b32b4faa9ef84db2f3591f38ee38ccdfb32b19b1d373bbb0a60f9a39563d7f75",
+        "libbz2.a": "b89869046bc647831ea7d0f2c9cb30f331eaf24386fef20b29801b58510c6c3c"
+      },
+      "stdlib_bytes": 22671332,
+      "static_archives": [
+        "libpython3.13.a",
+        "Modules/_decimal/libmpdec/libmpdec.a",
+        "Modules/_hacl/libHacl_Hash_SHA2.a",
+        "Modules/expat/libexpat.a"
+      ],
+      "xcode": "Xcode 26.6\nBuild version 17F113",
+      "sdk_version": "26.5"
+    },
+    "python_probe": {
+      "schema": 1,
+      "passed": true,
+      "scope": "CPython and synthetic inittab module only",
+      "python": "3.13.7 (main, Oct 26 2026, 08:04:02) [Clang 21.0.0 (clang-2100.1.1.101)]",
+      "platform": "ios",
+      "platform_description": "iPadOS-26.5-arm64-64bit",
+      "sysconfig_host": "aarch64-apple-ios17.0-simulator",
+      "extension_origins": {
+        "math": "built-in",
+        "_struct": "built-in",
+        "_datetime": "built-in",
+        "binascii": "built-in",
+        "zlib": "built-in",
+        "_json": "built-in",
+        "_pickle": "built-in",
+        "_random": "built-in",
+        "_sha2": "built-in",
+        "pyexpat": "built-in",
+        "_elementtree": "built-in",
+        "unicodedata": "built-in",
+        "array": "built-in"
+      },
+      "posix_fallbacks": [
+        "pipe",
+        "dup2",
+        "non_inheritable"
+      ],
+      "smoke_seconds": 0.0021180410000170014,
+      "resident_bytes": 69828608
+    },
+    "python_binary": {
+      "schema": 1,
+      "sdk": "iphonesimulator",
+      "architecture": "arm64",
+      "executable_file_bytes": 8945120,
+      "sha256": "a20946f51f2f46a2ab0529bb142aac58b1133278eea93170987d67352220c9cd",
+      "dynamic_system_links": [
+        "/usr/lib/libsqlite3.dylib",
+        "/usr/lib/libiconv.2.dylib",
+        "/System/Library/Frameworks/Foundation.framework/Foundation",
+        "/System/Library/Frameworks/UIKit.framework/UIKit",
+        "/usr/lib/libSystem.B.dylib"
+      ]
+    },
+    "simulator": {
+      "runtime": {
+        "isAvailable": true,
+        "version": "26.5",
+        "isInternal": false,
+        "buildversion": "23F77",
+        "supportedArchitectures": [
+          "arm64"
+        ],
+        "supportedDeviceTypes": [
+          {
+            "bundlePath": "/Library/Developer/CoreSimulator/Profiles/DeviceTypes/iPhone 17 Pro.simdevicetype",
+            "name": "iPhone 17 Pro",
+            "identifier": "com.apple.CoreSimulator.SimDeviceType.iPhone-17-Pro",
+            "productFamily": "iPhone"
+          },
+          {
+            "bundlePath": "/Library/Developer/CoreSimulator/Profiles/DeviceTypes/iPhone 17 Pro Max.simdevicetype",
+            "name": "iPhone 17 Pro Max",
+            "identifier": "com.apple.CoreSimulator.SimDeviceType.iPhone-17-Pro-Max",
+            "productFamily": "iPhone"
+          },
+          {
+            "bundlePath": "/Library/Developer/CoreSimulator/Profiles/DeviceTypes/iPhone 17e.simdevicetype",
+            "name": "iPhone 17e",
+            "identifier": "com.apple.CoreSimulator.SimDeviceType.iPhone-17e",
+            "productFamily": "iPhone"
+          },
+          {
+            "bundlePath": "/Library/Developer/CoreSimulator/Profiles/DeviceTypes/iPhone Air.simdevicetype",
+            "name": "iPhone Air",
+            "identifier": "com.apple.CoreSimulator.SimDeviceType.iPhone-Air",
+            "productFamily": "iPhone"
+          },
+          {
+            "bundlePath": "/Library/Developer/CoreSimulator/Profiles/DeviceTypes/iPhone 17.simdevicetype",
+            "name": "iPhone 17",
+            "identifier": "com.apple.CoreSimulator.SimDeviceType.iPhone-17",
+            "productFamily": "iPhone"
+          },
+          {
+            "bundlePath": "/Library/Developer/CoreSimulator/Profiles/DeviceTypes/iPhone 16 Pro.simdevicetype",
+            "name": "iPhone 16 Pro",
+            "identifier": "com.apple.CoreSimulator.SimDeviceType.iPhone-16-Pro",
+            "productFamily": "iPhone"
+          },
+          {
+            "bundlePath": "/Library/Developer/CoreSimulator/Profiles/DeviceTypes/iPhone 16 Pro Max.simdevicetype",
+            "name": "iPhone 16 Pro Max",
+            "identifier": "com.apple.CoreSimulator.SimDeviceType.iPhone-16-Pro-Max",
+            "productFamily": "iPhone"
+          },
+          {
+            "bundlePath": "/Library/Developer/CoreSimulator/Profiles/DeviceTypes/iPhone 16e.simdevicetype",
+            "name": "iPhone 16e",
+            "identifier": "com.apple.CoreSimulator.SimDeviceType.iPhone-16e",
+            "productFamily": "iPhone"
+          },
+          {
+            "bundlePath": "/Library/Developer/CoreSimulator/Profiles/DeviceTypes/iPhone 16.simdevicetype",
+            "name": "iPhone 16",
+            "identifier": "com.apple.CoreSimulator.SimDeviceType.iPhone-16",
+            "productFamily": "iPhone"
+          },
+          {
+            "bundlePath": "/Library/Developer/CoreSimulator/Profiles/DeviceTypes/iPhone 16 Plus.simdevicetype",
+            "name": "iPhone 16 Plus",
+            "identifier": "com.apple.CoreSimulator.SimDeviceType.iPhone-16-Plus",
+            "productFamily": "iPhone"
+          },
+          {
+            "bundlePath": "/Library/Developer/CoreSimulator/Profiles/DeviceTypes/iPhone 15 Pro.simdevicetype",
+            "name": "iPhone 15 Pro",
+            "identifier": "com.apple.CoreSimulator.SimDeviceType.iPhone-15-Pro",
+            "productFamily": "iPhone"
+          },
+          {
+            "bundlePath": "/Library/Developer/CoreSimulator/Profiles/DeviceTypes/iPhone 15 Pro Max.simdevicetype",
+            "name": "iPhone 15 Pro Max",
+            "identifier": "com.apple.CoreSimulator.SimDeviceType.iPhone-15-Pro-Max",
+            "productFamily": "iPhone"
+          },
+          {
+            "bundlePath": "/Library/Developer/CoreSimulator/Profiles/DeviceTypes/iPhone 15.simdevicetype",
+            "name": "iPhone 15",
+            "identifier": "com.apple.CoreSimulator.SimDeviceType.iPhone-15",
+            "productFamily": "iPhone"
+          },
+          {
+            "bundlePath": "/Library/Developer/CoreSimulator/Profiles/DeviceTypes/iPhone 15 Plus.simdevicetype",
+            "name": "iPhone 15 Plus",
+            "identifier": "com.apple.CoreSimulator.SimDeviceType.iPhone-15-Plus",
+            "productFamily": "iPhone"
+          },
+          {
+            "bundlePath": "/Library/Developer/CoreSimulator/Profiles/DeviceTypes/iPhone 14 Pro.simdevicetype",
+            "name": "iPhone 14 Pro",
+            "identifier": "com.apple.CoreSimulator.SimDeviceType.iPhone-14-Pro",
+            "productFamily": "iPhone"
+          },
+          {
+            "bundlePath": "/Library/Developer/CoreSimulator/Profiles/DeviceTypes/iPhone 14 Pro Max.simdevicetype",
+            "name": "iPhone 14 Pro Max",
+            "identifier": "com.apple.CoreSimulator.SimDeviceType.iPhone-14-Pro-Max",
+            "productFamily": "iPhone"
+          },
+          {
+            "bundlePath": "/Library/Developer/CoreSimulator/Profiles/DeviceTypes/iPhone 14.simdevicetype",
+            "name": "iPhone 14",
+            "identifier": "com.apple.CoreSimulator.SimDeviceType.iPhone-14",
+            "productFamily": "iPhone"
+          },
+          {
+            "bundlePath": "/Library/Developer/CoreSimulator/Profiles/DeviceTypes/iPhone 14 Plus.simdevicetype",
+            "name": "iPhone 14 Plus",
+            "identifier": "com.apple.CoreSimulator.SimDeviceType.iPhone-14-Plus",
+            "productFamily": "iPhone"
+          },
+          {
+            "bundlePath": "/Library/Developer/CoreSimulator/Profiles/DeviceTypes/iPhone SE (3rd generation).simdevicetype",
+            "name": "iPhone SE (3rd generation)",
+            "identifier": "com.apple.CoreSimulator.SimDeviceType.iPhone-SE-3rd-generation",
+            "productFamily": "iPhone"
+          },
+          {
+            "bundlePath": "/Library/Developer/CoreSimulator/Profiles/DeviceTypes/iPhone 13 Pro.simdevicetype",
+            "name": "iPhone 13 Pro",
+            "identifier": "com.apple.CoreSimulator.SimDeviceType.iPhone-13-Pro",
+            "productFamily": "iPhone"
+          },
+          {
+            "bundlePath": "/Library/Developer/CoreSimulator/Profiles/DeviceTypes/iPhone 13 Pro Max.simdevicetype",
+            "name": "iPhone 13 Pro Max",
+            "identifier": "com.apple.CoreSimulator.SimDeviceType.iPhone-13-Pro-Max",
+            "productFamily": "iPhone"
+          },
+          {
+            "bundlePath": "/Library/Developer/CoreSimulator/Profiles/DeviceTypes/iPhone 13.simdevicetype",
+            "name": "iPhone 13",
+            "identifier": "com.apple.CoreSimulator.SimDeviceType.iPhone-13",
+            "productFamily": "iPhone"
+          },
+          {
+            "bundlePath": "/Library/Developer/CoreSimulator/Profiles/DeviceTypes/iPhone 13 mini.simdevicetype",
+            "name": "iPhone 13 mini",
+            "identifier": "com.apple.CoreSimulator.SimDeviceType.iPhone-13-mini",
+            "productFamily": "iPhone"
+          },
+          {
+            "bundlePath": "/Library/Developer/CoreSimulator/Profiles/DeviceTypes/iPhone 12 Pro.simdevicetype",
+            "name": "iPhone 12 Pro",
+            "identifier": "com.apple.CoreSimulator.SimDeviceType.iPhone-12-Pro",
+            "productFamily": "iPhone"
+          },
+          {
+            "bundlePath": "/Library/Developer/CoreSimulator/Profiles/DeviceTypes/iPhone 12 Pro Max.simdevicetype",
+            "name": "iPhone 12 Pro Max",
+            "identifier": "com.apple.CoreSimulator.SimDeviceType.iPhone-12-Pro-Max",
+            "productFamily": "iPhone"
+          },
+          {
+            "bundlePath": "/Library/Developer/CoreSimulator/Profiles/DeviceTypes/iPhone 12.simdevicetype",
+            "name": "iPhone 12",
+            "identifier": "com.apple.CoreSimulator.SimDeviceType.iPhone-12",
+            "productFamily": "iPhone"
+          },
+          {
+            "bundlePath": "/Library/Developer/CoreSimulator/Profiles/DeviceTypes/iPhone 12 mini.simdevicetype",
+            "name": "iPhone 12 mini",
+            "identifier": "com.apple.CoreSimulator.SimDeviceType.iPhone-12-mini",
+            "productFamily": "iPhone"
+          },
+          {
+            "bundlePath": "/Library/Developer/CoreSimulator/Profiles/DeviceTypes/iPhone SE (2nd generation).simdevicetype",
+            "name": "iPhone SE (2nd generation)",
+            "identifier": "com.apple.CoreSimulator.SimDeviceType.iPhone-SE--2nd-generation-",
+            "productFamily": "iPhone"
+          },
+          {
+            "bundlePath": "/Library/Developer/CoreSimulator/Profiles/DeviceTypes/iPhone 11 Pro.simdevicetype",
+            "name": "iPhone 11 Pro",
+            "identifier": "com.apple.CoreSimulator.SimDeviceType.iPhone-11-Pro",
+            "productFamily": "iPhone"
+          },
+          {
+            "bundlePath": "/Library/Developer/CoreSimulator/Profiles/DeviceTypes/iPhone 11 Pro Max.simdevicetype",
+            "name": "iPhone 11 Pro Max",
+            "identifier": "com.apple.CoreSimulator.SimDeviceType.iPhone-11-Pro-Max",
+            "productFamily": "iPhone"
+          },
+          {
+            "bundlePath": "/Library/Developer/CoreSimulator/Profiles/DeviceTypes/iPhone 11.simdevicetype",
+            "name": "iPhone 11",
+            "identifier": "com.apple.CoreSimulator.SimDeviceType.iPhone-11",
+            "productFamily": "iPhone"
+          },
+          {
+            "bundlePath": "/Library/Developer/CoreSimulator/Profiles/DeviceTypes/iPad Pro 13-inch (M5) (16GB).simdevicetype",
+            "name": "iPad Pro 13-inch (M5) (16GB)",
+            "identifier": "com.apple.CoreSimulator.SimDeviceType.iPad-Pro-13-inch-M5-16GB",
+            "productFamily": "iPad"
+          },
+          {
+            "bundlePath": "/Library/Developer/CoreSimulator/Profiles/DeviceTypes/iPad Pro 13-inch (M5).simdevicetype",
+            "name": "iPad Pro 13-inch (M5)",
+            "identifier": "com.apple.CoreSimulator.SimDeviceType.iPad-Pro-13-inch-M5-12GB",
+            "productFamily": "iPad"
+          },
+          {
+            "bundlePath": "/Library/Developer/CoreSimulator/Profiles/DeviceTypes/iPad Pro 11-inch (M5) (16GB).simdevicetype",
+            "name": "iPad Pro 11-inch (M5) (16GB)",
+            "identifier": "com.apple.CoreSimulator.SimDeviceType.iPad-Pro-11-inch-M5-16GB",
+            "productFamily": "iPad"
+          },
+          {
+            "bundlePath": "/Library/Developer/CoreSimulator/Profiles/DeviceTypes/iPad Pro 11-inch (M5).simdevicetype",
+            "name": "iPad Pro 11-inch (M5)",
+            "identifier": "com.apple.CoreSimulator.SimDeviceType.iPad-Pro-11-inch-M5-12GB",
+            "productFamily": "iPad"
+          },
+          {
+            "bundlePath": "/Library/Developer/CoreSimulator/Profiles/DeviceTypes/iPad Pro 11-inch (M4) (16GB).simdevicetype",
+            "name": "iPad Pro 11-inch (M4) (16GB)",
+            "identifier": "com.apple.CoreSimulator.SimDeviceType.iPad-Pro-11-inch-M4-16GB",
+            "productFamily": "iPad"
+          },
+          {
+            "bundlePath": "/Library/Developer/CoreSimulator/Profiles/DeviceTypes/iPad Pro 11-inch (M4).simdevicetype",
+            "name": "iPad Pro 11-inch (M4)",
+            "identifier": "com.apple.CoreSimulator.SimDeviceType.iPad-Pro-11-inch-M4-8GB",
+            "productFamily": "iPad"
+          },
+          {
+            "bundlePath": "/Library/Developer/CoreSimulator/Profiles/DeviceTypes/iPad Pro 13-inch (M4) (16GB).simdevicetype",
+            "name": "iPad Pro 13-inch (M4) (16GB)",
+            "identifier": "com.apple.CoreSimulator.SimDeviceType.iPad-Pro-13-inch-M4-16GB",
+            "productFamily": "iPad"
+          },
+          {
+            "bundlePath": "/Library/Developer/CoreSimulator/Profiles/DeviceTypes/iPad Pro 13-inch (M4).simdevicetype",
+            "name": "iPad Pro 13-inch (M4)",
+            "identifier": "com.apple.CoreSimulator.SimDeviceType.iPad-Pro-13-inch-M4-8GB",
+            "productFamily": "iPad"
+          },
+          {
+            "bundlePath": "/Library/Developer/CoreSimulator/Profiles/DeviceTypes/iPad Air 13-inch (M4).simdevicetype",
+            "name": "iPad Air 13-inch (M4)",
+            "identifier": "com.apple.CoreSimulator.SimDeviceType.iPad-Air-13-inch-M4",
+            "productFamily": "iPad"
+          },
+          {
+            "bundlePath": "/Library/Developer/CoreSimulator/Profiles/DeviceTypes/iPad Air 11-inch (M4).simdevicetype",
+            "name": "iPad Air 11-inch (M4)",
+            "identifier": "com.apple.CoreSimulator.SimDeviceType.iPad-Air-11-inch-M4",
+            "productFamily": "iPad"
+          },
+          {
+            "bundlePath": "/Library/Developer/CoreSimulator/Profiles/DeviceTypes/iPad (A16).simdevicetype",
+            "name": "iPad (A16)",
+            "identifier": "com.apple.CoreSimulator.SimDeviceType.iPad-A16",
+            "productFamily": "iPad"
+          },
+          {
+            "bundlePath": "/Library/Developer/CoreSimulator/Profiles/DeviceTypes/iPad Air 13-inch (M3).simdevicetype",
+            "name": "iPad Air 13-inch (M3)",
+            "identifier": "com.apple.CoreSimulator.SimDeviceType.iPad-Air-13-inch-M3",
+            "productFamily": "iPad"
+          },
+          {
+            "bundlePath": "/Library/Developer/CoreSimulator/Profiles/DeviceTypes/iPad Air 11-inch (M3).simdevicetype",
+            "name": "iPad Air 11-inch (M3)",
+            "identifier": "com.apple.CoreSimulator.SimDeviceType.iPad-Air-11-inch-M3",
+            "productFamily": "iPad"
+          },
+          {
+            "bundlePath": "/Library/Developer/CoreSimulator/Profiles/DeviceTypes/iPad Air 11-inch (M2).simdevicetype",
+            "name": "iPad Air 11-inch (M2)",
+            "identifier": "com.apple.CoreSimulator.SimDeviceType.iPad-Air-11-inch-M2",
+            "productFamily": "iPad"
+          },
+          {
+            "bundlePath": "/Library/Developer/CoreSimulator/Profiles/DeviceTypes/iPad Air 13-inch (M2).simdevicetype",
+            "name": "iPad Air 13-inch (M2)",
+            "identifier": "com.apple.CoreSimulator.SimDeviceType.iPad-Air-13-inch-M2",
+            "productFamily": "iPad"
+          },
+          {
+            "bundlePath": "/Library/Developer/CoreSimulator/Profiles/DeviceTypes/iPad mini (A17 Pro).simdevicetype",
+            "name": "iPad mini (A17 Pro)",
+            "identifier": "com.apple.CoreSimulator.SimDeviceType.iPad-mini-A17-Pro",
+            "productFamily": "iPad"
+          },
+          {
+            "bundlePath": "/Library/Developer/CoreSimulator/Profiles/DeviceTypes/iPad Pro (11-inch) (4th generation) (16GB).simdevicetype",
+            "name": "iPad Pro (11-inch) (4th generation) (16GB)",
+            "identifier": "com.apple.CoreSimulator.SimDeviceType.iPad-Pro-11-inch-4th-generation-16GB",
+            "productFamily": "iPad"
+          },
+          {
+            "bundlePath": "/Library/Developer/CoreSimulator/Profiles/DeviceTypes/iPad Pro (11-inch) (4th generation).simdevicetype",
+            "name": "iPad Pro (11-inch) (4th generation)",
+            "identifier": "com.apple.CoreSimulator.SimDeviceType.iPad-Pro-11-inch-4th-generation-8GB",
+            "productFamily": "iPad"
+          },
+          {
+            "bundlePath": "/Library/Developer/CoreSimulator/Profiles/DeviceTypes/iPad Pro (12.9-inch) (6th generation) (16GB).simdevicetype",
+            "name": "iPad Pro (12.9-inch) (6th generation) (16GB)",
+            "identifier": "com.apple.CoreSimulator.SimDeviceType.iPad-Pro-12-9-inch-6th-generation-16GB",
+            "productFamily": "iPad"
+          },
+          {
+            "bundlePath": "/Library/Developer/CoreSimulator/Profiles/DeviceTypes/iPad Pro (12.9-inch) (6th generation).simdevicetype",
+            "name": "iPad Pro (12.9-inch) (6th generation)",
+            "identifier": "com.apple.CoreSimulator.SimDeviceType.iPad-Pro-12-9-inch-6th-generation-8GB",
+            "productFamily": "iPad"
+          },
+          {
+            "bundlePath": "/Library/Developer/CoreSimulator/Profiles/DeviceTypes/iPad (10th generation).simdevicetype",
+            "name": "iPad (10th generation)",
+            "identifier": "com.apple.CoreSimulator.SimDeviceType.iPad-10th-generation",
+            "productFamily": "iPad"
+          },
+          {
+            "bundlePath": "/Library/Developer/CoreSimulator/Profiles/DeviceTypes/iPad Air (5th generation).simdevicetype",
+            "name": "iPad Air (5th generation)",
+            "identifier": "com.apple.CoreSimulator.SimDeviceType.iPad-Air-5th-generation",
+            "productFamily": "iPad"
+          },
+          {
+            "bundlePath": "/Library/Developer/CoreSimulator/Profiles/DeviceTypes/iPad mini (6th generation).simdevicetype",
+            "name": "iPad mini (6th generation)",
+            "identifier": "com.apple.CoreSimulator.SimDeviceType.iPad-mini-6th-generation",
+            "productFamily": "iPad"
+          },
+          {
+            "bundlePath": "/Library/Developer/CoreSimulator/Profiles/DeviceTypes/iPad Pro (11-inch) (3rd generation).simdevicetype",
+            "name": "iPad Pro (11-inch) (3rd generation)",
+            "identifier": "com.apple.CoreSimulator.SimDeviceType.iPad-Pro-11-inch-3rd-generation",
+            "productFamily": "iPad"
+          },
+          {
+            "bundlePath": "/Library/Developer/CoreSimulator/Profiles/DeviceTypes/iPad Pro (12.9-inch) (5th generation).simdevicetype",
+            "name": "iPad Pro (12.9-inch) (5th generation)",
+            "identifier": "com.apple.CoreSimulator.SimDeviceType.iPad-Pro-12-9-inch-5th-generation",
+            "productFamily": "iPad"
+          },
+          {
+            "bundlePath": "/Library/Developer/CoreSimulator/Profiles/DeviceTypes/iPad (9th generation).simdevicetype",
+            "name": "iPad (9th generation)",
+            "identifier": "com.apple.CoreSimulator.SimDeviceType.iPad-9th-generation",
+            "productFamily": "iPad"
+          },
+          {
+            "bundlePath": "/Library/Developer/CoreSimulator/Profiles/DeviceTypes/iPad Air (4th generation).simdevicetype",
+            "name": "iPad Air (4th generation)",
+            "identifier": "com.apple.CoreSimulator.SimDeviceType.iPad-Air--4th-generation-",
+            "productFamily": "iPad"
+          },
+          {
+            "bundlePath": "/Library/Developer/CoreSimulator/Profiles/DeviceTypes/iPad (8th generation).simdevicetype",
+            "name": "iPad (8th generation)",
+            "identifier": "com.apple.CoreSimulator.SimDeviceType.iPad--8th-generation-",
+            "productFamily": "iPad"
+          },
+          {
+            "bundlePath": "/Library/Developer/CoreSimulator/Profiles/DeviceTypes/iPad Air (3rd generation).simdevicetype",
+            "name": "iPad Air (3rd generation)",
+            "identifier": "com.apple.CoreSimulator.SimDeviceType.iPad-Air--3rd-generation-",
+            "productFamily": "iPad"
+          },
+          {
+            "bundlePath": "/Library/Developer/CoreSimulator/Profiles/DeviceTypes/iPad mini (5th generation).simdevicetype",
+            "name": "iPad mini (5th generation)",
+            "identifier": "com.apple.CoreSimulator.SimDeviceType.iPad-mini--5th-generation-",
+            "productFamily": "iPad"
+          },
+          {
+            "bundlePath": "/Library/Developer/CoreSimulator/Profiles/DeviceTypes/iPad Pro (11-inch) (2nd generation).simdevicetype",
+            "name": "iPad Pro (11-inch) (2nd generation)",
+            "identifier": "com.apple.CoreSimulator.SimDeviceType.iPad-Pro--11-inch---2nd-generation-",
+            "productFamily": "iPad"
+          },
+          {
+            "bundlePath": "/Library/Developer/CoreSimulator/Profiles/DeviceTypes/iPad Pro (12.9-inch) (4th generation).simdevicetype",
+            "name": "iPad Pro (12.9-inch) (4th generation)",
+            "identifier": "com.apple.CoreSimulator.SimDeviceType.iPad-Pro--12-9-inch---4th-generation-",
+            "productFamily": "iPad"
+          },
+          {
+            "bundlePath": "/Library/Developer/CoreSimulator/Profiles/DeviceTypes/iPad Pro (11-inch) (1st generation).simdevicetype",
+            "name": "iPad Pro (11-inch) (1st generation)",
+            "identifier": "com.apple.CoreSimulator.SimDeviceType.iPad-Pro--11-inch-",
+            "productFamily": "iPad"
+          },
+          {
+            "bundlePath": "/Library/Developer/CoreSimulator/Profiles/DeviceTypes/iPad Pro (12.9-inch) (3rd generation).simdevicetype",
+            "name": "iPad Pro (12.9-inch) (3rd generation)",
+            "identifier": "com.apple.CoreSimulator.SimDeviceType.iPad-Pro--12-9-inch---3rd-generation-",
+            "productFamily": "iPad"
+          }
+        ],
+        "identifier": "com.apple.CoreSimulator.SimRuntime.iOS-26-5",
+        "platform": "iOS",
+        "bundlePath": "/Library/Developer/CoreSimulator/Volumes/iOS_23F77/Library/Developer/CoreSimulator/Profiles/Runtimes/iOS 26.5.simruntime",
+        "runtimeRoot": "/Library/Developer/CoreSimulator/Volumes/iOS_23F77/Library/Developer/CoreSimulator/Profiles/Runtimes/iOS 26.5.simruntime/Contents/Resources/RuntimeRoot",
+        "lastUsage": {
+          "arm64": "0001-01-01T00:00:00Z"
+        },
+        "name": "iOS 26.5"
+      },
+      "type": {
+        "productFamily": "iPad",
+        "bundlePath": "/Library/Developer/CoreSimulator/Profiles/DeviceTypes/iPad Pro (12.9-inch) (3rd generation).simdevicetype",
+        "maxRuntimeVersion": 4294967295,
+        "maxRuntimeVersionString": "65535.255.255",
+        "identifier": "com.apple.CoreSimulator.SimDeviceType.iPad-Pro--12-9-inch---3rd-generation-",
+        "modelIdentifier": "iPad8,5",
+        "minRuntimeVersionString": "12.0.0",
+        "minRuntimeVersion": 786432,
+        "name": "iPad Pro (12.9-inch) (3rd generation)"
+      },
+      "device": "CA3C442A-6F39-4525-A633-064B29C5D348"
+    },
+    "occt": {
+      "schema": 1,
+      "source": {
+        "version": "7.8.1",
+        "directory": "OCCT-7_8_1",
+        "url": "https://github.com/Open-Cascade-SAS/OCCT/archive/refs/tags/V7_8_1.tar.gz",
+        "sha256": "7321af48c34dc253bf8aae3f0430e8cb10976961d534d8509e72516978aa82f5"
+      },
+      "sdk": "iphonesimulator",
+      "minimum_ios": "17.0",
+      "architecture": "arm64",
+      "patches": [],
+      "toolkit_roots": [
+        "TKFillet",
+        "TKMesh",
+        "TKernel",
+        "TKG2d",
+        "TKG3d",
+        "TKMath",
+        "TKShHealing",
+        "TKXSBase",
+        "TKBool",
+        "TKBO",
+        "TKBRep",
+        "TKTopAlgo",
+        "TKGeomAlgo",
+        "TKGeomBase",
+        "TKOffset",
+        "TKPrim",
+        "TKHLR",
+        "TKFeat",
+        "TKDESTEP",
+        "TKDEIGES",
+        "TKDEGLTF",
+        "TKDESTL",
+        "TKBin",
+        "TKBinL",
+        "TKCAF",
+        "TKXCAF",
+        "TKLCAF",
+        "TKVCAF",
+        "TKCDF",
+        "TKMeshVS",
+        "TKService",
+        "TKV3d",
+        "TKRWMesh",
+        "TKBinXCAF"
+      ],
+      "toolkit_dependencies": {
+        "TKBO": [
+          "TKBRep",
+          "TKG2d",
+          "TKG3d",
+          "TKGeomAlgo",
+          "TKGeomBase",
+          "TKMath",
+          "TKPrim",
+          "TKShHealing",
+          "TKTopAlgo",
+          "TKernel"
+        ],
+        "TKBRep": [
+          "TKG2d",
+          "TKG3d",
+          "TKGeomBase",
+          "TKMath",
+          "TKernel"
+        ],
+        "TKBin": [
+          "TKBRep",
+          "TKBinL",
+          "TKCAF",
+          "TKCDF",
+          "TKG2d",
+          "TKG3d",
+          "TKLCAF",
+          "TKMath",
+          "TKernel"
+        ],
+        "TKBinL": [
+          "TKCDF",
+          "TKLCAF",
+          "TKernel"
+        ],
+        "TKBinXCAF": [
+          "TKBRep",
+          "TKBin",
+          "TKBinL",
+          "TKCAF",
+          "TKCDF",
+          "TKG2d",
+          "TKG3d",
+          "TKLCAF",
+          "TKMath",
+          "TKService",
+          "TKXCAF",
+          "TKernel"
+        ],
+        "TKBool": [
+          "TKBO",
+          "TKBRep",
+          "TKG2d",
+          "TKG3d",
+          "TKGeomAlgo",
+          "TKGeomBase",
+          "TKMath",
+          "TKPrim",
+          "TKShHealing",
+          "TKTopAlgo",
+          "TKernel"
+        ],
+        "TKCAF": [
+          "TKBO",
+          "TKBRep",
+          "TKCDF",
+          "TKG2d",
+          "TKG3d",
+          "TKGeomBase",
+          "TKLCAF",
+          "TKMath",
+          "TKTopAlgo",
+          "TKernel"
+        ],
+        "TKCDF": [
+          "TKernel"
+        ],
+        "TKDE": [
+          "TKernel"
+        ],
+        "TKDEGLTF": [
+          "TKBRep",
+          "TKDE",
+          "TKG3d",
+          "TKLCAF",
+          "TKMath",
+          "TKMesh",
+          "TKRWMesh",
+          "TKService",
+          "TKV3d",
+          "TKXCAF",
+          "TKernel"
+        ],
+        "TKDEIGES": [
+          "TKBRep",
+          "TKBool",
+          "TKCDF",
+          "TKDE",
+          "TKG2d",
+          "TKG3d",
+          "TKGeomAlgo",
+          "TKGeomBase",
+          "TKLCAF",
+          "TKMath",
+          "TKPrim",
+          "TKShHealing",
+          "TKTopAlgo",
+          "TKXCAF",
+          "TKXSBase",
+          "TKernel"
+        ],
+        "TKDESTEP": [
+          "TKBRep",
+          "TKCAF",
+          "TKCDF",
+          "TKDE",
+          "TKG2d",
+          "TKG3d",
+          "TKGeomAlgo",
+          "TKGeomBase",
+          "TKLCAF",
+          "TKMath",
+          "TKShHealing",
+          "TKTopAlgo",
+          "TKXCAF",
+          "TKXSBase",
+          "TKernel"
+        ],
+        "TKDESTL": [
+          "TKBRep",
+          "TKDE",
+          "TKG2d",
+          "TKG3d",
+          "TKLCAF",
+          "TKMath",
+          "TKTopAlgo",
+          "TKXCAF",
+          "TKernel"
+        ],
+        "TKFeat": [
+          "TKBO",
+          "TKBRep",
+          "TKBool",
+          "TKG2d",
+          "TKG3d",
+          "TKGeomAlgo",
+          "TKGeomBase",
+          "TKMath",
+          "TKPrim",
+          "TKShHealing",
+          "TKTopAlgo",
+          "TKernel"
+        ],
+        "TKFillet": [
+          "TKBO",
+          "TKBRep",
+          "TKBool",
+          "TKG2d",
+          "TKG3d",
+          "TKGeomAlgo",
+          "TKGeomBase",
+          "TKMath",
+          "TKShHealing",
+          "TKTopAlgo",
+          "TKernel"
+        ],
+        "TKG2d": [
+          "TKMath",
+          "TKernel"
+        ],
+        "TKG3d": [
+          "TKG2d",
+          "TKMath",
+          "TKernel"
+        ],
+        "TKGeomAlgo": [
+          "TKBRep",
+          "TKG2d",
+          "TKG3d",
+          "TKGeomBase",
+          "TKMath",
+          "TKernel"
+        ],
+        "TKGeomBase": [
+          "TKG2d",
+          "TKG3d",
+          "TKMath",
+          "TKernel"
+        ],
+        "TKHLR": [
+          "TKBRep",
+          "TKG2d",
+          "TKG3d",
+          "TKGeomAlgo",
+          "TKGeomBase",
+          "TKMath",
+          "TKTopAlgo",
+          "TKernel"
+        ],
+        "TKLCAF": [
+          "TKCDF",
+          "TKernel"
+        ],
+        "TKMath": [
+          "TKernel"
+        ],
+        "TKMesh": [
+          "TKBRep",
+          "TKG2d",
+          "TKG3d",
+          "TKGeomBase",
+          "TKMath",
+          "TKShHealing",
+          "TKTopAlgo",
+          "TKernel"
+        ],
+        "TKMeshVS": [
+          "TKG2d",
+          "TKG3d",
+          "TKMath",
+          "TKService",
+          "TKV3d",
+          "TKernel"
+        ],
+        "TKOffset": [
+          "TKBO",
+          "TKBRep",
+          "TKBool",
+          "TKFillet",
+          "TKG2d",
+          "TKG3d",
+          "TKGeomAlgo",
+          "TKGeomBase",
+          "TKMath",
+          "TKPrim",
+          "TKShHealing",
+          "TKTopAlgo",
+          "TKernel"
+        ],
+        "TKPrim": [
+          "TKBRep",
+          "TKG2d",
+          "TKG3d",
+          "TKGeomBase",
+          "TKMath",
+          "TKTopAlgo",
+          "TKernel"
+        ],
+        "TKRWMesh": [
+          "TKBRep",
+          "TKDE",
+          "TKG3d",
+          "TKLCAF",
+          "TKMath",
+          "TKMesh",
+          "TKService",
+          "TKV3d",
+          "TKXCAF",
+          "TKernel"
+        ],
+        "TKService": [
+          "TKMath",
+          "TKernel"
+        ],
+        "TKShHealing": [
+          "TKBRep",
+          "TKG2d",
+          "TKG3d",
+          "TKGeomAlgo",
+          "TKGeomBase",
+          "TKMath",
+          "TKTopAlgo",
+          "TKernel"
+        ],
+        "TKTopAlgo": [
+          "TKBRep",
+          "TKG2d",
+          "TKG3d",
+          "TKGeomAlgo",
+          "TKGeomBase",
+          "TKMath",
+          "TKernel"
+        ],
+        "TKV3d": [
+          "TKBRep",
+          "TKG2d",
+          "TKG3d",
+          "TKGeomAlgo",
+          "TKGeomBase",
+          "TKHLR",
+          "TKMath",
+          "TKMesh",
+          "TKService",
+          "TKShHealing",
+          "TKTopAlgo",
+          "TKernel"
+        ],
+        "TKVCAF": [
+          "TKBO",
+          "TKBRep",
+          "TKCAF",
+          "TKCDF",
+          "TKG2d",
+          "TKG3d",
+          "TKGeomBase",
+          "TKLCAF",
+          "TKMath",
+          "TKService",
+          "TKTopAlgo",
+          "TKV3d",
+          "TKernel"
+        ],
+        "TKXCAF": [
+          "TKBRep",
+          "TKCAF",
+          "TKCDF",
+          "TKG2d",
+          "TKG3d",
+          "TKLCAF",
+          "TKMath",
+          "TKService",
+          "TKTopAlgo",
+          "TKV3d",
+          "TKVCAF",
+          "TKernel"
+        ],
+        "TKXSBase": [
+          "TKBRep",
+          "TKG2d",
+          "TKG3d",
+          "TKGeomBase",
+          "TKMath",
+          "TKShHealing",
+          "TKTopAlgo",
+          "TKernel"
+        ],
+        "TKernel": []
+      },
+      "archives": {
+        "lib/libTKBO.a": {
+          "sha256": "8b65eab3ddbec5673d1ce1e91363cf7c21b0b914af18d67bc2f2fd8b6025d9f1",
+          "bytes": 6075456,
+          "verified_build_versions": 88
+        },
+        "lib/libTKBRep.a": {
+          "sha256": "8128ab9e1e48d6ee7845b02a67f717e3cb01a381b6cf5b0d594a9ca025022ad0",
+          "bytes": 2628600,
+          "verified_build_versions": 77
+        },
+        "lib/libTKBin.a": {
+          "sha256": "867c7e9ca35026d785a0ae06f5ffbcec59aa894f47a643758505ef20867538d4",
+          "bytes": 284488,
+          "verified_build_versions": 13
+        },
+        "lib/libTKBinL.a": {
+          "sha256": "7f7210ef1658cba850b7150b73a7254eccb6a76c51a7a34eaa9d2d91518cc205",
+          "bytes": 740600,
+          "verified_build_versions": 42
+        },
+        "lib/libTKBinXCAF.a": {
+          "sha256": "36b5b0dc7c585133552992b6f6dc8d4cda7f30feebf5dfa7f10bccd906a6b6c2",
+          "bytes": 307320,
+          "verified_build_versions": 18
+        },
+        "lib/libTKBool.a": {
+          "sha256": "8f8cc0299800ab471f18ccab2c2bec7bd0dfdac8409adc07bf426b57503ba41e",
+          "bytes": 10240552,
+          "verified_build_versions": 243
+        },
+        "lib/libTKCAF.a": {
+          "sha256": "a844de1c1f49d1a2207e50408106932ee3e46d35dfbd600d05dbb188f1070afc",
+          "bytes": 1333568,
+          "verified_build_versions": 31
+        },
+        "lib/libTKCDF.a": {
+          "sha256": "2ae846b071fe95cb70c78ef77f395316838485b4ad25442980a059976355bed1",
+          "bytes": 699096,
+          "verified_build_versions": 45
+        },
+        "lib/libTKDE.a": {
+          "sha256": "3588b9330fedfd801234bbd8634a104fa64b512458c8789973f384ef364873de",
+          "bytes": 162160,
+          "verified_build_versions": 4
+        },
+        "lib/libTKDEGLTF.a": {
+          "sha256": "dce4caaf276103b39d68691c508436833c50e0b2f4d2a4aa0fad35384a2eca55",
+          "bytes": 385456,
+          "verified_build_versions": 8
+        },
+        "lib/libTKDEIGES.a": {
+          "sha256": "0b0531d6dec53f562cf9cbef7d0002a7e60941d52f7722590ab99201a8c377e1",
+          "bytes": 11236168,
+          "verified_build_versions": 459
+        },
+        "lib/libTKDESTEP.a": {
+          "sha256": "c89ecf60659ab338522cb827e10a5b904fd0c6c14d3c0b6b1daa2b7fc4306448",
+          "bytes": 25907200,
+          "verified_build_versions": 1712
+        },
+        "lib/libTKDESTL.a": {
+          "sha256": "a2e61fb45328dd3ca7d6244c8eb34bc76bd6befbd020b8c1e485b20d3ef02d79",
+          "bytes": 152200,
+          "verified_build_versions": 7
+        },
+        "lib/libTKFeat.a": {
+          "sha256": "b8bf3eef4c48cdba03c2aed3adca54471df11854b4613c7a7186e1e049640d5d",
+          "bytes": 2889712,
+          "verified_build_versions": 35
+        },
+        "lib/libTKFillet.a": {
+          "sha256": "9972aa897bc1d23575ca1ee0a2b9cb2776324e252c9ec4e6eb43516d0cba4afd",
+          "bytes": 4566632,
+          "verified_build_versions": 114
+        },
+        "lib/libTKG2d.a": {
+          "sha256": "04b7c26da664d1a2efa749a897140c40958ed55cc53baaa94ce46ce4a9181b17",
+          "bytes": 818400,
+          "verified_build_versions": 36
+        },
+        "lib/libTKG3d.a": {
+          "sha256": "8c0a73a3c68717d686beb8b4ec98982118238b8824e695c6393f4c40bf83606e",
+          "bytes": 2363072,
+          "verified_build_versions": 81
+        },
+        "lib/libTKGeomAlgo.a": {
+          "sha256": "897be38f84a5e29fb6189d6ed935f28fcbad1f38b17a841969262052ffa22c44",
+          "bytes": 10312632,
+          "verified_build_versions": 365
+        },
+        "lib/libTKGeomBase.a": {
+          "sha256": "407a4057ff3d1bc7facfa0cbc6bdc50da4fba00e365250919d23e08bb87bcd23",
+          "bytes": 8874184,
+          "verified_build_versions": 288
+        },
+        "lib/libTKHLR.a": {
+          "sha256": "4c3900f2ebb77b30c36e39680f4b687775ad302535206f9950b6aedb7b57d2dd",
+          "bytes": 2157768,
+          "verified_build_versions": 91
+        },
+        "lib/libTKLCAF.a": {
+          "sha256": "d77d021eabe7b3eaa885736d15c891ce26a26792f790de6a3ea75c731276d628",
+          "bytes": 2499808,
+          "verified_build_versions": 95
+        },
+        "lib/libTKMath.a": {
+          "sha256": "3438c0b347b63f60d3c1f9d6e97f9b85f544e8c4bb28e18c78e4589e25d98811",
+          "bytes": 4743608,
+          "verified_build_versions": 211
+        },
+        "lib/libTKMesh.a": {
+          "sha256": "81e72a763950a7ec0d8b191bba5e3443023f074927b17d425e87481007f91727",
+          "bytes": 2183360,
+          "verified_build_versions": 65
+        },
+        "lib/libTKMeshVS.a": {
+          "sha256": "16bca7db901a992f4b5f78453214a0b9c9670b69b54f50f68615a1017cd14f97",
+          "bytes": 734648,
+          "verified_build_versions": 22
+        },
+        "lib/libTKOffset.a": {
+          "sha256": "bc47ad85379d3a3e59b9fca1cb5a53bc986c7c3cc90bff07f414a4fc2c18845e",
+          "bytes": 4176544,
+          "verified_build_versions": 34
+        },
+        "lib/libTKPrim.a": {
+          "sha256": "177bf7822466b2de20096df19d620502d6aac44bc7de05498fcf1a2164b27568",
+          "bytes": 738248,
+          "verified_build_versions": 34
+        },
+        "lib/libTKRWMesh.a": {
+          "sha256": "aef91789f43f218743ed038c702c93d5a48b4e2cf345617672129d298ff7f5be",
+          "bytes": 205792,
+          "verified_build_versions": 7
+        },
+        "lib/libTKService.a": {
+          "sha256": "8130ea1185fdfdfb2f7470d1819005b0fc98b4aa773f2ef00e5ed81e2679c7c4",
+          "bytes": 2574592,
+          "verified_build_versions": 104
+        },
+        "lib/libTKShHealing.a": {
+          "sha256": "5dbaa1a81c90e299c689644cdeb4e6bf70c5e006dcd809e9083238057e744cf8",
+          "bytes": 5912024,
+          "verified_build_versions": 112
+        },
+        "lib/libTKTopAlgo.a": {
+          "sha256": "0030e802209511d73761c318e355e0cce7b35ca14a62a918be96d6ffb56d1f2b",
+          "bytes": 6286656,
+          "verified_build_versions": 156
+        },
+        "lib/libTKV3d.a": {
+          "sha256": "3346d6234cce202ade4ad8b04a4b69b2670d68a03b85ed1c9129c204d14888fc",
+          "bytes": 7268656,
+          "verified_build_versions": 203
+        },
+        "lib/libTKVCAF.a": {
+          "sha256": "c7d28df68e947238e74781a691a542e63d9c1b87687ccd50c2d431163a3bd8d4",
+          "bytes": 370320,
+          "verified_build_versions": 11
+        },
+        "lib/libTKXCAF.a": {
+          "sha256": "be96f12b653e71197afc31e829a513fe48cd704e5ffea050ce0515d70a0a37b4",
+          "bytes": 2085432,
+          "verified_build_versions": 48
+        },
+        "lib/libTKXSBase.a": {
+          "sha256": "e94a14b6c3633d81544f534ea292ca80abecf69d4b8268227034cc2279b48703",
+          "bytes": 5383616,
+          "verified_build_versions": 199
+        },
+        "lib/libTKernel.a": {
+          "sha256": "6c27dd919017e92f2fd8a1ca72da147557e8116d9dd9f4a9fc6bc280cfedbdcd",
+          "bytes": 3395392,
+          "verified_build_versions": 131
+        }
+      },
+      "notices": {
+        "LICENSE_LGPL_21.txt": {
+          "sha256": "e237fa56668030e928551ddd60f05df5fe957f75eab874bbd017e085ed722e7c",
+          "bytes": 26434
+        },
+        "OCCT_LGPL_EXCEPTION.txt": {
+          "sha256": "04580a884ea6cea294402649ff7b5cbb167d47462d1340a4ed33e550db10a81b",
+          "bytes": 663
+        }
+      },
+      "provider_header_dependencies": {
+        "TKDE": [
+          "TKernel"
+        ],
+        "TKDEGLTF": [
+          "TKBinXCAF",
+          "TKLCAF",
+          "TKXCAF",
+          "TKernel"
+        ],
+        "TKDEIGES": [
+          "TKBinXCAF",
+          "TKXCAF",
+          "TKXSBase",
+          "TKernel"
+        ],
+        "TKDESTEP": [
+          "TKBinXCAF",
+          "TKXCAF",
+          "TKXSBase",
+          "TKernel"
+        ],
+        "TKDESTL": [
+          "TKBRep",
+          "TKBinXCAF",
+          "TKLCAF",
+          "TKXCAF",
+          "TKernel"
+        ]
+      },
+      "configure_command": [
+        "cmake",
+        "-S",
+        "/Users/builder/clone/build/freecad-ios/occt/OCCT-7_8_1",
+        "-B",
+        "/Users/builder/clone/build/freecad-ios/occt/iphonesimulator/build",
+        "-G",
+        "Ninja",
+        "-DCMAKE_BUILD_TYPE=Release",
+        "-DCMAKE_SYSTEM_NAME=iOS",
+        "-DCMAKE_POLICY_VERSION_MINIMUM=3.5",
+        "-DCMAKE_OSX_SYSROOT=iphonesimulator",
+        "-DCMAKE_OSX_ARCHITECTURES=arm64",
+        "-DCMAKE_OSX_DEPLOYMENT_TARGET=17.0",
+        "-DCMAKE_TRY_COMPILE_TARGET_TYPE=STATIC_LIBRARY",
+        "-DCMAKE_INTERPROCEDURAL_OPTIMIZATION=OFF",
+        "-DCMAKE_EXPORT_COMPILE_COMMANDS=ON",
+        "-DBUILD_LIBRARY_TYPE=Static",
+        "-DBUILD_DOC_Overview=OFF",
+        "-DBUILD_USE_PCH=OFF",
+        "-DINSTALL_DIR_LAYOUT=Unix",
+        "-DCMAKE_INSTALL_PREFIX=/Users/builder/clone/build/freecad-ios/occt/iphonesimulator/stage",
+        "-DINSTALL_DIR=/Users/builder/clone/build/freecad-ios/occt/iphonesimulator/stage",
+        "-DBUILD_ADDITIONAL_TOOLKITS=TKFillet TKMesh TKernel TKG2d TKG3d TKMath TKShHealing TKXSBase TKBool TKBO TKBRep TKTopAlgo TKGeomAlgo TKGeomBase TKOffset TKPrim TKHLR TKFeat TKDESTEP TKDEIGES TKDEGLTF TKDESTL TKBin TKBinL TKCAF TKXCAF TKLCAF TKVCAF TKCDF TKMeshVS TKService TKV3d TKRWMesh TKBinXCAF",
+        "-DBUILD_MODULE_FoundationClasses=OFF",
+        "-DBUILD_MODULE_ModelingData=OFF",
+        "-DBUILD_MODULE_ModelingAlgorithms=OFF",
+        "-DBUILD_MODULE_Visualization=OFF",
+        "-DBUILD_MODULE_ApplicationFramework=OFF",
+        "-DBUILD_MODULE_DataExchange=OFF",
+        "-DBUILD_MODULE_DETools=OFF",
+        "-DBUILD_MODULE_Draw=OFF",
+        "-DUSE_TCL=OFF",
+        "-DUSE_TK=OFF",
+        "-DUSE_FREETYPE=OFF",
+        "-DUSE_FREEIMAGE=OFF",
+        "-DUSE_FFMPEG=OFF",
+        "-DUSE_OPENVR=OFF",
+        "-DUSE_RAPIDJSON=OFF",
+        "-DUSE_DRACO=OFF",
+        "-DUSE_TBB=OFF",
+        "-DUSE_EIGEN=OFF",
+        "-DUSE_XLIB=OFF",
+        "-DUSE_OPENGL=OFF",
+        "-DUSE_GLES2=OFF",
+        "-DUSE_D3D=OFF",
+        "-DCMAKE_CXX_COMPILER_LAUNCHER=ccache",
+        "-DCMAKE_C_COMPILER_LAUNCHER=ccache"
+      ],
+      "presentation_toolkits": [
+        "TKMeshVS",
+        "TKService",
+        "TKV3d",
+        "TKVCAF"
+      ],
+      "viewer_driver_toolkits": [],
+      "xcode": "Xcode 26.6\nBuild version 17F113",
+      "sdk_version": "26.5",
+      "source_inventory": {
+        "files": 35999,
+        "sha256": "3dcee48881229f330b4b7ddf82f3d37f4f8a7a979c0d2fdbe4bf027c4c18a095",
+        "scope": "Digest of full source_files object; original complete report hash retained separately"
+      }
+    }
+  }
+}

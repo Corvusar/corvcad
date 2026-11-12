@@ -1,0 +1,12 @@
+build/
+.build/
+DerivedData/
+app/CorvCAD.xcodeproj/
+*.xcworkspace
+*.ipa
+.DS_Store
+*.kicad_prl
+__pycache__/
+*.pyc
+.claude/settings.local.json
+CLAUDE.local.md

@@ -1,0 +1,161 @@
+{
+ "ecc83-pp.kicad_pcb": {
+  "sha256": "0ab45f4f8c90ac877e3313a1888d875107f2be3fc2b2f40cfb7927873b35260c",
+  "files": {
+   "ecc83-pp-B_Mask.gbr": "3be40c3010b7dd2a871161cc84af848c354bde7f9f30ea37a5c93799c8ee7baa",
+   "ecc83-pp-B_Silkscreen.gbr": "7ab12bd358f36e240d0f17ce825ecf9d24c20f81dafb1a82e891015d92a6ee2e",
+   "ecc83-pp-bottom_cu.gbr": "7cd4f4465abc3e9ae5e468dfd156fda599934b89adee8fd31f1d304d0cc46667",
+   "ecc83-pp-F_Mask.gbr": "c5b3d587a62f8dfc9325eedfb26a3b6579dd4d742791a292451c5600176da0dc",
+   "ecc83-pp-F_Silkscreen.gbr": "341516d30b470e3a0db0c5826613a8e91ec29c89ee33ce5fd30ed12f4c64dead",
+   "ecc83-pp-job.gbrjob": "cc074f6400104de1dd3fcfa17017e47127933ce2c519d87d80f0917f2c9fd18e",
+   "ecc83-pp-NPTH.drl": "d46bfe77b6414683178624fb7e071e5519710a69c40ef915b241d896cacbf04f",
+   "ecc83-pp-pos.csv": "de5d2b796296db2f8fcf5ef06fcac6fbd4e7bce0207c09ee133a8c4d449c7b0b",
+   "ecc83-pp-PTH.drl": "2aa92981c6de2a792fef22ac5541b4321fc7178043598b37b1ab3dea6da901d9",
+   "ecc83-pp-top_cu.gbr": "fe6395ac096c3418553625dc26b80ba40228aaf193030a2d6ef44944266e53a7"
+  }
+ },
+ "interf_u.kicad_pcb": {
+  "sha256": "a740ce7fde77ab6af191e23ece21e57d36bb3c29325879248520dcd9ab47b57e",
+  "files": {
+   "interf_u-B_Adhesive.gbr": "122057822ca3569268c069ef3cbbe31950551160b67c9b3338abe3cf78335175",
+   "interf_u-B_Courtyard.gbr": "9b23ccfda9869bea589d4707d654406511f2aa25b62285b2e8d47fb9cc3e2881",
+   "interf_u-B_Mask.gbr": "4919dd19cedb8d3ea6a6b822ffe4def7feb1cdf46da6e25d1f15e510baf0eb78",
+   "interf_u-B_Paste.gbr": "e5fe832fc1252620a176af15363544ab6c6697c2bc8f7ee5c5e7f8b67980d08f",
+   "interf_u-B_Silkscreen.gbr": "9638ac2702207d5e685482e51fcb20163bc85a5c2c6e313f4c48507198d16771",
+   "interf_u-bottom_copper.gbr": "3c9fd214a3d9d046fde88a60ac50354ae169e14933532248a6a7d7b439a187ab",
+   "interf_u-Edge_Cuts.gbr": "cef33521cf9572d0f01846812e1656bde82f1930530854f5070cf3bca37edb20",
+   "interf_u-F_Adhesive.gbr": "33a5bebcdc3b6dda7af9ebfc54a16885419b36519447eb9427a256d3ef13268e",
+   "interf_u-F_Courtyard.gbr": "99b3b7510dfab2ab045a872208db5001510cdc276cfca822c18deaf54aa9ce35",
+   "interf_u-F_Mask.gbr": "1ff1ca697ef1eccebf537f21f90421eafce8bcd0c96b75842a70c8d8f3ffefe4",
+   "interf_u-F_Paste.gbr": "8290d9a9d7bf886bc36d6faab4825551ed28f22c8b160a8a4fbe4dcf8cf1b99b",
+   "interf_u-F_Silkscreen.gbr": "8392ce9d956ae060e75f0acb136745c870ad27f5a1d8e156b9a65b30841d7b91",
+   "interf_u-job.gbrjob": "031ccc16e044242df8ef27d42d41296c91f26c87ead0182d2525d0a8463db55a",
+   "interf_u-Margin.gbr": "be7400b9f4d53feb263a7a3b3f8ca1cd4a4f79b174d6daec80a9d7cbc54472b0",
+   "interf_u-NPTH.drl": "d46bfe77b6414683178624fb7e071e5519710a69c40ef915b241d896cacbf04f",
+   "interf_u-pos.csv": "a4aaf7a4cd2345db4ff5758e415b44e25e877d5f66e92c33872cc1847bc57ef4",
+   "interf_u-PTH.drl": "5497facb5552c8240091b0fbc886a235c148e9f241ce97d75f7034294ea77c05",
+   "interf_u-top_copper.gbr": "dc4653474752b0aa3923dfcc11bde3263612253f3afef17c39c092102c0d9047",
+   "interf_u-User_Comments.gbr": "683b9bf0535e134679113a01f5161c55294c623947dfbb23ad746e8fa8e08d68",
+   "interf_u-User_Drawings.gbr": "4ae9852346af62f943f0ffa308cc43092c48f596942dff9f4028fec825cabd18",
+   "interf_u-User_Eco1.gbr": "3bf78c8e42d783ea71805a1840bd7a78a04e291c05448f32503639f86a5d5a72",
+   "interf_u-User_Eco2.gbr": "3c0ec5858e85c0a57ba42df9ac8a2e66faa6d974f443a3482267856009bccd20"
+  }
+ },
+ "video.kicad_pcb": {
+  "sha256": "f620675158ddd5c61e5ce9e15f4c92b230ae1df1cbcec6c502b8ce266e4007ea",
+  "files": {
+   "video-B_Adhesive.gbr": "9632b049264c3a9c2566dcb82cd6fa6beedbd80bf881c1b65eb3487e714429e4",
+   "video-B_Courtyard.gbr": "2520b8b581e166d4ac5ca57ffb915119759075580ca5e16c9664611f62e1b8d7",
+   "video-B_Cu.gbr": "ed9db832194963ba2927346bc11067ed1ae507310b18287cb56e0d45ad8bb120",
+   "video-B_Mask.gbr": "9df501c1ffa08ba2c7810fe516fcfe689677724f7497432f0dae445ca0d277fa",
+   "video-B_Paste.gbr": "8f70b4f29ad2b28588035e40f6e2233a1e7dd4d59390a6f92c9927683a384193",
+   "video-B_Silkscreen.gbr": "b49fb9c4d79318c238ab21e9e8a044016fd926c1d42f5d9afbab78a709984de8",
+   "video-Edge_Cuts.gbr": "6e0643883b3de9fffe3c52dfc5da579e95ce6419a1d91cc73261b8daf627e472",
+   "video-F_Adhesive.gbr": "88028879873cf2bb06e67e8377cf30e6273252b226245766d6018a4cf69be20f",
+   "video-F_Courtyard.gbr": "e7d425edb7b956178a43178889a120557f812769e7eb7b41ca22479924e2877d",
+   "video-F_Fab.gbr": "40f5f739e966d977896638ea1e4c8ee72a0fc972cc4fdfb0efe4a59325b34c00",
+   "video-F_Mask.gbr": "564f50f9be87f4a0d1fbfc1102330208d84b4b1452fd73b3186a3d973fd18a2d",
+   "video-F_Paste.gbr": "6996f449dee79c549d5e564e1cf62739cf19ab84b9a15d87c96d27798cb07785",
+   "video-F_Silkscreen.gbr": "a0440a74b19a3e58f2882efd797c99b3cd54cdca7d978e834c435601704474e3",
+   "video-In1_Cu.gbr": "51fb140cb43e08d60698e82c62aa349129ebd72a013069ca17b939878e3d1238",
+   "video-In2_Cu.gbr": "57a987be55c28c177eceff7f23dbd5cbcb04727aa0011e0630caeae6fe8ac27b",
+   "video-job.gbrjob": "50c8fa566fcd3aac61fa37bba4c863240ac567738c9f7791e9a54b67ba798da1",
+   "video-Margin.gbr": "7ba233347bc1fb2f0e5d6f8f97154b09152c61c5d4ffa82f087b29e4ca3d475d",
+   "video-NPTH.drl": "8ed13ed068495820042d6ed76ba437dfa011f7fbbb3506cc08265c62092030ae",
+   "video-pos.csv": "291338378908416aa5100ce9aa85977f6f8a46091ab27b2a21859dff6a0c7a5b",
+   "video-PTH.drl": "4157705db90369077adaf2990c272180bdfcdddeafb22b1016e5bd6f78d1cddd",
+   "video-top_copper.gbr": "6c455bf2d0331e2521d909531ad7c17ea5b33d3003820745b32f3dc8f7cc4215",
+   "video-User_Comments.gbr": "438ab3e7738a1a3e1ece2d5a699961bb62cf473df0472ed24f5b94b8a61d8488",
+   "video-User_Drawings.gbr": "82d65a44f4981242ba4458185c6f1c8363ac0ff9a7c8c71867b21a52dd2cf3e9",
+   "video-User_Eco1.gbr": "d7456d230f44a95b42cb3e4e9487019b5e99526cdfec37f72e0514b4c0ccad61",
+   "video-User_Eco2.gbr": "ae552d3dcc25639850c16ba9d704fd73f24229ce54d73364afeedf5e7dcf831c"
+  }
+ },
+ "complex_hierarchy.kicad_pcb": {
+  "sha256": "d5f4162d4c766448832723d139f9e0fcb88a17c82340f10f6f6dc6c2042f0d69",
+  "files": {
+   "complex_hierarchy-B_Adhesive.gbr": "d1e6107c5a1515b7c1780b3b5ddcb499137c2c72f607a033189f43daab186296",
+   "complex_hierarchy-B_Courtyard.gbr": "70cafdde72e48e94d92bf878dc705d51dd559019d22b291d29faf686479d434f",
+   "complex_hierarchy-B_Mask.gbr": "92cb1859099f236add3a858cd06d9b1d71314a4d5aa3f7fec3bd9248e6421ff2",
+   "complex_hierarchy-B_Paste.gbr": "5b4a0f3ef617ce801e5d095b782d5b643b53e6bc8127cc6ecdf1120ec4e8e345",
+   "complex_hierarchy-B_Silkscreen.gbr": "1a38ba36bde7fde10c8ac94d5a481103fb1e04a73d370fec91b33b484c6a18c3",
+   "complex_hierarchy-bottom_copper.gbr": "b50bb6fcf9e12eddb0959bdda4c5a6ceee1e462e0d4b418b00aabf6ce728e33b",
+   "complex_hierarchy-Edge_Cuts.gbr": "f129cf09f22e9d866bd1d075ed5fd8e88602fb2901f6033d8e646ec5b06574a4",
+   "complex_hierarchy-F_Adhesive.gbr": "5ba97c8287c36bb4907fcce6fccb0e4b8e5d8c9f3e2cca8535e092aad128cdd5",
+   "complex_hierarchy-F_Courtyard.gbr": "06ad3e76be75bfd4d97ab8ab53d180ecd497e55ace94592f5269cc6fb14316d9",
+   "complex_hierarchy-F_Fab.gbr": "f45b585dabb8e881411e47391ddb5265f634478312b50aeb8dea5bd668be35db",
+   "complex_hierarchy-F_Mask.gbr": "d1fadd166cdb501b70627efaa6233c664465e9822ea53409b7dab13ad19df265",
+   "complex_hierarchy-F_Paste.gbr": "579b428dbabd53748c36ac539a6beed5af9fff57fd916c52d99a2a6f9888ad2a",
+   "complex_hierarchy-F_Silkscreen.gbr": "649e5cf56ab1326544b11d0bf711901ab435f5ed9fe7bda1e8944995fa3f4d6d",
+   "complex_hierarchy-job.gbrjob": "82f34ecc539cd5ad055dc42f83dbd550293bf4897d36aa8b3dbe310b87aec811",
+   "complex_hierarchy-Margin.gbr": "70cafdde72e48e94d92bf878dc705d51dd559019d22b291d29faf686479d434f",
+   "complex_hierarchy-NPTH.drl": "d46bfe77b6414683178624fb7e071e5519710a69c40ef915b241d896cacbf04f",
+   "complex_hierarchy-pos.csv": "bac78142a0f234f6147b1dbc8902b28f8b68f9a34146a375364b36fa458e6298",
+   "complex_hierarchy-PTH.drl": "c7efe4365ba508015c20b6ac19d710de7fecade86e30623697d2008d5e9d0639",
+   "complex_hierarchy-top_copper.gbr": "f62776a153e2190d0d4e16c777e6e7b8cd04441ebad6f3aae645c8e2acc2251d",
+   "complex_hierarchy-User_Comments.gbr": "2cad4d3f40185e5d8da913615cbe23a08e16b3b40d123cd50345157210868146",
+   "complex_hierarchy-User_Drawings.gbr": "25ae6af25208d688fa070350a15287d0a88f875ea096c887b900668922409e63",
+   "complex_hierarchy-User_Eco1.gbr": "b914fdc7f99647dafa9c0d8d89eb508c422495123d2e3e81af17d831deae914d",
+   "complex_hierarchy-User_Eco2.gbr": "cb76aa508dc34efd9272759f46a1136db9e09dfaa3f6c2eb6a5013db30596c0e"
+  }
+ },
+ "StickHub.kicad_pcb": {
+  "sha256": "cee5a90f8803791cc55498d2576ed1f3416060d37701a02d4ec2937073c76051",
+  "files": {
+   "StickHub-B_Adhesive.gbr": "4044338e5b8ba8872074fd8fabae3d721006b94ef00049150e96afd5bfa19522",
+   "StickHub-B_Courtyard.gbr": "d7bfc3f7f22f6b64792a767ee26052b111887e1461139dd1d041d5b8b9d24b70",
+   "StickHub-B_Cu.gbr": "0f1b013a231b9ce1641d4c6340c96e2fd39c2649e08c8f150287f60c005e0e5d",
+   "StickHub-B_Fab.gbr": "8c09c42ed907d5c5ad4d7e8974db7b5eb3ad274dab744f227fa5cd7c9d9dde23",
+   "StickHub-B_Mask.gbr": "d7eaea6755cdf44244898aaee0409589ce927cefb67ea9018fca1963d20c3e36",
+   "StickHub-B_Paste.gbr": "85048281d8691af1ee10a9d6de93c852533e374490a55276da011c49e0438eb7",
+   "StickHub-B_Silkscreen.gbr": "3e9e91519e16045d7d01e115c68d360bff99cd66b2c63c3b9236b71f16de56ba",
+   "StickHub-Edge_Cuts.gbr": "029b0bb4e939fb5c83de63aa599eafa615412f85445be0d823b400aac3d5bfe9",
+   "StickHub-F_Adhesive.gbr": "c566f7a03034b2d449fa66f77bce50a7de5db429c3fc207f9c3c14dcc9521e18",
+   "StickHub-F_Courtyard.gbr": "13471a9fe1f9f4008985cd9af084329cade9b9d365a34a897de85ef45b30eea8",
+   "StickHub-F_Cu.gbr": "8c878fa7609bc504d9523eb386e1282e52c211c67171c026abc0428b2c43c7dc",
+   "StickHub-F_Fab.gbr": "950084432556d4db79d54d82a15e61ae349080baeba0bd02e27ad31195010569",
+   "StickHub-F_Mask.gbr": "6b2231bcdc90813fcf90cf95847a5e18c2a8791092d8f382e7e8fde640052004",
+   "StickHub-F_Paste.gbr": "89209512216009c8db0773d030285408f49417599238c9d819f9b5ed6afa7bb6",
+   "StickHub-F_Silkscreen.gbr": "a36934a2fa09cf9c9fe62b302709fa6d25c40bcce696c7257593df0e2d09cf12",
+   "StickHub-job.gbrjob": "978792d210298c27484fe14c7e076d4f326aebdc55cab0cda1287f42e1f17de0",
+   "StickHub-Margin.gbr": "c6fdb683a84acff1a9a356de6fbb541e25eaa65cb47ece8677cb655aae5bb67f",
+   "StickHub-NPTH.drl": "fa2195c8a875d2e54ae5e56f061defc41cd9d8df5bc7ff312a0d1f60aa6b1f8d",
+   "StickHub-pos.csv": "0db1e6752ba5f422b228fc49314fa42838cb30fc552cdd6ce422be35e42126ac",
+   "StickHub-PTH.drl": "b778dee4903a01491c4b9c4b546f421eb767266b28668a5eaed6d23a8f87b795",
+   "StickHub-User_Comments.gbr": "86dda95cf68c8a44c7f618f30366645804910ea389a1c5af2c7c27ea02bd6fab",
+   "StickHub-User_Drawings.gbr": "3c43ecc5c63a4ba4679aea534e5ba82d0ee040a2a44133dfb2c024b0f5000c95",
+   "StickHub-User_Eco1.gbr": "cd9919c75c10baac4f250635b9eb9233ab08bed577eb768d0ec71cc479233b5b",
+   "StickHub-User_Eco2.gbr": "fdd2d1a0541b6b0ea7cebf892b10b54ddbbb1027ae3327ef8c3510de2285f016"
+  }
+ },
+ "RoundTrip.kicad_pcb": {
+  "sha256": "b734c040c392df1ec18f1106315721b204fed68d77948674b85113f7ee896c63",
+  "files": {
+   "RoundTrip-B_Cu.gbr": "faf39714d4f9a835773239465b8925a67dba63245eabe0fa09a2db283c8f6333",
+   "RoundTrip-Edge_Cuts.gbr": "2c1078b6270c8b51c18e3937df0244c5733b4c99ce60779f81e044343b2cd9ce",
+   "RoundTrip-F_Cu.gbr": "2e0d720e6149c12308a00f333f816fbfd878d0b8af77d0378b9960752e84a595",
+   "RoundTrip-job.gbrjob": "4e0d1a02405983f338d321bbfebd08608bac5cc5e1ec2da589ddcb6a55986932",
+   "RoundTrip-NPTH.drl": "1d70a651b467494fcb5a1a0042541ac4e3422fcfb72ea0c84633cc7e2816432d",
+   "RoundTrip-pos.csv": "bc0ccb77d7076105b639f55cdd929a0a690fc575b6bec1aa42114ba7914f168d",
+   "RoundTrip-PTH.drl": "e5fca73b39e9d6068117d11f58ce2ea3378cc57d5a9aa716fda0c620afbaac48"
+  }
+ },
+ "Drawn.kicad_pcb": {
+  "sha256": "bc2e0b8a2ed5b17f63973b4421cc02340ce18d00bf3a350ebf3b46b73c6dbf5c",
+  "files": {
+   "Drawn-B_Cu.gbr": "e06ffe9d610b9e6b946423eb9eedf2ba48852dbfc41de5c7e0bb73d9ef41b9d7",
+   "Drawn-B_Mask.gbr": "3a4ca4959affec7cd28512a0b464fdca76966707ec09cacc8898bedb3fa59f2b",
+   "Drawn-B_Paste.gbr": "813ff47257fe590d9ffecfcd85475caddf6ce8b48ef1f0e6d2d52e89e3497da8",
+   "Drawn-B_Silkscreen.gbr": "5f6bb120de2ac7b518188c0342c2546f8c51a30fe045879f1f9d1d81939e102f",
+   "Drawn-Edge_Cuts.gbr": "d9c03e052695b465ea40f0304150e67466324fd4ea6c1acda0664699a12aceef",
+   "Drawn-F_Cu.gbr": "3fbcfa6d63e96504db8560b73e3ddf81ddf7ad9a447fd79256a3e366f7cdf445",
+   "Drawn-F_Mask.gbr": "4ce29f78640eb2ac2bd09d128d66fae74747f8de41972b98210febe84fc01913",
+   "Drawn-F_Paste.gbr": "667bd88d579817362e403ec85ead3daadaa0502e50c5443b133c7f649f6b32c3",
+   "Drawn-F_Silkscreen.gbr": "09c22f3ba7ac5509794cc3247e3441d8305172b51f7d76ef10b3582d91ec40af",
+   "Drawn-job.gbrjob": "022ddb87d1397964c0d559f6fb193cd8bdab7021dad05bab858adaa8e1fffb47",
+   "Drawn-NPTH.drl": "d46bfe77b6414683178624fb7e071e5519710a69c40ef915b241d896cacbf04f",
+   "Drawn-pos.csv": "7565b037b9375e5a5070ba77a93488768c56409db7c519ace55cc83bb2f74819",
+   "Drawn-PTH.drl": "0d62e5c129c8757621376b0ae42ae8bf775bae88c47d95341bcd70a53147051d"
+  }
+ }
+}

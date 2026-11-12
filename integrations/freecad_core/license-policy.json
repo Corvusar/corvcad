@@ -1,0 +1,39 @@
+{
+  "schema": 1,
+  "description": "Classification rules for the pinned measured FreeCAD inputs; individual SPDX and grant notices take precedence. This records evidence, not relicensing or release approval.",
+  "project_default": {
+    "expression": "LGPL-2.0-or-later",
+    "evidence": "src/Doc/LICENSE.html",
+    "reason": "Pinned upstream application notice explicitly states LGPL2+. Files declaring LGPL-2.1-or-later retain that narrower declaration."
+  },
+  "vendored": {
+    "src/3rdParty/lazy_loader/": {"expression": "Apache-2.0", "evidence": "src/3rdParty/lazy_loader/lazy_loader.py", "reason": "TensorFlow Authors' explicit Apache 2.0 grant; include the namespace initializer."},
+    "src/3rdParty/PyCXX/": {"expression": "LicenseRef-PyCXX-LLNL", "evidence": "src/3rdParty/PyCXX/CXX/COPYRIGHT", "reason": "BSD-style grant plus the additional DOE contract notice retained in full; no simplification to plain BSD-3-Clause."},
+    "src/3rdParty/zipios++/": {"expression": "LGPL-2.0-or-later", "evidence": "src/3rdParty/zipios++/zipios_common.h", "reason": "Component grant explicitly permits version 2 or later; some component files have no separate banner."},
+    "src/3rdParty/libE57Format/extern/CRCpp/": {"expression": "MIT", "evidence": "src/3rdParty/libE57Format/extern/CRCpp/LICENSE"},
+    "src/3rdParty/libE57Format/": {"expression": "BSL-1.0", "evidence": "src/3rdParty/libE57Format/LICENSE.md"},
+    "src/3rdParty/libkdtree/": {"expression": "Artistic-2.0", "evidence": "src/3rdParty/libkdtree/COPYING"},
+    "src/3rdParty/json/": {"expression": "MIT", "evidence": "src/3rdParty/json/single_include/nlohmann/json.hpp"}
+  },
+  "overrides": {
+    "cMake/FindEigen3.cmake": {"expression": "BSD-2-Clause", "evidence": "cMake/FindEigen3.cmake", "reason": "The file expressly identifies its 2-clause BSD grant."},
+    "cMake/FreeCAD_Helpers/ChooseQtVersion.cmake": {"expression": "BSD-3-Clause", "evidence": "cMake/FreeCAD_Helpers/ChooseQtVersion.cmake", "reason": "Retains the complete VTK BSD 3-clause grant."},
+    "data/examples/osifont-lgpl3fe.ttf": {"expression": "LicenseRef-OSIFONT-FontException", "evidence": "data/examples/osifont.license", "reason": "Exact upstream multi-licence/font-exception notice retained. Unused example font excluded from production payload pending a complete font-specific packaging review."},
+    "data/examples/osifont.license": {"expression": "LicenseRef-OSIFONT-FontException", "evidence": "data/examples/osifont.license"},
+    "src/Mod/Test/unittestgui.py": {"expression": "LicenseRef-PyUnit-Python-Terms", "evidence": "src/Mod/Test/unittestgui.py", "reason": "Steve Purcell's Python-terms permission with mandatory retained copyright/disclaimer; test tool only."},
+    "src/3rdParty/lazy_loader/CMakeLists.txt": {"expression": "LGPL-2.0-or-later", "evidence": "src/Doc/LICENSE.html", "reason": "FreeCAD-authored copying/build wrapper; distinct from the TensorFlow Python helper."},
+    "src/3rdParty/libE57Format/cmake/GitInfo.cmake": {"expression": "MIT AND BSL-1.0", "evidence": "src/3rdParty/libE57Format/cmake/GitInfo.cmake", "additional_notice": "supplemental-notices/GitInfo-MIT.txt", "reason": "Original C++ Modern Framework helper is MIT; libE57Format modifications retain the component BSL grant. Official MIT notice pinned separately because this copy omits its grant."},
+    "src/3rdParty/CMakeLists.txt": {"expression": "LGPL-2.0-or-later", "evidence": "src/Doc/LICENSE.html", "reason": "FreeCAD's aggregate dependency-selection build script, not a vendored implementation."},
+    "src/Base/PyTools.c": {"expression": "LicenseRef-PPEMBED", "evidence": "src/Base/PyTools.c", "reason": "Mark Lutz/O'Reilly permissive use/copy/modify/distribute grant, including warranty disclaimer."},
+    "src/Base/PyTools.h": {"expression": "LicenseRef-PPEMBED", "evidence": "src/Base/PyTools.h", "reason": "The complete PPEMBED permission is in the file banner."},
+    "src/App/Expression.tab.c": {"expression": "LGPL-2.0-or-later AND (GPL-3.0-or-later WITH Bison-exception-2.2)", "evidence": "src/App/Expression.tab.c", "reason": "Expression.y grammar under LGPL2+ plus generated Bison skeleton with explicit 2.2 exception."},
+    "src/App/Expression.tab.h": {"expression": "LGPL-2.0-or-later AND (GPL-3.0-or-later WITH Bison-exception-2.2)", "evidence": "src/App/Expression.tab.h", "reason": "Generated Bison parser interface retains its explicit skeleton exception."}
+  },
+  "notes": [
+    "SPDX expressions identify declared terms; multiple file declarations are retained separately and conservatively combined with AND.",
+    "The project default applies only outside src/3rdParty and only without a specific file grant; new unclassified vendored components fail.",
+    "Generated files retain measured hashes and provenance; build-host-specific output is regenerated, not expected to be byte-identical across platforms.",
+    "Files with historical GPL shorthand as well as an SPDX LGPL declaration retain both excerpts for review; the explicit SPDX declaration is the classification basis.",
+    "Dependency package copyright texts may cover unlinked code; they are not a statement that every package component is distributed."
+  ]
+}

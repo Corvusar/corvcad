@@ -1,0 +1,72 @@
+name: FreeCAD static module development check
+# Manual development check; desktop success is not F3 iOS acceptance.
+on:
+  workflow_dispatch:
+    inputs:
+      runner_labels:
+        description: macOS runner labels as a JSON array
+        type: string
+        default: '["macos-15"]'
+  workflow_call:
+    inputs:
+      runner_labels:
+        type: string
+        default: '["macos-15"]'
+permissions:
+  contents: read
+jobs:
+  static-desktop:
+    runs-on: ${{ fromJSON(inputs.runner_labels) }}
+    timeout-minutes: 90
+    env:
+      HOMEBREW_NO_AUTO_UPDATE: '1'
+      HOMEBREW_NO_INSTALL_CLEANUP: '1'
+      CCACHE_DIR: ${{ github.workspace }}/build/freecad-ios/ccache
+      CCACHE_BASEDIR: ${{ github.workspace }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install development dependencies
+        run: |
+          brew install cmake ninja ccache boost xerces-c eigen@3 fmt yaml-cpp freetype icu4c qtbase qttools opencascade swig python@3.11 bison flex
+          echo "STATIC_PYTHON=$(brew --prefix python@3.11)/bin/python3.11" >> "$GITHUB_ENV"
+          echo "CMAKE_PREFIX_PATH=$(brew --prefix qtbase):$(brew --prefix qttools):$(brew --prefix icu4c):$(brew --prefix opencascade):$(brew --prefix eigen@3):$(brew --prefix python@3.11)" >> "$GITHUB_ENV"
+          echo "ICU_ROOT=$(brew --prefix icu4c)" >> "$GITHUB_ENV"
+      - uses: actions/cache/restore@v4
+        id: compiler-cache
+        with:
+          path: ${{ env.CCACHE_DIR }}
+          key: f3-static-${{ runner.os }}-${{ hashFiles('integrations/freecad_core/ios/static-profile.json') }}-${{ github.run_id }}-${{ github.run_attempt }}
+          restore-keys: f3-static-${{ runner.os }}-
+      - name: Regression tests and static source configuration
+        run: |
+          "$STATIC_PYTHON" -m unittest discover -s integrations/freecad_core/ios -v
+          linguist=$(find -L "$(brew --prefix qttools)" -name Qt6LinguistToolsConfig.cmake -print -quit)
+          test -n "$linguist"
+          "$STATIC_PYTHON" integrations/freecad_core/ios/prepare_static.py configure \
+            -DPython3_EXECUTABLE="$STATIC_PYTHON" -DQt6LinguistTools_DIR="$(dirname "$linguist")" \
+            -DEigen3_DIR="$(brew --prefix eigen@3)/share/eigen3/cmake" > static-configure.log 2>&1 || { tail -100 static-configure.log; exit 1; }
+      - name: Build static FreeCAD libraries and executable
+        run: |
+          cmake --build build/freecad-ios/static-desktop --parallel 3 > static-build.log 2>&1 || { tail -100 static-build.log; exit 1; }
+      - name: Verify built-in imports and repeat upstream/F1 regressions
+        run: |
+          "$STATIC_PYTHON" integrations/freecad_core/ios/run_static.py
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: f3-static-desktop-evidence
+          path: |
+            static-configure.log
+            static-build.log
+            build/freecad-ios/static-desktop/static-source-verification.json
+            build/freecad-ios/static-desktop/configure-command.json
+            build/freecad-ios/static-desktop/CMakeCache.txt
+            build/freecad-ios/static-desktop/compile_commands.json
+            build/freecad-ios/static-desktop/.cmake/api/v1/reply/
+            build/freecad-ios/static-evidence/
+          retention-days: 7
+      - uses: actions/cache/save@v4
+        if: always()
+        with:
+          path: ${{ env.CCACHE_DIR }}
+          key: ${{ steps.compiler-cache.outputs.cache-primary-key }}

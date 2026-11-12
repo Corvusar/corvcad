@@ -1,0 +1,190 @@
+{
+  "schema": 1,
+  "source_revision": "fba4dec",
+  "sdk": "iphonesimulator",
+  "architecture": "x86_64",
+  "scope": "Intel native FreeCAD and both C ABI session fixtures passed; app compiled/executed, UI rollback assertion failed",
+  "f3_baseline": {
+    "status": "simulator F1 proofs passed with static FreeCAD modules",
+    "executable_file_bytes": 94662264,
+    "executable_sha256": "dc68e2d187de277157113db3f234a80e0c33e95a2a820f8191cdb3aa5d33857a",
+    "runtime_file_bytes": 126236789,
+    "peak_process_rss_bytes": 127057920
+  },
+  "native_sessions": {
+    "demo": {
+      "schema": 1,
+      "passed": true,
+      "native_runtime": {
+        "platform": "ios",
+        "freecad_version": [
+          "1",
+          "1",
+          "4",
+          "20260928 (Git shallow)",
+          "Unknown",
+          "2026/09/28 13:46:34",
+          "HEAD",
+          "4fd3bf320d9566a27e60069fc8387448aaa3a094"
+        ],
+        "home_path": "/Users/<user>/corvcad-freecad-f4/build/freecad-ios-intel/package/sim/FreeCADRuntime//",
+        "resource_dir": "/Users/<user>/corvcad-freecad-f4/build/freecad-ios-intel/package/sim/FreeCADRuntime/data/",
+        "library_dir": "/Users/<user>/corvcad-freecad-f4/build/freecad-ios-intel/package/sim/FreeCADRuntime/lib/",
+        "partdesign_helper": "/Users/<user>/corvcad-freecad-f4/build/freecad-ios-intel/package/sim/FreeCADRuntime/Mod/PartDesign/__init__.py",
+        "builtin_origins": {
+          "FreeCAD": "built-in",
+          "__FreeCADBase__": "built-in",
+          "Materials": "built-in",
+          "Part": "built-in",
+          "Mesh": "built-in",
+          "Sketcher": "built-in",
+          "_PartDesign": "built-in",
+          "Spreadsheet": "built-in",
+          "Import": "built-in"
+        }
+      },
+      "operations": {
+        "initialize": true,
+        "create": true,
+        "invalid_change_rollback": true,
+        "recompute": true,
+        "undo": true,
+        "redo": true,
+        "save": true,
+        "reopen": true,
+        "multiple_sessions": true,
+        "duplicate_path_guard": true,
+        "stale_handle_guard": true,
+        "triangle_short_buffer": true,
+        "null_and_nonfinite_guards": true,
+        "save_external_change_guard": true,
+        "export_unknown_overwrite_guard": true,
+        "export_external_change_guard": true,
+        "step": true,
+        "stl": true
+      },
+      "triangle_counts": {
+        "tray": 1040,
+        "lid": 12
+      },
+      "preview_signed_volume_mm3": {
+        "tray": 8752.815782444086,
+        "lid": 4900.5
+      },
+      "files": {
+        "enclosure.FCStd": {
+          "bytes": 31546,
+          "sha256": "9a0344038d21bd6cbf832fa5e2cebfbbbae67b934b9e8cd9aed67b629e282a67"
+        },
+        "tray.step": {
+          "bytes": 15125,
+          "sha256": "893466b88d5878c34099b4f69185038af96b27a680ee98236085a09cbbbbb12a"
+        },
+        "lid.step": {
+          "bytes": 6961,
+          "sha256": "80e7f3cfb763d655b67459de8288030e1e3e634b16752041550d542f8a07eb65"
+        },
+        "tray.stl": {
+          "bytes": 52084,
+          "sha256": "9a92b8f045963f6828530872809e32c62ea5b37830a3b343dfadfb094bc7f8b1"
+        },
+        "lid.stl": {
+          "bytes": 684,
+          "sha256": "ad34c69c0d602491ef614422b2fa1724b7f40f6d74fbc039453f21e47e4026f1"
+        }
+      }
+    },
+    "roundtrip": {
+      "schema": 1,
+      "passed": true,
+      "native_runtime": {
+        "platform": "ios",
+        "freecad_version": [
+          "1",
+          "1",
+          "4",
+          "20260928 (Git shallow)",
+          "Unknown",
+          "2026/09/28 13:46:34",
+          "HEAD",
+          "4fd3bf320d9566a27e60069fc8387448aaa3a094"
+        ],
+        "home_path": "/Users/<user>/corvcad-freecad-f4/build/freecad-ios-intel/package/sim/FreeCADRuntime//",
+        "resource_dir": "/Users/<user>/corvcad-freecad-f4/build/freecad-ios-intel/package/sim/FreeCADRuntime/data/",
+        "library_dir": "/Users/<user>/corvcad-freecad-f4/build/freecad-ios-intel/package/sim/FreeCADRuntime/lib/",
+        "partdesign_helper": "/Users/<user>/corvcad-freecad-f4/build/freecad-ios-intel/package/sim/FreeCADRuntime/Mod/PartDesign/__init__.py",
+        "builtin_origins": {
+          "FreeCAD": "built-in",
+          "__FreeCADBase__": "built-in",
+          "Materials": "built-in",
+          "Part": "built-in",
+          "Mesh": "built-in",
+          "Sketcher": "built-in",
+          "_PartDesign": "built-in",
+          "Spreadsheet": "built-in",
+          "Import": "built-in"
+        }
+      },
+      "operations": {
+        "initialize": true,
+        "create": true,
+        "invalid_change_rollback": true,
+        "recompute": true,
+        "undo": true,
+        "redo": true,
+        "save": true,
+        "reopen": true,
+        "multiple_sessions": true,
+        "duplicate_path_guard": true,
+        "stale_handle_guard": true,
+        "triangle_short_buffer": true,
+        "null_and_nonfinite_guards": true,
+        "save_external_change_guard": true,
+        "export_unknown_overwrite_guard": true,
+        "export_external_change_guard": true,
+        "step": true,
+        "stl": true
+      },
+      "triangle_counts": {
+        "tray": 2052,
+        "lid": 12
+      },
+      "preview_signed_volume_mm3": {
+        "tray": 19017.631534044634,
+        "lid": 12760.5
+      },
+      "files": {
+        "enclosure.FCStd": {
+          "bytes": 37864,
+          "sha256": "12d207e421db84be328763e3c810c78cdb9a60134bad22043805d1b4f01ee7c9"
+        },
+        "tray.step": {
+          "bytes": 18253,
+          "sha256": "f6e29038e8b0a168f94a69d845db43dd6940838356526c4ada3280850d488607"
+        },
+        "lid.step": {
+          "bytes": 6973,
+          "sha256": "6bbbbbb30eea36b0ba1405f566f730e054e68cc4ea156f08c0a2e4d418791559"
+        },
+        "tray.stl": {
+          "bytes": 102684,
+          "sha256": "888747829e5e8af0d442c2d3364a53eab6c163fbb668548cdea64689a68c18e9"
+        },
+        "lid.stl": {
+          "bytes": 684,
+          "sha256": "4c8ef461e33af9b40ebf9d5ce3f0eaf1acdf9b28c987c67c0149ec896167977a"
+        }
+      }
+    }
+  },
+  "native_app_built": true,
+  "native_app_ui_accepted": false,
+  "ui_failure": "NativeFreeCADTests.swift:55: rejected standoff diameter left displayed model setting at 3.0 instead of restored 6.0; file hash, dirty state, history, STL export and reopen assertions did not fail",
+  "app_ui_failure_log": {
+    "name": "app-tests-initial.log",
+    "bytes": 9742,
+    "sha256": "84b3bd7cd469c165e54654eb0ea3ca2a2c152823f503a0f75f187b8bcff721c7"
+  },
+  "default_app_tests_executed": false,
+  "physical_device_tested": false
+}

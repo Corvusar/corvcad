@@ -1,0 +1,65 @@
+{
+  "schema": 1,
+  "date": "2026-10-29",
+  "source_revision": "e992927",
+  "scope": "Initial raw library variant measurement only; excludes unavailable KiCad003 core and uses prior wx/Python providers. Not combined preflight/link/runtime acceptance.",
+  "accepted_combined_native": false,
+  "physical_device_execution": false,
+  "receipt_sha256": "06f8c6a8b7cc4079e8beb9cbe0a5b6ca4c6e95c5399dada70fd7a4579f43d499",
+  "selected_archives": 200,
+  "excluded_archives": {
+    "libharfbuzz-vector.a": {
+      "sha256": "38e05a05d7f866fc4f7db93ec517e1ba04af77a4bedcd0ec1c8ff34a1a91f2e7",
+      "reason": "Unused HarfBuzz vector companion; reject omission if any retained consumer requires a unique export.",
+      "consumer_symbol_checks": 13,
+      "unique_exports_without_retained_consumer": 106
+    },
+    "libboost_container.a": {
+      "sha256": "6e9d70658869f83a1b2ba168df707f225b041458c7e6f131f08d3883e96fad9b",
+      "reason": "Unused compiled Boost.Container allocator implementation; reject omission if any retained consumer requires a unique export.",
+      "consumer_symbol_checks": 0,
+      "unique_exports_without_retained_consumer": 225
+    },
+    "libutf8_range.a": {
+      "sha256": "23b77f1721c2bec8faba3b38bc09d27bd44e2d20a1ee01974a982584e8df0382",
+      "reason": "Alternative UTF-8 validation archive; retain utf8_validity and verify every referenced export remains provided.",
+      "consumer_symbol_checks": 2,
+      "unique_exports_without_retained_consumer": 0
+    },
+    "libprotobuf-lite.a": {
+      "sha256": "6b0278f18c6ec76761ba54d5de1c5243a92216d9a6e16ceb0c5dacee50fb2de3",
+      "reason": "Alternative protobuf lite runtime; retain the full protobuf runtime and verify every referenced export remains provided.",
+      "consumer_symbol_checks": 375,
+      "unique_exports_without_retained_consumer": 0
+    },
+    "libharfbuzz-gpu.a": {
+      "sha256": "efd56dc006a4bbcb036758ff44aaca3e00003f0a3aed36c4310b5a17bd5e9229",
+      "reason": "Unused HarfBuzz GPU companion; reject omission if any retained consumer requires a unique export.",
+      "consumer_symbol_checks": 13,
+      "unique_exports_without_retained_consumer": 56
+    },
+    "libharfbuzz-raster.a": {
+      "sha256": "5947748e760f8550a025eeadaaa2de48249e9ad26435ad8dff34a42937c63dd4",
+      "reason": "Unused HarfBuzz raster companion; reject omission if any retained consumer requires a unique export.",
+      "consumer_symbol_checks": 13,
+      "unique_exports_without_retained_consumer": 84
+    },
+    "libharfbuzz-subset.a": {
+      "sha256": "c5661b5f3740841e6aad370fcf1f340ee456dab337b98d13b5e20298b64e2216",
+      "reason": "Unused HarfBuzz subset companion; retain the primary shaping archive and reject any unique consumer requirement.",
+      "consumer_symbol_checks": 26,
+      "unique_exports_without_retained_consumer": 1135
+    }
+  },
+  "missing_retained_providers": {},
+  "known_remaining_provider_work": [
+    "New wx using union PCRE2-32 instead of bundled10.49",
+    "New target CPython using union Expat, then FreeCAD/package/probes"
+  ],
+  "tests": {
+    "workspace": 79,
+    "mixed_runner": 14,
+    "freecad_ios": 121,
+    "freecad_ios_environment_skips": 20
+  }
+}

@@ -1,0 +1,5 @@
+#include "corvcad/c_api.h"
+#include "corvcad/schematic_session_c_api.h"
+#include "corvcad/board_native_c_api.h"
+#include "corvcad/mechanical_session_c_api.h"
+#include "parts3d_c_api.h"

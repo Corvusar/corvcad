@@ -1,0 +1,91 @@
+{
+  "schema": 1,
+  "date": "2026-10-28",
+  "status": "wx and standalone FreeCAD passed; KiCad retry pending",
+  "source_revision": "f0e6f1abbde1ccd7ceb6862fc92112a7c578a9db",
+  "sdk": "iphonesimulator",
+  "architecture": "x86_64",
+  "combined_native_accepted": false,
+  "physical_device_execution": false,
+  "app_checks_run": false,
+  "wx": {
+    "status": "wx archives built with shared Expat and target verified",
+    "archive_count": 9,
+    "receipt_sha256": "71187a064d6f0fdbe6f88d0183fce88a5d6deb1adb767faca0eef0435e945d1b"
+  },
+  "freecad": {
+    "probe_sha256": "d01379246d94fdb0b9a72e38dde903597623339f0364f62aa207606dd898f8dd",
+    "probe_bytes": 94759088,
+    "core_sha256": "d978346b87a8fc728cdaeb48bd09dff32b0a1e906798ca3fd0128e81184e925c",
+    "dependencies_sha256": "a8fef843d4a98c7ecd98a1b2e01f8f7f5340430b1deb82df39fa893fa32e21e2",
+    "runtime_resources": 1722,
+    "receipt_sha256": "cf3c30a3120706e86e70ed9e477d8916a90be71c5a47426f0037897fa5e220b5",
+    "cases": {
+      "demo": {
+        "passed": true,
+        "exports": {
+          "enclosure.FCStd": {
+            "bytes": 31545,
+            "sha256": "d14cfee6f0712483eadc867492060c32f03af662c77a4ea9b5ab520120fa764a"
+          },
+          "tray.step": {
+            "bytes": 15125,
+            "sha256": "f6b7a61ac252f23cc2cd8e2694fa5ee98e0f63412bc98f2704f396c1fafb0ce7"
+          },
+          "lid.step": {
+            "bytes": 6961,
+            "sha256": "fba7dea38145b208deaeb3571489a6b52f57b99efe587421e917b9f543b38d0a"
+          },
+          "tray.stl": {
+            "bytes": 52084,
+            "sha256": "9a92b8f045963f6828530872809e32c62ea5b37830a3b343dfadfb094bc7f8b1"
+          },
+          "lid.stl": {
+            "bytes": 684,
+            "sha256": "ad34c69c0d602491ef614422b2fa1724b7f40f6d74fbc039453f21e47e4026f1"
+          }
+        }
+      },
+      "roundtrip": {
+        "passed": true,
+        "exports": {
+          "enclosure.FCStd": {
+            "bytes": 37876,
+            "sha256": "e205d4b2f0707de27a6ce461a6501b2ecc1f4bf34bf87a1e8870db9cbbce49df"
+          },
+          "tray.step": {
+            "bytes": 18253,
+            "sha256": "10df02067b9f1196058ce781e5476efd77059161f163a8ff964c93bac2905534"
+          },
+          "lid.step": {
+            "bytes": 6973,
+            "sha256": "00a1d91bcbdb75c667369320ea02c68a37043beda07a2f073b4a3ef28e04aa01"
+          },
+          "tray.stl": {
+            "bytes": 102684,
+            "sha256": "888747829e5e8af0d442c2d3364a53eab6c163fbb668548cdea64689a68c18e9"
+          },
+          "lid.stl": {
+            "bytes": 684,
+            "sha256": "4c8ef461e33af9b40ebf9d5ce3f0eaf1acdf9b28c987c67c0149ec896167977a"
+          }
+        }
+      }
+    },
+    "cleanup": {
+      "shutdown": {
+        "returncode": 0
+      },
+      "delete": {
+        "returncode": 0
+      }
+    }
+  },
+  "kicad": {
+    "initial_failure": "fmt::format absent when fmt12.2 core.h omits format.h by default",
+    "correction_revision": "850bfed",
+    "correction": "Use public FMT_DEPRECATED_HEAVY_CORE=1 while retaining the common fmt12.2 headers/library",
+    "actual_failing_translation_unit_recompiled": true,
+    "full_retry": "kicad-sim-002; acceptance pending"
+  }
+}

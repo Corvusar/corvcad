@@ -1,0 +1,122 @@
+{
+  "schema": 1,
+  "scope": "Verified CPython embedding, not complete FreeCAD F3 acceptance",
+  "run_url": "private CI mirror run 40203833358",
+  "repository_commit": "cba1c0494a63cf84d24760a6873222e35b079836",
+  "platforms": {
+    "simulator": {
+      "artifact_id": 12602534596,
+      "artifact_sha256": "5dd90769fcd2d86d4fc26228c0b6c9ba4da6c818d0dfda07ccfcd649bc965f6b",
+      "build": {
+        "schema": 1,
+        "sdk": "iphonesimulator",
+        "target": "arm64-apple-ios17.0-simulator",
+        "source": {
+          "version": "3.13.7",
+          "url": "https://www.python.org/ftp/python/3.13.7/Python-3.13.7.tar.xz",
+          "sha256": "5462f9099dfd30e238def83c71d91897d8caa5ff6ebc7a50f14d4802cdaaa79a",
+          "license": "PSF-2.0 and bundled component notices in LICENSE"
+        },
+        "archive_bytes": 45995272,
+        "stdlib_bytes": 22546842,
+        "static_archives": [
+          "libpython3.13.a",
+          "Modules/_decimal/libmpdec/libmpdec.a",
+          "Modules/_hacl/libHacl_Hash_SHA2.a",
+          "Modules/expat/libexpat.a"
+        ],
+        "xcode": "Xcode 16.4\nBuild version 16F6",
+        "sdk_version": "18.5"
+      },
+      "binary": {
+        "schema": 1,
+        "sdk": "iphonesimulator",
+        "architecture": "arm64",
+        "executable_file_bytes": 8582592,
+        "sha256": "8f33275bc2450f92ac764d48be8384be784c3386c429ea681107c022e79d75ab",
+        "dynamic_system_links": [
+          "/usr/lib/libz.1.dylib",
+          "/usr/lib/libbz2.1.0.dylib",
+          "/usr/lib/libsqlite3.dylib",
+          "/usr/lib/libiconv.2.dylib",
+          "/System/Library/Frameworks/Foundation.framework/Foundation",
+          "/usr/lib/libSystem.B.dylib"
+        ]
+      },
+      "macho_build": " 11\n      cmd LC_BUILD_VERSION\n  cmdsize 32\n platform IOSSIMULATOR\n    minos 17.0\n      sdk 18.5\n   ntools 1\n     tool LD\n  version 1167.5\n",
+      "runtime_test": true,
+      "probe": {
+        "schema": 1,
+        "passed": true,
+        "scope": "CPython and synthetic inittab module only",
+        "python": "3.13.7 (main, Oct 25 2026, 14:48:50) [Clang 17.0.0 (clang-1700.0.13.5)]",
+        "platform": "ios",
+        "extension_origins": {
+          "math": "built-in",
+          "_struct": "built-in",
+          "_datetime": "built-in",
+          "binascii": "built-in",
+          "zlib": "built-in",
+          "_json": "built-in",
+          "_pickle": "built-in",
+          "_random": "built-in",
+          "_sha2": "built-in",
+          "pyexpat": "built-in",
+          "_elementtree": "built-in",
+          "unicodedata": "built-in",
+          "array": "built-in"
+        },
+        "smoke_seconds": 0.00036466699998527474,
+        "resident_bytes": 40583168
+      },
+      "simulator": {
+        "runtime_version": "26.2",
+        "runtime_build": "23C54",
+        "device_type": "iPad Pro (12.9-inch) (3rd generation)"
+      }
+    },
+    "device": {
+      "artifact_id": 12603645158,
+      "artifact_sha256": "86e30d88c221dcf3618052bb2bfee94c93d5603b49f2233436c2d7cde91edab3",
+      "build": {
+        "schema": 1,
+        "sdk": "iphoneos",
+        "target": "arm64-apple-ios17.0",
+        "source": {
+          "version": "3.13.7",
+          "url": "https://www.python.org/ftp/python/3.13.7/Python-3.13.7.tar.xz",
+          "sha256": "5462f9099dfd30e238def83c71d91897d8caa5ff6ebc7a50f14d4802cdaaa79a",
+          "license": "PSF-2.0 and bundled component notices in LICENSE"
+        },
+        "archive_bytes": 45947424,
+        "stdlib_bytes": 22546842,
+        "static_archives": [
+          "libpython3.13.a",
+          "Modules/_decimal/libmpdec/libmpdec.a",
+          "Modules/_hacl/libHacl_Hash_SHA2.a",
+          "Modules/expat/libexpat.a"
+        ],
+        "xcode": "Xcode 16.4\nBuild version 16F6",
+        "sdk_version": "18.5"
+      },
+      "binary": {
+        "schema": 1,
+        "sdk": "iphoneos",
+        "architecture": "arm64",
+        "executable_file_bytes": 8546776,
+        "sha256": "fd482b2f37a77e525ee9a81111458fbfee5af60738dcc97aee97e247306624ce",
+        "dynamic_system_links": [
+          "/usr/lib/libz.1.dylib",
+          "/usr/lib/libbz2.1.0.dylib",
+          "/usr/lib/libsqlite3.dylib",
+          "/usr/lib/libiconv.2.dylib",
+          "/System/Library/Frameworks/Foundation.framework/Foundation",
+          "/usr/lib/libSystem.B.dylib"
+        ]
+      },
+      "macho_build": " 11\n      cmd LC_BUILD_VERSION\n  cmdsize 32\n platform IOS\n    minos 17.0\n      sdk 18.5\n   ntools 1\n     tool LD\n  version 1167.5\n",
+      "runtime_test": false
+    }
+  },
+  "measurement_limit": "Executable file sizes and interpreter RSS only; no FreeCAD geometry/recompute measurement or physical-device execution."
+}

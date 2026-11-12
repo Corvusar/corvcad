@@ -1,0 +1,4 @@
+# Auto detect text files and perform LF normalization
+* text=auto
+# Preserve upstream notice formatting; these files are verified against their sources.
+integrations/kicad_core/audit/notices/* text eol=lf whitespace=-blank-at-eol,-blank-at-eof

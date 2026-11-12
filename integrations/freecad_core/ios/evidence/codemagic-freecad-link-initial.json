@@ -1,0 +1,74 @@
+{
+  "schema": 1,
+  "provider": "Codemagic",
+  "app_id": "6adef14098c06b067e3a725c",
+  "build_id": "6adf263856623e06590fd97c",
+  "commit": "c0a20f43129c493c96e6416d7246df779297f385",
+  "run_url": "https://codemagic.io/app/6adef14098c06b067e3a725c/build/6adf263856623e06590fd97c",
+  "scope": "FreeCAD sources compiled for arm64 simulator, including corrected WildMagic Carbon guard; final executable link failed before staging/runtime/geometry tests",
+  "result": "failed",
+  "failed_step": "Step 8 script `Compile FreeCAD for the target SDK` exited with status code 1",
+  "link_error": "Undefined symbol _qt_main_wrapper selected through Qt6Core EntryPointPrivate interface",
+  "native_runtime_tested": false,
+  "artifact": {
+    "name": "corvcad_6_artifacts.zip",
+    "bytes": 2285626,
+    "sha256": "8fd1f1107d7a0e1f86e361830c3da8c3482b4063fcb91c7b45b92820bc59f136"
+  },
+  "freecad_build_log_sha256": "0ea51b10cf5577cd8e17bdc0679aff2fd7c6d410b801fbd1c237717089589a62",
+  "reports": {
+    "build/freecad-ios/freecad-iphonesimulator/cross-compile-check.json": {
+      "sha256": "fef5ffa0217a82db55f1a87a6884bd241ba1e9940acaffd1f1804a4fcc9e753f",
+      "report": {
+        "schema": 1,
+        "sdk": "iphonesimulator",
+        "compilation_commands_checked": 672,
+        "status": "target compiler flags checked; link/runtime acceptance is separate"
+      }
+    },
+    "build/freecad-ios/freecad-iphonesimulator/ios-source-verification.json": {
+      "sha256": "0d30004ac87ded8bc9c6459dfd2fe606952df31eeef79e723e0cda2bfea8ff32",
+      "report": {
+        "schema": 1,
+        "source_commit": "4fd3bf320d9566a27e60069fc8387448aaa3a094",
+        "profile_sha256_lf": "bf8ea3bc7b9a8af33b98c4c7a123f56a474ad62e3d87a6c6da85da1e2add0fcb",
+        "static_profile_sha256_lf": "6d8d82d3485db6c1472e8d5bf622a885d1cc7693ef509c6583b2a15adf3d7f5f",
+        "source_files": {
+          "cMake/FreeCAD_Helpers/CheckInterModuleDependencies.cmake": "38cc5c51c843892f9917056f6b0fecba71d316ac413f9e3fd55dabfa40155455",
+          "cMake/FreeCAD_Helpers/SetupQt.cmake": "eee5398a459ae52a4dfa8207561de6af9f0849790a71cd1063095a4cd9a72be7",
+          "src/Mod/Part/parttests/TestPartMirror.py": "91d7ce2b38187b0487912ff7c866a1911687c7263240e4f457005533210df047",
+          "src/Mod/PartDesign/PartDesignTests/TestBoolean.py": "25741b7ebb30d372b5c84efc9e45d97ef31f9c804459b2d5c83ee32ad4890e09",
+          "src/Mod/PartDesign/CMakeLists.txt": "449bd20c2196254c6afeb875e19aeaa8fa794187306fbd54fe0a95ac7e51c8e6",
+          "src/Mod/PartDesign/InvoluteGearFeature.py": "37ebbf1a0fd69b86f2e30a179b6af371cb4b2df4f0b9318ece423bc74435105f",
+          "src/Mod/Sketcher/ProfileLib/RegularPolygon.py": "8c5ff9213080d9c8822ec1550af7c716424c0c1919479fbee44d6a64cf39c66d",
+          "CMakeLists.txt": "fbbde309ed79444fb5d4d8193076bd7bc5847865240c1f47e156e59b1325ca9d",
+          "cMake/FreeCadMacros.cmake": "97ba28f3ffc95358eb27eaa614b417bd15ab0a0f0c9e5df8df4ae9923aa84003",
+          "src/App/CMakeLists.txt": "9a2980dcfd57512f5ffab48b86e9e9117f66d9c937c6fd8eb198483044c1ad59",
+          "src/Base/CMakeLists.txt": "fcc922e5a78872c8017865abc7d5819f4a9f5363458e597e336857e3d40700d5",
+          "src/Main/CMakeLists.txt": "c00f138daa36577b637a2f2f6bbc6ec57cd8f144f16f43f252ddf4a8cdb94c1f",
+          "src/Main/MainCmd.cpp": "35383b509a9963417589f669ccdb9279f87c042a018ad54bac216c48d80743af",
+          "src/Mod/Import/App/CMakeLists.txt": "366a6a312aafada5e1a3edaea66e09336fd8c8d8c523796b2ec52d43dd479f5f",
+          "src/Mod/Material/App/CMakeLists.txt": "5f04e97027465a2a9dda9a1e178abd65ee2ee85d90dc328de45ca19886ad9a6b",
+          "src/Mod/Mesh/App/CMakeLists.txt": "66fdbaf5b3c3c660c008f0b5b3688c2b95d3fe6d1ea93accee4695be2ff5da45",
+          "src/Mod/Part/App/CMakeLists.txt": "026c1c005b0f6074433208dcb70842cd3bfc2fc973b1867b8054890fded8fb58",
+          "src/Mod/PartDesign/App/CMakeLists.txt": "6d0577da4f994c948dc8e872bf39e5ad9e8f612dbb9a41a6889075c7fa89b927",
+          "src/Mod/Sketcher/App/CMakeLists.txt": "78845537ad3ff46c500334d86be0c51611329d5dcf4419d5f2510637395ad7e9",
+          "src/Mod/Spreadsheet/App/CMakeLists.txt": "fdce48d5646f5536348a09a9c20e69d6af5f33993d755859a9dd5ed67935ef24",
+          "cMake/FreeCAD_Helpers/SetupPython.cmake": "0087edc2416306aacf811760f0dd4a4c5fda89ffb15d1ee380675544c7d469f6",
+          "src/FCConfig.h": "0216dd5f47f9e0d7c5b864d7ea86c54d6fafbef71d33b649bb19de1b59766934",
+          "src/Base/Interpreter.cpp": "fabd43cc09982ce0b7f5b093ed64d5f7ce83df6e359b406e916b42643c48c9ce",
+          "src/Mod/Mesh/App/WildMagic4/Wm4System.cpp": "609af4d14d621cee14df8a64d4809149fb8a6d7fcccc54840535fdac7ad7f63c"
+        },
+        "status": "iOS source patch state verified; native validation not established"
+      }
+    }
+  },
+  "cache_observation": {
+    "workflow": "freecad-ios",
+    "cache_id": "6adf0820f0b14d8a1ee72019",
+    "cache_bytes": 1266578999,
+    "ccache_calls": 5861,
+    "ccache_hits": 0,
+    "cause": "Existing first-success cache retained; prior warm build skipped cache upload, so new OCCT paths never persisted"
+  }
+}

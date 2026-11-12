@@ -1,0 +1,45 @@
+# Schematic session interface (version 11)
+
+The C entry points in `engine/include/corvcad/schematic_session_c_api.h` are available to Swift through the app bridging header. They currently wrap CorvCAD's **source-preserving compatibility backend**, not KiCad's model. Always check `cc_sch_api_version`, `cc_sch_session_backend`, and capability bits. `CC_SCH_NATIVE_KICAD`, `CC_SCH_ERC`, and `CC_SCH_NETLIST` are absent from the backend the app links today. A native KiCad backend exists as a desktop and simulator proof (`integrations/kicad_core/session/`, see `docs/KICAD_CORE_PORT.md`).
+
+Open a `.kicad_pro` or root `.kicad_sch` file with `cc_sch_session_open`. The session loads project-local child sheets recursively. `cc_sch_session_snapshot_json` returns a UTF-8 object with `backend`, `kiCadErcAvailable`, and `sheets`. Each sheet has `path`, project-relative `file`, `name`, `uuid`, `version`, `sharedFile`, and arrays for `symbols`, `wires`, `buses`, `labels`, `junctions`, `noConnects`, and `unsupportedConstructs`. Item `id` is `sheet-instance-path:uuid`; pass the separate path and UUID to edit calls. Symbol entries include reference, value, library ID, footprint, position, and rotation. Known KiCad constructs that this model does not expose stay in the original document text. Unknown top-level expressions appear in `unsupportedConstructs` and block a writable save.
+
+Version 2 adds the touch-authoring calls the iPad app uses: `cc_sch_transaction_add_two_pin` places CorvCAD's two-pin part with a reference unused across every sheet and writes the sheet's instance path (`/<root uuid>/<sheet uuid>...`) into the symbol's `instances` block; it is refused with `CC_SCH_UNSUPPORTED` in a sheet file used by more than one instance. `cc_sch_transaction_add_routed_wire` writes the pin-avoiding orthogonal route, and `cc_sch_session_route` returns that route for a preview. `cc_sch_transaction_move_label` and `cc_sch_transaction_rename_label` edit labels. `cc_sch_session_can_undo`/`can_redo` report history availability, and `cc_sch_session_sheet_source` returns one sheet instance's current file text so a client can draw it with the single-sheet reader. Child-sheet instances report their `Sheetname` as `name`.
+
+Call `cc_sch_transaction_begin`, apply one or more supported edits, then `cc_sch_transaction_commit`. If an edit fails, dispose the transaction to abort the group. `cc_sch_transaction_free` must be called after either path. Undo and redo operate on complete transactions. The in-memory history retains at most 50 entries within a 64 MiB source-text budget and is not persisted across sessions. Editing a shared child-sheet file affects every instance of that file; instance paths still distinguish where an item is displayed. Reference renaming in a shared file is refused until KiCad's per-instance semantics are available.
+
+Version 3 adds `cc_sch_session_netlist` (KiCad's s-expression netlist) and `cc_sch_session_erc_json` (the JSON report `kicad-cli sch erc --format json` writes) for the current, edited state. A backend offers them only with `CC_SCH_NETLIST` and `CC_SCH_ERC`; the compatibility backend returns `CC_SCH_UNSUPPORTED` and NULL.
+
+Version 7 adds `cc_sch_session_plot`: KiCad's schematic plot (`SCH_PLOTTER`) as `kicad-cli sch export pdf|svg` writes it with its defaults, all sheets with the drawing sheet in the default theme. Format 0 writes one PDF at the given path; format 1 writes one SVG per sheet into an existing directory. It is offered only with `CC_SCH_PLOT` (the NATIVE_KICAD backend); the compatibility backend returns `CC_SCH_UNSUPPORTED`.
+
+Version 9 adds, with `CC_SCH_KICAD_TOOLS`: `cc_sch_transaction_add_bus_bus_entry` (a bus-to-bus entry, quadrants as the wire entry; KiCad saves it as a 2.54 mm bus segment, so it reads back as one) and `cc_sch_transaction_resize_sheet` (top-left corner kept, at least 5.08 mm and what the sheet's pins need, pins kept on the edges). There `cc_sch_transaction_delete_item` also deletes a sheet: KiCad's hierarchy is refreshed after the commit, undo restores it, and the sheet's file stays in the project folder, as in KiCad.
+
+Version 11 adds KiCad's simulator, only with the new `CC_SCH_SIMULATE` capability: the native backend built with ngspice (`NGSPICE_BUILD`; see `docs/NGSPICE_PROPOSAL.md`). Without it, the calls return `CC_SCH_UNSUPPORTED` and NULL.
+- `cc_sch_session_simulate` runs one analysis on the current state, as KiCad's Simulator window does:
+  - the project's ngspice settings (LTspice and PSpice compatibility when the project has no workbook);
+  - KiCad's SPICE netlist;
+  - ngspice 46 with its XSPICE code models, in ngspice's background thread. The call blocks until the run ends; one simulation runs at a time in the process.
+- `command` is the analysis; empty means the schematic's own directive. It may carry a Simulator tab's option lines as KiCad's workbook stores them (`.kicad adjustpaths`, `.save all`, `.probe alli`, `.probe allp`, `.kicad esavenone`). With any of them, the netlist options are the ones listed, as KiCad reads a workbook tab; without, a new tab's defaults apply.
+- The result is text: a header line (analysis, plot, points, points kept), then one line per vector with its real or complex values. `max_points` keeps about that many points by stride, plus the last.
+- `cc_sch_session_spice_netlist` returns the netlist that run would load.
+- `cc_sch_simulate_stop`, callable from any thread, stops the run in progress; the simulate call then returns the points so far.
+
+Version 10 adds `cc_sch_import` (`CC_SCH_KICAD_TOOLS` backend only): KiCad's import of an Altium, Eagle, EasyEDA, EasyEDA Pro, CADSTAR, PADS, LTspice or gEDA schematic, as `SCH_EDIT_FRAME::importFile` runs it without the frame, into a project whose `.kicad_pro` exists, with no session open. The input is read from a copy in the project folder (importers write their symbol libraries beside it), footprint fields point at the `<project>-import-fps` library that `cc_board_native_import` fills, and a project with several designs imports its first board-and-schematic pair.
+
+Version 8 adds, again only with `CC_SCH_KICAD_TOOLS`: `cc_sch_transaction_add_no_connect` (a no-connect flag, normally on a pin end), `cc_sch_transaction_mirror_symbol` (KiCad's Mirror Vertically, axis 0, or Horizontally, axis 1, about the symbol's origin, which KiCad toggles), `cc_sch_transaction_add_text` (a free text note) and `cc_sch_transaction_add_note_line` (a graphic line on the notes layer, saved as a two-point `polyline`). Notes join no net. The compatible single-sheet reader exposes sheet `text` items and `polyline` segments (`cc_sch_text_*`, `cc_sch_note_line_*`) so a client can draw them.
+
+Version 6 adds KiCad's editing tools, offered only with `CC_SCH_KICAD_TOOLS` (the NATIVE_KICAD backend). The compatibility backend returns `CC_SCH_UNSUPPORTED` for each of them.
+- `cc_sch_transaction_annotate` runs KiCad's annotation of the whole hierarchy (by X position, first free number) and can renumber every symbol.
+- `cc_sch_transaction_add_bus` adds a bus segment, and `cc_sch_transaction_add_bus_entry` a wire-to-bus entry.
+- `cc_sch_transaction_add_scoped_label` adds a local, global or hierarchical label.
+- `cc_sch_transaction_add_sheet` adds a hierarchical sheet box with a new `<name>.kicad_sch`, written by the next save.
+- `cc_sch_transaction_add_sheet_pins` adds sheet pins for a sheet's hierarchical labels.
+- `cc_sch_session_bom_csv` returns the BOM as `kicad-cli sch export bom --group-by Value,Footprint` writes it.
+
+Version 5 adds `cc_sch_transaction_add_library_symbol` (`CC_SCH_LIBRARY`).
+
+Version 4 adds `cc_sch_transaction_rotate_symbol`, which turns a placed symbol 90 degrees counter-clockwise about its origin, as KiCad's rotate does. Its fields turn with it, and their text switches between horizontal and vertical. Wires attached to its pins stay where they are.
+
+`cc_sch_session_validate_structure` checks the loaded file versions and recognized KiCad 10 top-level grammar only; it is **not** ERC. `cc_sch_session_save_copy` stages a project directory beside the chosen destination, writes edited sheets, then renames it into place. It refuses an existing destination or symbolic links and removes the staged copy on reported failure. `cc_sch_session_save` stages edited sheets, detects external changes, and restores backups on reported failure. It does not yet recover a multi-file save interrupted by a process crash or power loss. Both reject schematic versions newer than KiCad 10.0.6's `20260306` file version or missing a version. A read-only snapshot remains available for such a file. They do not run ERC, and a successful save is not an electrical validation.
+
+All C functions return an error code in a zero-initialized `cc_sch_result` (`CC_SCH_CONFLICT`, `CC_SCH_UNSUPPORTED`, and others). Its message is owned; call `cc_sch_result_clear` when finished. Snapshot strings use `cc_free_text`. Session and transaction handles have their own free functions. The UI agent should surface unsupported operations explicitly and avoid presenting this backend as KiCad-backed.

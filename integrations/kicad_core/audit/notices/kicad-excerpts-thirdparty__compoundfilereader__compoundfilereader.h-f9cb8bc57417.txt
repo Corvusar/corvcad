@@ -1,0 +1,14 @@
+Source: KiCad 10.0.6 / thirdparty/compoundfilereader/compoundfilereader.h
+
+/***********************************************************************************************************************
+ * If we are compiling on Apple with Clang >= 17, the version of LLVM no longer includes a generic template for
+ * char_traits for char types which are not specified in the C++ standard. We define our own here for types required by
+ * the JSON library.
+ *
+ * From: https://github.com/llvm/llvm-project/commit/c3668779c13596e223c26fbd49670d18cd638c40
+ *
+ * Part of the LLVM Project, under the Apache License v2.0 with LLVM Exceptions.
+ * See https://llvm.org/LICENSE.txt for license information.
+ * SPDX-License-Identifier: Apache-2.0 WITH LLVM-exception
+ *
+ **********************************************************************************************************************/

@@ -1,0 +1,1783 @@
+CorvCAD patch series for KiCad 10.0.6 (caf7377), on top of 0009: let the push-and-shove
+router's model interface (PNS_KICAD_IFACE_BASE) link without the board editor's view and tools.
+
+Applied by integrations/kicad_core/fetch.py. Nothing changes in behaviour or in KiCad's own
+builds.
+
+pcbnew/router/pns_kicad_iface.cpp defines both PNS_KICAD_IFACE_BASE (board sync, rule
+resolver, sizes, layers) and PNS_KICAD_IFACE, the editor's interface, which draws preview
+items into the GAL view, hides items, reads the selection tool and pushes the editor's
+commit. Every PNS_KICAD_IFACE member and the view-only PNS_PCBNEW_DEBUG_DECORATOR move
+unchanged into a new pns_kicad_iface_view.cpp, listed after pns_kicad_iface.cpp in both router
+source lists, and pns_kicad_iface.cpp drops the editor headers only they used (tool base,
+selection tool, tool manager, GAL, painter, preview item). A program that only uses PNS_KICAD_IFACE_BASE (CorvCAD's headless router in
+integrations/kicad_core/session/kicad_board.cpp) then links pns_kicad_iface.cpp without the
+view and tool code.
+diff --git a/pcbnew/router/pns_kicad_iface.cpp b/pcbnew/router/pns_kicad_iface.cpp
+--- a/pcbnew/router/pns_kicad_iface.cpp
++++ b/pcbnew/router/pns_kicad_iface.cpp
+@@ -42,13 +42,8 @@
+ #include <layer_ids.h>
+ #include <optional>
+ #include <kidialog.h>
+-#include <tools/pcb_tool_base.h>
+-#include <tools/pcb_selection_tool.h>
+-#include <tool/tool_manager.h>
+ #include <settings/app_settings.h>
+ 
+-#include <gal/graphics_abstraction_layer.h>
+-#include <pcb_painter.h>
+ 
+ #include <geometry/shape.h>
+ #include <geometry/shape_line_chain.h>
+@@ -80,7 +75,6 @@
+ #include "pns_node.h"
+ #include "pns_router.h"
+ #include "pns_debug_decorator.h"
+-#include "router_preview_item.h"
+ 
+ typedef VECTOR2I::extended_type ecoord;
+ 
+@@ -1407,169 +1401,6 @@
+ }
+ 
+ 
+-class PNS_PCBNEW_DEBUG_DECORATOR: public PNS::DEBUG_DECORATOR
+-{
+-public:
+-    PNS_PCBNEW_DEBUG_DECORATOR( PNS::ROUTER_IFACE* aIface  ) :
+-            PNS::DEBUG_DECORATOR(),
+-            m_iface( aIface ),
+-            m_view( nullptr ),
+-            m_items( nullptr ),
+-            m_depth( 0 )
+-    {}
+-
+-    ~PNS_PCBNEW_DEBUG_DECORATOR()
+-    {
+-        PNS_PCBNEW_DEBUG_DECORATOR::Clear();
+-        
+-        for ( PNS::ITEM* item : m_clonedItems )
+-        {
+-            delete item;
+-        }
+-
+-        delete m_items;
+-    }
+-
+-    void SetView( KIGFX::VIEW* aView )
+-    {
+-        Clear();
+-        delete m_items;
+-        m_items = nullptr;
+-        m_view = aView;
+-
+-        if( m_view == nullptr )
+-            return;
+-
+-        if( m_view->GetGAL() )
+-            m_depth = m_view->GetGAL()->GetMinDepth();
+-
+-        m_items = new KIGFX::VIEW_GROUP( m_view );
+-        m_items->SetLayer( LAYER_SELECT_OVERLAY ) ;
+-        m_view->Add( m_items );
+-    }
+-
+-    void AddPoint( const VECTOR2I& aP, const KIGFX::COLOR4D& aColor, int aSize, const wxString& aName = wxT( "" ),
+-                   const SRC_LOCATION_INFO& aSrcLoc = SRC_LOCATION_INFO() ) override
+-
+-    {
+-        SHAPE_LINE_CHAIN sh;
+-
+-        sh.SetWidth( 10000 );
+-
+-        sh.Append( aP.x - aSize, aP.y - aSize );
+-        sh.Append( aP.x + aSize, aP.y + aSize );
+-        sh.Append( aP.x, aP.y );
+-        sh.Append( aP.x - aSize, aP.y + aSize );
+-        sh.Append( aP.x + aSize, aP.y - aSize );
+-
+-        AddShape( &sh, aColor, sh.Width(), aName, aSrcLoc );
+-    }
+-
+-    void AddItem( const PNS::ITEM* aItem, const KIGFX::COLOR4D& aColor, int aOverrideWidth = 0,
+-                  const wxString& aName = wxT( "" ),
+-                  const SRC_LOCATION_INFO& aSrcLoc = SRC_LOCATION_INFO() ) override
+-    {
+-        if( !m_view || !aItem )
+-            return;
+-
+-        PNS::ITEM* cloned = aItem->Clone();
+-
+-        if( auto line = dyn_cast<PNS::LINE*>( cloned ))
+-        {
+-            line->ClearLinks();
+-        }
+-
+-        m_clonedItems.push_back( cloned );
+-
+-        ROUTER_PREVIEW_ITEM* pitem = new ROUTER_PREVIEW_ITEM( cloned, m_iface, m_view );
+-
+-        pitem->SetColor( aColor.WithAlpha( 0.5 ) );
+-        pitem->SetWidth( aOverrideWidth );
+-        pitem->SetDepth( nextDepth() );
+-
+-        m_items->Add( pitem );
+-        m_view->Update( m_items );
+-    }
+-
+-    void AddShape( const BOX2I& aBox, const KIGFX::COLOR4D& aColor, int aOverrideWidth = 0,
+-                   const wxString& aName = wxT( "" ),
+-                   const SRC_LOCATION_INFO& aSrcLoc = SRC_LOCATION_INFO() ) override
+-    {
+-        SHAPE_LINE_CHAIN l;
+-        l.SetWidth( aOverrideWidth );
+-
+-        VECTOR2I o = aBox.GetOrigin();
+-        VECTOR2I s = aBox.GetSize();
+-
+-        l.Append( o );
+-        l.Append( o.x + s.x, o.y );
+-        l.Append( o.x + s.x, o.y + s.y );
+-        l.Append( o.x, o.y + s.y );
+-        l.Append( o );
+-
+-        AddShape( &l, aColor, aOverrideWidth, aName, aSrcLoc );
+-    }
+-
+-    void AddShape( const SHAPE* aShape, const KIGFX::COLOR4D& aColor, int aOverrideWidth = 0,
+-                   const wxString& aName = wxT( "" ),
+-                   const SRC_LOCATION_INFO& aSrcLoc = SRC_LOCATION_INFO() ) override
+-    {
+-        if( !m_view || !aShape )
+-            return;
+-
+-        ROUTER_PREVIEW_ITEM* pitem = new ROUTER_PREVIEW_ITEM( *aShape, m_iface, m_view );
+-
+-        pitem->SetColor( aColor.WithAlpha( 0.5 ) );
+-        pitem->SetWidth( aOverrideWidth );
+-        pitem->SetDepth( nextDepth() );
+-
+-        m_items->Add( pitem );
+-        m_view->Update( m_items );
+-    }
+-
+-    void Clear() override
+-    {
+-        if( m_view && m_items )
+-        {
+-            m_items->FreeItems();
+-            m_view->Update( m_items );
+-
+-            if( m_view->GetGAL() )
+-                m_depth = m_view->GetGAL()->GetMinDepth();
+-        }
+-
+-        for( PNS::ITEM* item : m_clonedItems )
+-            delete item;
+-
+-        m_clonedItems.clear();
+-    }
+-
+-    virtual void Message( const wxString& msg, const SRC_LOCATION_INFO& aSrcLoc = SRC_LOCATION_INFO() ) override
+-    {
+-    }
+-
+-private:
+-    double nextDepth()
+-    {
+-        // Use different depths so that the transculent shapes won't overwrite each other.
+-
+-        m_depth++;
+-
+-        if( m_depth >= 0 && m_view->GetGAL() )
+-            m_depth = m_view->GetGAL()->GetMinDepth();
+-
+-        return m_depth;
+-    }
+-
+-    PNS::ROUTER_IFACE* m_iface;
+-    KIGFX::VIEW* m_view;
+-    KIGFX::VIEW_GROUP* m_items;
+-    std::vector<PNS::ITEM*> m_clonedItems;
+-
+-    double m_depth;
+-};
+-
+-
+ PNS::DEBUG_DECORATOR* PNS_KICAD_IFACE_BASE::GetDebugDecorator()
+ {
+     return m_debugDecorator;
+@@ -1586,29 +1417,10 @@
+ }
+ 
+ 
+-PNS_KICAD_IFACE::PNS_KICAD_IFACE()
+-{
+-    m_tool = nullptr;
+-    m_view = nullptr;
+-    m_previewItems = nullptr;
+-    m_commitFlags = 0;
+-}
+-
+-
+ PNS_KICAD_IFACE_BASE::~PNS_KICAD_IFACE_BASE()
+ {
+     delete m_ruleResolver;
+     delete m_debugDecorator;
+-}
+-
+-
+-PNS_KICAD_IFACE::~PNS_KICAD_IFACE()
+-{
+-    if( m_previewItems )
+-    {
+-        m_previewItems->FreeItems();
+-        delete m_previewItems;
+-    }
+ }
+ 
+ 
+@@ -2140,25 +1952,9 @@
+ }
+ 
+ 
+-
+ bool PNS_KICAD_IFACE_BASE::IsKicadCopperLayer( PCB_LAYER_ID aKicadLayer ) const
+ {
+     return ::IsCopperLayer( aKicadLayer );
+-}
+-
+-
+-bool PNS_KICAD_IFACE::IsAnyLayerVisible( const PNS_LAYER_RANGE& aLayer ) const
+-{
+-    if( !m_view )
+-        return false;
+-
+-    for( int i = aLayer.Start(); i <= aLayer.End(); i++ )
+-    {
+-        if( m_view->IsLayerVisible( GetBoardLayerFromPNSLayer( i ) ) )
+-            return true;
+-    }
+-
+-    return false;
+ }
+ 
+ 
+@@ -2251,37 +2047,6 @@
+     }
+ 
+     return test.Start() <= test.End();
+-}
+-
+-
+-bool PNS_KICAD_IFACE::IsItemVisible( const PNS::ITEM* aItem ) const
+-{
+-    // by default, all items are visible (new ones created by the router have parent == NULL
+-    // as they have not been committed yet to the BOARD)
+-    if( !m_view || !aItem->Parent() )
+-        return true;
+-
+-    BOARD_ITEM*      item = aItem->Parent();
+-    bool             isOnVisibleLayer = true;
+-    RENDER_SETTINGS* settings = m_view->GetPainter()->GetSettings();
+-
+-    if( settings->GetHighContrast() )
+-        isOnVisibleLayer = item->IsOnLayer( settings->GetPrimaryHighContrastLayer() );
+-
+-    if( m_view->IsVisible( item ) && isOnVisibleLayer )
+-    {
+-        for( PCB_LAYER_ID layer : item->GetLayerSet() )
+-        {
+-            if( item->ViewGetLOD( layer, m_view ) < m_view->GetScale() )
+-                return true;
+-        }
+-    }
+-
+-    // Items hidden in the router are not hidden on the board
+-    if( m_hiddenItems.find( item ) != m_hiddenItems.end() )
+-        return true;
+-
+-    return false;
+ }
+ 
+ 
+@@ -2448,576 +2213,27 @@
+ }
+ 
+ 
+-void PNS_KICAD_IFACE::EraseView()
+-{
+-    for( BOARD_ITEM* item : m_hiddenItems )
+-        m_view->SetVisible( item, true );
+-
+-    m_hiddenItems.clear();
+-
+-    if( m_previewItems )
+-    {
+-        m_previewItems->FreeItems();
+-        m_view->Update( m_previewItems );
+-    }
+-
+-    if( m_debugDecorator )
+-        m_debugDecorator->Clear();
+-}
+-
+-
+ void PNS_KICAD_IFACE_BASE::SetDebugDecorator( PNS::DEBUG_DECORATOR *aDec )
+ {
+     m_debugDecorator = aDec;
+ }
+ 
+ 
+-void PNS_KICAD_IFACE::DisplayItem( const PNS::ITEM* aItem, int aClearance, bool aEdit, int aFlags )
+-{
+-       if( aItem->IsVirtual() )
+-        return;
+-
+-    if( ZONE* zone = dynamic_cast<ZONE*>( aItem->Parent() ) )
+-    {
+-        if( zone->GetIsRuleArea() )
+-            aFlags |= PNS_SEMI_SOLID;
+-    }
+-
+-    ROUTER_PREVIEW_ITEM* pitem = new ROUTER_PREVIEW_ITEM( aItem, this, m_view, aFlags );
+-
+-    // Note: SEGMENT_T is used for placed tracks; LINE_T is used for the routing head
+-    static int tracks = PNS::ITEM::SEGMENT_T | PNS::ITEM::ARC_T | PNS::ITEM::LINE_T;
+-    static int tracksOrVias = tracks | PNS::ITEM::VIA_T;
+-
+-    if( aClearance >= 0 )
+-    {
+-        pitem->SetClearance( aClearance );
+-
+-        PCBNEW_SETTINGS* settings = static_cast<PCBNEW_SETTINGS*>( m_tool->GetManager()->GetSettings() );
+-
+-        switch( settings->m_Display.m_TrackClearance )
+-        {
+-        case SHOW_WITH_VIA_ALWAYS:
+-        case SHOW_WITH_VIA_WHILE_ROUTING_OR_DRAGGING:
+-            pitem->ShowClearance( aItem->OfKind( tracksOrVias ) );
+-            break;
+-
+-        case SHOW_WITH_VIA_WHILE_ROUTING:
+-            pitem->ShowClearance( aItem->OfKind( tracksOrVias ) && !aEdit );
+-            break;
+-
+-        case SHOW_WHILE_ROUTING:
+-            pitem->ShowClearance( aItem->OfKind( tracks ) && !aEdit );
+-            break;
+-
+-        default:
+-            pitem->ShowClearance( false );
+-            break;
+-        }
+-    }
+-
+-    m_previewItems->Add( pitem );
+-    m_view->Update( m_previewItems );
+-}
+-
+-
+-void PNS_KICAD_IFACE::DisplayPathLine( const SHAPE_LINE_CHAIN& aLine, int aImportance )
+-{
+-    ROUTER_PREVIEW_ITEM* pitem = new ROUTER_PREVIEW_ITEM( aLine, this, m_view );
+-    pitem->SetDepth( pitem->GetOriginDepth() - ROUTER_PREVIEW_ITEM::PathOverlayDepth );
+-
+-    COLOR4D color;
+-
+-    if( aImportance >= 1 )
+-        color = COLOR4D( 1.0, 1.0, 0.0, 0.6 );
+-    else if( aImportance == 0 )
+-        color = COLOR4D( 0.7, 0.7, 0.7, 0.6 );
+-
+-    pitem->SetColor( color );
+-
+-    m_previewItems->Add( pitem );
+-    m_view->Update( m_previewItems );
+-}
+-
+-
+-void PNS_KICAD_IFACE::DisplayRatline( const SHAPE_LINE_CHAIN& aRatline, PNS::NET_HANDLE aNet )
+-{
+-    ROUTER_PREVIEW_ITEM* pitem = new ROUTER_PREVIEW_ITEM( aRatline, this, m_view );
+-
+-    KIGFX::RENDER_SETTINGS*     renderSettings = m_view->GetPainter()->GetSettings();
+-    KIGFX::PCB_RENDER_SETTINGS* rs = static_cast<KIGFX::PCB_RENDER_SETTINGS*>( renderSettings );
+-    bool                        colorByNet = rs->GetNetColorMode() != NET_COLOR_MODE::OFF;
+-    COLOR4D                     defaultColor = rs->GetColor( nullptr, LAYER_RATSNEST );
+-    COLOR4D                     color = defaultColor;
+-
+-    std::shared_ptr<CONNECTIVITY_DATA>  connectivity = m_board->GetConnectivity();
+-    std::set<int>                       highlightedNets = rs->GetHighlightNetCodes();
+-    std::map<int, KIGFX::COLOR4D>&      netColors = rs->GetNetColorMap();
+-    int                                 netCode = -1;
+-
+-    if( NETINFO_ITEM* net = static_cast<NETINFO_ITEM*>( aNet ) )
+-        netCode = net->GetNetCode();
+-
+-    const NETCLASS*     nc = nullptr;
+-    const NET_SETTINGS* netSettings = connectivity->GetNetSettings();
+-
+-    if( connectivity->HasNetNameForNetCode( netCode ) )
+-    {
+-        const wxString& netName = connectivity->GetNetNameForNetCode( netCode );
+-
+-        if( netSettings && netSettings->HasEffectiveNetClass( netName ) )
+-            nc = netSettings->GetCachedEffectiveNetClass( netName ).get();
+-    }
+-
+-    if( colorByNet && netColors.count( netCode ) )
+-        color = netColors.at( netCode );
+-    else if( colorByNet && nc && nc->HasPcbColor() )
+-        color = nc->GetPcbColor();
+-    else
+-        color = defaultColor;
+-
+-    if( color == COLOR4D::UNSPECIFIED )
+-        color = defaultColor;
+-
+-    pitem->SetColor( color.Brightened( 0.5 ).WithAlpha( std::min( 1.0, color.a + 0.4 ) ) );
+-
+-    m_previewItems->Add( pitem );
+-    m_view->Update( m_previewItems );
+-}
+-
+-
+-void PNS_KICAD_IFACE::HideItem( PNS::ITEM* aItem )
+-{
+-    BOARD_ITEM* parent = aItem->Parent();
+-
+-    if( parent )
+-    {
+-        if( m_view->IsVisible( parent ) )
+-            m_hiddenItems.insert( parent );
+-
+-        m_view->SetVisible( parent, false );
+-        m_view->Update( parent, KIGFX::APPEARANCE );
+-
+-        for( ZONE* td : m_board->Zones() )
+-        {
+-            if( td->IsTeardropArea()
+-                && td->GetBoundingBox().Intersects( aItem->Parent()->GetBoundingBox() )
+-                && td->Outline()->Collide( aItem->Shape( td->GetLayer() ) ) )
+-            {
+-                m_view->SetVisible( td, false );
+-                m_view->Update( td, KIGFX::APPEARANCE );
+-            }
+-        }
+-    }
+-}
+-
+-
+ void PNS_KICAD_IFACE_BASE::RemoveItem( PNS::ITEM* aItem )
+ {
+ }
+ 
+ 
+-void PNS_KICAD_IFACE::RemoveItem( PNS::ITEM* aItem )
+-{
+-    BOARD_ITEM* parent = aItem->Parent();
+-
+-    if( aItem->OfKind( PNS::ITEM::SOLID_T ) && parent->Type() == PCB_PAD_T )
+-    {
+-        PAD*   pad = static_cast<PAD*>( parent );
+-        VECTOR2I pos = static_cast<PNS::SOLID*>( aItem )->Pos();
+-
+-        m_fpOffsets[ pad ].p_old = pos;
+-        return;
+-    }
+-
+-    if( parent )
+-    {
+-        if( EDA_GROUP* group = parent->GetParentGroup() )
+-            m_itemGroups[parent] = group;
+-
+-        m_commit->Remove( parent );
+-    }
+-}
+-
+-
+ void PNS_KICAD_IFACE_BASE::UpdateItem( PNS::ITEM* aItem )
+ {
+ }
+ 
+ 
+-void PNS_KICAD_IFACE::modifyBoardItem( PNS::ITEM* aItem )
+-{
+-    BOARD_ITEM* board_item = aItem->Parent();
+-
+-    switch( aItem->Kind() )
+-    {
+-    case PNS::ITEM::ARC_T:
+-    {
+-        PNS::ARC*        arc = static_cast<PNS::ARC*>( aItem );
+-        PCB_ARC*         arc_board = static_cast<PCB_ARC*>( board_item );
+-        const SHAPE_ARC* arc_shape = static_cast<const SHAPE_ARC*>( arc->Shape( -1 ) );
+-
+-        m_commit->Modify( arc_board );
+-
+-        arc_board->SetStart( VECTOR2I( arc_shape->GetP0() ) );
+-        arc_board->SetEnd( VECTOR2I( arc_shape->GetP1() ) );
+-        arc_board->SetMid( VECTOR2I( arc_shape->GetArcMid() ) );
+-        arc_board->SetWidth( arc->Width() );
+-        break;
+-    }
+-
+-    case PNS::ITEM::SEGMENT_T:
+-    {
+-        PNS::SEGMENT* seg = static_cast<PNS::SEGMENT*>( aItem );
+-        PCB_TRACK*    track = static_cast<PCB_TRACK*>( board_item );
+-        const SEG&    s = seg->Seg();
+-
+-        m_commit->Modify( track );
+-
+-        track->SetStart( VECTOR2I( s.A.x, s.A.y ) );
+-        track->SetEnd( VECTOR2I( s.B.x, s.B.y ) );
+-        track->SetWidth( seg->Width() );
+-        break;
+-    }
+-
+-    case PNS::ITEM::VIA_T:
+-    {
+-        PCB_VIA*  via_board = static_cast<PCB_VIA*>( board_item );
+-        PNS::VIA* via = static_cast<PNS::VIA*>( aItem );
+-
+-        m_commit->Modify( via_board );
+-
+-        via_board->SetPosition( VECTOR2I( via->Pos().x, via->Pos().y ) );
+-        via_board->SetWidth( PADSTACK::ALL_LAYERS, via->Diameter( 0 ) );
+-        via_board->SetDrill( via->Drill() );
+-        via_board->SetNet( static_cast<NETINFO_ITEM*>( via->Net() ) );
+-        via_board->SetViaType( via->ViaType() ); // MUST be before SetLayerPair()
+-        via_board->Padstack().SetUnconnectedLayerMode( via->UnconnectedLayerMode() );
+-        via_board->SetIsFree( via->IsFree() );
+-        via_board->SetLayerPair( GetBoardLayerFromPNSLayer( via->Layers().Start() ),
+-                                 GetBoardLayerFromPNSLayer( via->Layers().End() ) );
+-
+-        PNS_LAYER_RANGE holeLayers = via->HoleLayers();
+-
+-        if( holeLayers.Start() >= 0 && holeLayers.End() >= 0 )
+-        {
+-            via_board->SetPrimaryDrillStartLayer( GetBoardLayerFromPNSLayer( holeLayers.Start() ) );
+-            via_board->SetPrimaryDrillEndLayer( GetBoardLayerFromPNSLayer( holeLayers.End() ) );
+-        }
+-
+-        via_board->SetFrontPostMachining( via->HolePostMachining() );
+-        via_board->SetSecondaryDrillSize( via->SecondaryDrill() );
+-
+-        if( std::optional<PNS_LAYER_RANGE> secondaryLayers = via->SecondaryHoleLayers() )
+-        {
+-            via_board->SetSecondaryDrillStartLayer( GetBoardLayerFromPNSLayer( secondaryLayers->Start() ) );
+-            via_board->SetSecondaryDrillEndLayer( GetBoardLayerFromPNSLayer( secondaryLayers->End() ) );
+-        }
+-        else
+-        {
+-            via_board->SetSecondaryDrillStartLayer( UNDEFINED_LAYER );
+-            via_board->SetSecondaryDrillEndLayer( UNDEFINED_LAYER );
+-        }
+-
+-        break;
+-    }
+-
+-    case PNS::ITEM::SOLID_T:
+-    {
+-        if( aItem->Parent()->Type() == PCB_PAD_T )
+-        {
+-            PAD*     pad = static_cast<PAD*>( aItem->Parent() );
+-            VECTOR2I pos = static_cast<PNS::SOLID*>( aItem )->Pos();
+-
+-            // Don't add to commit; we'll add the parent footprints when processing the m_fpOffsets
+-
+-            m_fpOffsets[pad].p_old = pad->GetPosition();
+-            m_fpOffsets[pad].p_new = pos;
+-        }
+-        break;
+-    }
+-
+-    default:
+-        m_commit->Modify( aItem->Parent() );
+-        break;
+-    }
+-}
+-
+-
+-void PNS_KICAD_IFACE::UpdateItem( PNS::ITEM* aItem )
+-{
+-    modifyBoardItem( aItem );
+-}
+-
+-
+ void PNS_KICAD_IFACE_BASE::AddItem( PNS::ITEM* aItem )
+ {
+ }
+ 
+ 
+-BOARD_CONNECTED_ITEM* PNS_KICAD_IFACE::createBoardItem( PNS::ITEM* aItem )
+-{
+-    BOARD_CONNECTED_ITEM* newBoardItem = nullptr;
+-    NETINFO_ITEM* net = static_cast<NETINFO_ITEM*>( aItem->Net() );
+-
+-    if( !net )
+-        net = NETINFO_LIST::OrphanedItem();
+-
+-    switch( aItem->Kind() )
+-    {
+-    case PNS::ITEM::ARC_T:
+-    {
+-        PNS::ARC* arc = static_cast<PNS::ARC*>( aItem );
+-        PCB_ARC*  new_arc = new PCB_ARC( m_board, static_cast<const SHAPE_ARC*>( arc->Shape( -1 ) ) );
+-        new_arc->SetWidth( arc->Width() );
+-        new_arc->SetLayer( GetBoardLayerFromPNSLayer( arc->Layers().Start() ) );
+-        new_arc->SetNet( net );
+-
+-        if( aItem->GetSourceItem() && aItem->GetSourceItem()->IsType( { PCB_TRACE_T, PCB_ARC_T } ) )
+-        {
+-            PCB_TRACK* sourceTrack = static_cast<PCB_TRACK*>( aItem->GetSourceItem() );
+-            new_arc->SetHasSolderMask( sourceTrack->HasSolderMask() );
+-            new_arc->SetLocalSolderMaskMargin( sourceTrack->GetLocalSolderMaskMargin() );
+-        }
+-
+-        newBoardItem = new_arc;
+-        break;
+-    }
+-
+-    case PNS::ITEM::SEGMENT_T:
+-    {
+-        PNS::SEGMENT* seg = static_cast<PNS::SEGMENT*>( aItem );
+-        PCB_TRACK*    track = new PCB_TRACK( m_board );
+-        const SEG&    s = seg->Seg();
+-        track->SetStart( VECTOR2I( s.A.x, s.A.y ) );
+-        track->SetEnd( VECTOR2I( s.B.x, s.B.y ) );
+-        track->SetWidth( seg->Width() );
+-        track->SetLayer( GetBoardLayerFromPNSLayer( seg->Layers().Start() ) );
+-        track->SetNet( net );
+-
+-        if( aItem->GetSourceItem() && aItem->GetSourceItem()->IsType( { PCB_TRACE_T, PCB_ARC_T } ) )
+-        {
+-            PCB_TRACK* sourceTrack = static_cast<PCB_TRACK*>( aItem->GetSourceItem() );
+-            track->SetHasSolderMask( sourceTrack->HasSolderMask() );
+-            track->SetLocalSolderMaskMargin( sourceTrack->GetLocalSolderMaskMargin() );
+-        }
+-
+-        newBoardItem = track;
+-        break;
+-    }
+-
+-    case PNS::ITEM::VIA_T:
+-    {
+-        PCB_VIA*  via_board = new PCB_VIA( m_board );
+-        PNS::VIA* via = static_cast<PNS::VIA*>( aItem );
+-        via_board->SetPosition( VECTOR2I( via->Pos().x, via->Pos().y ) );
+-        via_board->SetWidth( PADSTACK::ALL_LAYERS, via->Diameter( 0 ) );
+-        via_board->SetDrill( via->Drill() );
+-        via_board->SetNet( net );
+-        via_board->SetViaType( via->ViaType() ); // MUST be before SetLayerPair()
+-        via_board->Padstack().SetUnconnectedLayerMode( via->UnconnectedLayerMode() );
+-        via_board->SetIsFree( via->IsFree() );
+-        via_board->SetLayerPair( GetBoardLayerFromPNSLayer( via->Layers().Start() ),
+-                                 GetBoardLayerFromPNSLayer( via->Layers().End() ) );
+-
+-        PNS_LAYER_RANGE holeLayers = via->HoleLayers();
+-
+-        if( holeLayers.Start() >= 0 && holeLayers.End() >= 0 )
+-        {
+-            via_board->SetPrimaryDrillStartLayer( GetBoardLayerFromPNSLayer( holeLayers.Start() ) );
+-            via_board->SetPrimaryDrillEndLayer( GetBoardLayerFromPNSLayer( holeLayers.End() ) );
+-        }
+-
+-        via_board->SetFrontPostMachining( via->HolePostMachining() );
+-        via_board->SetSecondaryDrillSize( via->SecondaryDrill() );
+-
+-        if( std::optional<PNS_LAYER_RANGE> secondaryLayers = via->SecondaryHoleLayers() )
+-        {
+-            via_board->SetSecondaryDrillStartLayer( GetBoardLayerFromPNSLayer( secondaryLayers->Start() ) );
+-            via_board->SetSecondaryDrillEndLayer( GetBoardLayerFromPNSLayer( secondaryLayers->End() ) );
+-        }
+-        else
+-        {
+-            via_board->SetSecondaryDrillStartLayer( UNDEFINED_LAYER );
+-            via_board->SetSecondaryDrillEndLayer( UNDEFINED_LAYER );
+-        }
+-
+-        if( aItem->GetSourceItem() && aItem->GetSourceItem()->Type() == PCB_VIA_T )
+-        {
+-            PCB_VIA* sourceVia = static_cast<PCB_VIA*>( aItem->GetSourceItem() );
+-            via_board->SetFrontTentingMode( sourceVia->GetFrontTentingMode() );
+-            via_board->SetBackTentingMode( sourceVia->GetBackTentingMode() );
+-        }
+-
+-        newBoardItem = via_board;
+-        break;
+-    }
+-
+-    case PNS::ITEM::SOLID_T:
+-    {
+-        PAD*     pad = static_cast<PAD*>( aItem->Parent() );
+-        VECTOR2I pos = static_cast<PNS::SOLID*>( aItem )->Pos();
+-
+-        m_fpOffsets[pad].p_new = pos;
+-        return nullptr;
+-    }
+-
+-    default:
+-        return nullptr;
+-    }
+-
+-    if( net->GetNetCode() <= 0 )
+-    {
+-        NETINFO_ITEM* newNetInfo = newBoardItem->GetNet();
+-
+-        newNetInfo->SetParent( m_board );
+-        newNetInfo->SetNetClass( m_board->GetDesignSettings().m_NetSettings->GetDefaultNetclass() );
+-    }
+-
+-    if( newBoardItem )
+-    {
+-        if( aItem->IsLocked() )
+-            newBoardItem->SetLocked( true );
+-
+-        if( BOARD_ITEM* src = aItem->GetSourceItem() )
+-        {
+-            if( m_itemGroups.contains( src ) )
+-                m_replacementMap[src].push_back( newBoardItem );
+-        }
+-        else
+-        {
+-            // This is a new item, which goes in the entered group (if any)
+-            m_replacementMap[ENTERED_GROUP_MAGIC_NUMBER].push_back( newBoardItem );
+-        }
+-    }
+-
+-    return newBoardItem;
+-}
+-
+-
+-void PNS_KICAD_IFACE::AddItem( PNS::ITEM* aItem )
+-{
+-    BOARD_CONNECTED_ITEM* boardItem = createBoardItem( aItem );
+-
+-    if( boardItem )
+-    {
+-        aItem->SetParent( boardItem );
+-        boardItem->ClearFlags();
+-
+-        m_commit->Add( boardItem );
+-    }
+-}
+-
+-
+-void PNS_KICAD_IFACE::Commit()
+-{
+-    PCB_SELECTION_TOOL*  selTool = m_tool->GetManager()->GetTool<PCB_SELECTION_TOOL>();
+-    std::set<FOOTPRINT*> processedFootprints;
+-
+-    EraseView();
+-
+-    for( const auto& [ pad, fpOffset ] : m_fpOffsets )
+-    {
+-        VECTOR2I   offset = fpOffset.p_new - fpOffset.p_old;
+-        FOOTPRINT* footprint = pad->GetParentFootprint();
+-        VECTOR2I   p_orig = footprint->GetPosition();
+-        VECTOR2I   p_new = p_orig + offset;
+-
+-        if( processedFootprints.find( footprint ) != processedFootprints.end() )
+-            continue;
+-
+-        processedFootprints.insert( footprint );
+-        m_commit->Modify( footprint );
+-        footprint->SetPosition( p_new );
+-    }
+-
+-    m_fpOffsets.clear();
+-
+-    for( const auto& [ src, items ] : m_replacementMap )
+-    {
+-        EDA_GROUP* group = nullptr;
+-
+-        if( src == ENTERED_GROUP_MAGIC_NUMBER )
+-            group = selTool ? selTool->GetEnteredGroup() : nullptr;
+-        else if( auto it = m_itemGroups.find( src ); it != m_itemGroups.end() )
+-            group = it->second;
+-
+-        if( group )
+-        {
+-            m_commit->Modify( group->AsEdaItem(), nullptr, RECURSE_MODE::NO_RECURSE );
+-
+-            for( BOARD_ITEM* bi : items )
+-                group->AddItem( bi );
+-        }
+-    }
+-
+-    m_itemGroups.clear();
+-    m_replacementMap.clear();
+-
+-    m_commit->Push( _( "Routing" ), m_commitFlags | SKIP_ENTERED_GROUP );
+-    m_commit = std::make_unique<BOARD_COMMIT>( m_tool );
+-}
+-
+-
+-EDA_UNITS PNS_KICAD_IFACE::GetUnits() const
+-{
+-    return static_cast<EDA_UNITS>( m_tool->GetManager()->GetSettings()->m_System.units );
+-}
+-
+-
+-void PNS_KICAD_IFACE::SetView( KIGFX::VIEW* aView )
+-{
+-    wxLogTrace( wxT( "PNS" ), wxT( "SetView %p" ), aView );
+-
+-    if( m_previewItems )
+-    {
+-        m_previewItems->FreeItems();
+-        delete m_previewItems;
+-    }
+-
+-    m_view = aView;
+-    m_previewItems = new KIGFX::VIEW_GROUP( m_view );
+-    m_previewItems->SetLayer( LAYER_SELECT_OVERLAY ) ;
+-
+-    if(m_view)
+-        m_view->Add( m_previewItems );
+-
+-    delete m_debugDecorator;
+-
+-    auto dec = new PNS_PCBNEW_DEBUG_DECORATOR( this );
+-    m_debugDecorator = dec;
+-
+-    dec->SetDebugEnabled( ADVANCED_CFG::GetCfg().m_ShowRouterDebugGraphics );
+-
+-    if( ADVANCED_CFG::GetCfg().m_ShowRouterDebugGraphics )
+-        dec->SetView( m_view );
+-}
+-
+-
+-int PNS_KICAD_IFACE::GetNetCode( PNS::NET_HANDLE aNet ) const
+-{
+-    if( aNet )
+-        return static_cast<NETINFO_ITEM*>( aNet )->GetNetCode();
+-    else
+-        return -1;
+-}
+-
+-
+-wxString PNS_KICAD_IFACE::GetNetName( PNS::NET_HANDLE aNet ) const
+-{
+-    if( aNet )
+-        return static_cast<NETINFO_ITEM*>( aNet )->GetNetname();
+-    else
+-        return wxEmptyString;
+-}
+-
+-
+-void PNS_KICAD_IFACE::UpdateNet( PNS::NET_HANDLE aNet )
+-{
+-    wxLogTrace( wxT( "PNS" ), wxT( "Update-net %s" ), GetNetName( aNet ) );
+-}
+-
+-
+ PNS::NET_HANDLE PNS_KICAD_IFACE_BASE::GetOrphanedNetHandle()
+ {
+     return NETINFO_LIST::OrphanedItem();
+@@ -3027,13 +2243,6 @@
+ PNS::RULE_RESOLVER* PNS_KICAD_IFACE_BASE::GetRuleResolver()
+ {
+     return m_ruleResolver;
+-}
+-
+-
+-void PNS_KICAD_IFACE::SetHostTool( PCB_TOOL_BASE* aTool )
+-{
+-    m_tool = aTool;
+-    m_commit = std::make_unique<BOARD_COMMIT>( m_tool );
+ }
+ 
+ 
+diff --git a/pcbnew/router/pns_kicad_iface_view.cpp b/pcbnew/router/pns_kicad_iface_view.cpp
+new file mode 100644
+--- /dev/null
++++ b/pcbnew/router/pns_kicad_iface_view.cpp
+@@ -0,0 +1,864 @@
++/*
++ * KiRouter - a push-and-(sometimes-)shove PCB router
++ *
++ * Copyright (C) 2013-2016 CERN
++ * Copyright The KiCad Developers, see AUTHORS.txt for contributors.
++ * Author: Tomasz Wlostowski <tomasz.wlostowski@cern.ch>
++ *
++ * This program is free software: you can redistribute it and/or modify it
++ * under the terms of the GNU General Public License as published by the
++ * Free Software Foundation, either version 3 of the License, or (at your
++ * option) any later version.
++ *
++ * This program is distributed in the hope that it will be useful, but
++ * WITHOUT ANY WARRANTY; without even the implied warranty of
++ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
++ * General Public License for more details.
++ *
++ * You should have received a copy of the GNU General Public License along
++ * with this program.  If not, see <http://www.gnu.org/licenses/>.
++ */
++
++// PNS_KICAD_IFACE, the board editor's router interface, split from pns_kicad_iface.cpp
++// (CorvCAD patch 0010) so PNS_KICAD_IFACE_BASE links without the view and tools.
++
++#include <board.h>
++#include <board_connected_item.h>
++#include <board_design_settings.h>
++#include <project/net_settings.h>
++#include <netinfo.h>
++#include <footprint.h>
++#include <layer_range.h>
++#include <length_delay_calculation/length_delay_calculation.h>
++#include <pad.h>
++#include <pcb_track.h>
++#include <zone.h>
++#include <pcb_shape.h>
++#include <pcb_generator.h>
++#include <pcb_text.h>
++#include <pcb_barcode.h>
++#include <pcb_table.h>
++#include <pcb_tablecell.h>
++#include <pcb_dimension.h>
++#include <board_commit.h>
++#include <eda_group.h>
++#include <layer_ids.h>
++#include <optional>
++#include <kidialog.h>
++#include <tools/pcb_tool_base.h>
++#include <tools/pcb_selection_tool.h>
++#include <tool/tool_manager.h>
++#include <settings/app_settings.h>
++#include <gal/graphics_abstraction_layer.h>
++#include <pcb_painter.h>
++#include <geometry/shape.h>
++#include <geometry/shape_line_chain.h>
++#include <geometry/shape_arc.h>
++#include <geometry/shape_simple.h>
++#include <drc/drc_rule.h>
++#include <drc/drc_engine.h>
++#include <connectivity/connectivity_data.h>
++#include <wx/log.h>
++#include <memory>
++#include <unordered_set>
++#include <advanced_config.h>
++#include <pcbnew_settings.h>
++#include <macros.h>
++#include "pns_kicad_iface.h"
++#include "pns_arc.h"
++#include "pns_sizes_settings.h"
++#include "pns_item.h"
++#include "pns_layerset.h"
++#include "pns_line.h"
++#include "pns_solid.h"
++#include "pns_segment.h"
++#include "pns_node.h"
++#include "pns_router.h"
++#include "pns_debug_decorator.h"
++#include "router_preview_item.h"
++
++#define ENTERED_GROUP_MAGIC_NUMBER ( (BOARD*)777 )
++
++
++class PNS_PCBNEW_DEBUG_DECORATOR: public PNS::DEBUG_DECORATOR
++{
++public:
++    PNS_PCBNEW_DEBUG_DECORATOR( PNS::ROUTER_IFACE* aIface  ) :
++            PNS::DEBUG_DECORATOR(),
++            m_iface( aIface ),
++            m_view( nullptr ),
++            m_items( nullptr ),
++            m_depth( 0 )
++    {}
++
++    ~PNS_PCBNEW_DEBUG_DECORATOR()
++    {
++        PNS_PCBNEW_DEBUG_DECORATOR::Clear();
++        
++        for ( PNS::ITEM* item : m_clonedItems )
++        {
++            delete item;
++        }
++
++        delete m_items;
++    }
++
++    void SetView( KIGFX::VIEW* aView )
++    {
++        Clear();
++        delete m_items;
++        m_items = nullptr;
++        m_view = aView;
++
++        if( m_view == nullptr )
++            return;
++
++        if( m_view->GetGAL() )
++            m_depth = m_view->GetGAL()->GetMinDepth();
++
++        m_items = new KIGFX::VIEW_GROUP( m_view );
++        m_items->SetLayer( LAYER_SELECT_OVERLAY ) ;
++        m_view->Add( m_items );
++    }
++
++    void AddPoint( const VECTOR2I& aP, const KIGFX::COLOR4D& aColor, int aSize, const wxString& aName = wxT( "" ),
++                   const SRC_LOCATION_INFO& aSrcLoc = SRC_LOCATION_INFO() ) override
++
++    {
++        SHAPE_LINE_CHAIN sh;
++
++        sh.SetWidth( 10000 );
++
++        sh.Append( aP.x - aSize, aP.y - aSize );
++        sh.Append( aP.x + aSize, aP.y + aSize );
++        sh.Append( aP.x, aP.y );
++        sh.Append( aP.x - aSize, aP.y + aSize );
++        sh.Append( aP.x + aSize, aP.y - aSize );
++
++        AddShape( &sh, aColor, sh.Width(), aName, aSrcLoc );
++    }
++
++    void AddItem( const PNS::ITEM* aItem, const KIGFX::COLOR4D& aColor, int aOverrideWidth = 0,
++                  const wxString& aName = wxT( "" ),
++                  const SRC_LOCATION_INFO& aSrcLoc = SRC_LOCATION_INFO() ) override
++    {
++        if( !m_view || !aItem )
++            return;
++
++        PNS::ITEM* cloned = aItem->Clone();
++
++        if( auto line = dyn_cast<PNS::LINE*>( cloned ))
++        {
++            line->ClearLinks();
++        }
++
++        m_clonedItems.push_back( cloned );
++
++        ROUTER_PREVIEW_ITEM* pitem = new ROUTER_PREVIEW_ITEM( cloned, m_iface, m_view );
++
++        pitem->SetColor( aColor.WithAlpha( 0.5 ) );
++        pitem->SetWidth( aOverrideWidth );
++        pitem->SetDepth( nextDepth() );
++
++        m_items->Add( pitem );
++        m_view->Update( m_items );
++    }
++
++    void AddShape( const BOX2I& aBox, const KIGFX::COLOR4D& aColor, int aOverrideWidth = 0,
++                   const wxString& aName = wxT( "" ),
++                   const SRC_LOCATION_INFO& aSrcLoc = SRC_LOCATION_INFO() ) override
++    {
++        SHAPE_LINE_CHAIN l;
++        l.SetWidth( aOverrideWidth );
++
++        VECTOR2I o = aBox.GetOrigin();
++        VECTOR2I s = aBox.GetSize();
++
++        l.Append( o );
++        l.Append( o.x + s.x, o.y );
++        l.Append( o.x + s.x, o.y + s.y );
++        l.Append( o.x, o.y + s.y );
++        l.Append( o );
++
++        AddShape( &l, aColor, aOverrideWidth, aName, aSrcLoc );
++    }
++
++    void AddShape( const SHAPE* aShape, const KIGFX::COLOR4D& aColor, int aOverrideWidth = 0,
++                   const wxString& aName = wxT( "" ),
++                   const SRC_LOCATION_INFO& aSrcLoc = SRC_LOCATION_INFO() ) override
++    {
++        if( !m_view || !aShape )
++            return;
++
++        ROUTER_PREVIEW_ITEM* pitem = new ROUTER_PREVIEW_ITEM( *aShape, m_iface, m_view );
++
++        pitem->SetColor( aColor.WithAlpha( 0.5 ) );
++        pitem->SetWidth( aOverrideWidth );
++        pitem->SetDepth( nextDepth() );
++
++        m_items->Add( pitem );
++        m_view->Update( m_items );
++    }
++
++    void Clear() override
++    {
++        if( m_view && m_items )
++        {
++            m_items->FreeItems();
++            m_view->Update( m_items );
++
++            if( m_view->GetGAL() )
++                m_depth = m_view->GetGAL()->GetMinDepth();
++        }
++
++        for( PNS::ITEM* item : m_clonedItems )
++            delete item;
++
++        m_clonedItems.clear();
++    }
++
++    virtual void Message( const wxString& msg, const SRC_LOCATION_INFO& aSrcLoc = SRC_LOCATION_INFO() ) override
++    {
++    }
++
++private:
++    double nextDepth()
++    {
++        // Use different depths so that the transculent shapes won't overwrite each other.
++
++        m_depth++;
++
++        if( m_depth >= 0 && m_view->GetGAL() )
++            m_depth = m_view->GetGAL()->GetMinDepth();
++
++        return m_depth;
++    }
++
++    PNS::ROUTER_IFACE* m_iface;
++    KIGFX::VIEW* m_view;
++    KIGFX::VIEW_GROUP* m_items;
++    std::vector<PNS::ITEM*> m_clonedItems;
++
++    double m_depth;
++};
++
++
++PNS_KICAD_IFACE::PNS_KICAD_IFACE()
++{
++    m_tool = nullptr;
++    m_view = nullptr;
++    m_previewItems = nullptr;
++    m_commitFlags = 0;
++}
++
++
++PNS_KICAD_IFACE::~PNS_KICAD_IFACE()
++{
++    if( m_previewItems )
++    {
++        m_previewItems->FreeItems();
++        delete m_previewItems;
++    }
++}
++
++
++bool PNS_KICAD_IFACE::IsAnyLayerVisible( const PNS_LAYER_RANGE& aLayer ) const
++{
++    if( !m_view )
++        return false;
++
++    for( int i = aLayer.Start(); i <= aLayer.End(); i++ )
++    {
++        if( m_view->IsLayerVisible( GetBoardLayerFromPNSLayer( i ) ) )
++            return true;
++    }
++
++    return false;
++}
++
++
++bool PNS_KICAD_IFACE::IsItemVisible( const PNS::ITEM* aItem ) const
++{
++    // by default, all items are visible (new ones created by the router have parent == NULL
++    // as they have not been committed yet to the BOARD)
++    if( !m_view || !aItem->Parent() )
++        return true;
++
++    BOARD_ITEM*      item = aItem->Parent();
++    bool             isOnVisibleLayer = true;
++    RENDER_SETTINGS* settings = m_view->GetPainter()->GetSettings();
++
++    if( settings->GetHighContrast() )
++        isOnVisibleLayer = item->IsOnLayer( settings->GetPrimaryHighContrastLayer() );
++
++    if( m_view->IsVisible( item ) && isOnVisibleLayer )
++    {
++        for( PCB_LAYER_ID layer : item->GetLayerSet() )
++        {
++            if( item->ViewGetLOD( layer, m_view ) < m_view->GetScale() )
++                return true;
++        }
++    }
++
++    // Items hidden in the router are not hidden on the board
++    if( m_hiddenItems.find( item ) != m_hiddenItems.end() )
++        return true;
++
++    return false;
++}
++
++
++void PNS_KICAD_IFACE::EraseView()
++{
++    for( BOARD_ITEM* item : m_hiddenItems )
++        m_view->SetVisible( item, true );
++
++    m_hiddenItems.clear();
++
++    if( m_previewItems )
++    {
++        m_previewItems->FreeItems();
++        m_view->Update( m_previewItems );
++    }
++
++    if( m_debugDecorator )
++        m_debugDecorator->Clear();
++}
++
++
++void PNS_KICAD_IFACE::DisplayItem( const PNS::ITEM* aItem, int aClearance, bool aEdit, int aFlags )
++{
++       if( aItem->IsVirtual() )
++        return;
++
++    if( ZONE* zone = dynamic_cast<ZONE*>( aItem->Parent() ) )
++    {
++        if( zone->GetIsRuleArea() )
++            aFlags |= PNS_SEMI_SOLID;
++    }
++
++    ROUTER_PREVIEW_ITEM* pitem = new ROUTER_PREVIEW_ITEM( aItem, this, m_view, aFlags );
++
++    // Note: SEGMENT_T is used for placed tracks; LINE_T is used for the routing head
++    static int tracks = PNS::ITEM::SEGMENT_T | PNS::ITEM::ARC_T | PNS::ITEM::LINE_T;
++    static int tracksOrVias = tracks | PNS::ITEM::VIA_T;
++
++    if( aClearance >= 0 )
++    {
++        pitem->SetClearance( aClearance );
++
++        PCBNEW_SETTINGS* settings = static_cast<PCBNEW_SETTINGS*>( m_tool->GetManager()->GetSettings() );
++
++        switch( settings->m_Display.m_TrackClearance )
++        {
++        case SHOW_WITH_VIA_ALWAYS:
++        case SHOW_WITH_VIA_WHILE_ROUTING_OR_DRAGGING:
++            pitem->ShowClearance( aItem->OfKind( tracksOrVias ) );
++            break;
++
++        case SHOW_WITH_VIA_WHILE_ROUTING:
++            pitem->ShowClearance( aItem->OfKind( tracksOrVias ) && !aEdit );
++            break;
++
++        case SHOW_WHILE_ROUTING:
++            pitem->ShowClearance( aItem->OfKind( tracks ) && !aEdit );
++            break;
++
++        default:
++            pitem->ShowClearance( false );
++            break;
++        }
++    }
++
++    m_previewItems->Add( pitem );
++    m_view->Update( m_previewItems );
++}
++
++
++void PNS_KICAD_IFACE::DisplayPathLine( const SHAPE_LINE_CHAIN& aLine, int aImportance )
++{
++    ROUTER_PREVIEW_ITEM* pitem = new ROUTER_PREVIEW_ITEM( aLine, this, m_view );
++    pitem->SetDepth( pitem->GetOriginDepth() - ROUTER_PREVIEW_ITEM::PathOverlayDepth );
++
++    COLOR4D color;
++
++    if( aImportance >= 1 )
++        color = COLOR4D( 1.0, 1.0, 0.0, 0.6 );
++    else if( aImportance == 0 )
++        color = COLOR4D( 0.7, 0.7, 0.7, 0.6 );
++
++    pitem->SetColor( color );
++
++    m_previewItems->Add( pitem );
++    m_view->Update( m_previewItems );
++}
++
++
++void PNS_KICAD_IFACE::DisplayRatline( const SHAPE_LINE_CHAIN& aRatline, PNS::NET_HANDLE aNet )
++{
++    ROUTER_PREVIEW_ITEM* pitem = new ROUTER_PREVIEW_ITEM( aRatline, this, m_view );
++
++    KIGFX::RENDER_SETTINGS*     renderSettings = m_view->GetPainter()->GetSettings();
++    KIGFX::PCB_RENDER_SETTINGS* rs = static_cast<KIGFX::PCB_RENDER_SETTINGS*>( renderSettings );
++    bool                        colorByNet = rs->GetNetColorMode() != NET_COLOR_MODE::OFF;
++    COLOR4D                     defaultColor = rs->GetColor( nullptr, LAYER_RATSNEST );
++    COLOR4D                     color = defaultColor;
++
++    std::shared_ptr<CONNECTIVITY_DATA>  connectivity = m_board->GetConnectivity();
++    std::set<int>                       highlightedNets = rs->GetHighlightNetCodes();
++    std::map<int, KIGFX::COLOR4D>&      netColors = rs->GetNetColorMap();
++    int                                 netCode = -1;
++
++    if( NETINFO_ITEM* net = static_cast<NETINFO_ITEM*>( aNet ) )
++        netCode = net->GetNetCode();
++
++    const NETCLASS*     nc = nullptr;
++    const NET_SETTINGS* netSettings = connectivity->GetNetSettings();
++
++    if( connectivity->HasNetNameForNetCode( netCode ) )
++    {
++        const wxString& netName = connectivity->GetNetNameForNetCode( netCode );
++
++        if( netSettings && netSettings->HasEffectiveNetClass( netName ) )
++            nc = netSettings->GetCachedEffectiveNetClass( netName ).get();
++    }
++
++    if( colorByNet && netColors.count( netCode ) )
++        color = netColors.at( netCode );
++    else if( colorByNet && nc && nc->HasPcbColor() )
++        color = nc->GetPcbColor();
++    else
++        color = defaultColor;
++
++    if( color == COLOR4D::UNSPECIFIED )
++        color = defaultColor;
++
++    pitem->SetColor( color.Brightened( 0.5 ).WithAlpha( std::min( 1.0, color.a + 0.4 ) ) );
++
++    m_previewItems->Add( pitem );
++    m_view->Update( m_previewItems );
++}
++
++
++void PNS_KICAD_IFACE::HideItem( PNS::ITEM* aItem )
++{
++    BOARD_ITEM* parent = aItem->Parent();
++
++    if( parent )
++    {
++        if( m_view->IsVisible( parent ) )
++            m_hiddenItems.insert( parent );
++
++        m_view->SetVisible( parent, false );
++        m_view->Update( parent, KIGFX::APPEARANCE );
++
++        for( ZONE* td : m_board->Zones() )
++        {
++            if( td->IsTeardropArea()
++                && td->GetBoundingBox().Intersects( aItem->Parent()->GetBoundingBox() )
++                && td->Outline()->Collide( aItem->Shape( td->GetLayer() ) ) )
++            {
++                m_view->SetVisible( td, false );
++                m_view->Update( td, KIGFX::APPEARANCE );
++            }
++        }
++    }
++}
++
++
++void PNS_KICAD_IFACE::RemoveItem( PNS::ITEM* aItem )
++{
++    BOARD_ITEM* parent = aItem->Parent();
++
++    if( aItem->OfKind( PNS::ITEM::SOLID_T ) && parent->Type() == PCB_PAD_T )
++    {
++        PAD*   pad = static_cast<PAD*>( parent );
++        VECTOR2I pos = static_cast<PNS::SOLID*>( aItem )->Pos();
++
++        m_fpOffsets[ pad ].p_old = pos;
++        return;
++    }
++
++    if( parent )
++    {
++        if( EDA_GROUP* group = parent->GetParentGroup() )
++            m_itemGroups[parent] = group;
++
++        m_commit->Remove( parent );
++    }
++}
++
++
++void PNS_KICAD_IFACE::modifyBoardItem( PNS::ITEM* aItem )
++{
++    BOARD_ITEM* board_item = aItem->Parent();
++
++    switch( aItem->Kind() )
++    {
++    case PNS::ITEM::ARC_T:
++    {
++        PNS::ARC*        arc = static_cast<PNS::ARC*>( aItem );
++        PCB_ARC*         arc_board = static_cast<PCB_ARC*>( board_item );
++        const SHAPE_ARC* arc_shape = static_cast<const SHAPE_ARC*>( arc->Shape( -1 ) );
++
++        m_commit->Modify( arc_board );
++
++        arc_board->SetStart( VECTOR2I( arc_shape->GetP0() ) );
++        arc_board->SetEnd( VECTOR2I( arc_shape->GetP1() ) );
++        arc_board->SetMid( VECTOR2I( arc_shape->GetArcMid() ) );
++        arc_board->SetWidth( arc->Width() );
++        break;
++    }
++
++    case PNS::ITEM::SEGMENT_T:
++    {
++        PNS::SEGMENT* seg = static_cast<PNS::SEGMENT*>( aItem );
++        PCB_TRACK*    track = static_cast<PCB_TRACK*>( board_item );
++        const SEG&    s = seg->Seg();
++
++        m_commit->Modify( track );
++
++        track->SetStart( VECTOR2I( s.A.x, s.A.y ) );
++        track->SetEnd( VECTOR2I( s.B.x, s.B.y ) );
++        track->SetWidth( seg->Width() );
++        break;
++    }
++
++    case PNS::ITEM::VIA_T:
++    {
++        PCB_VIA*  via_board = static_cast<PCB_VIA*>( board_item );
++        PNS::VIA* via = static_cast<PNS::VIA*>( aItem );
++
++        m_commit->Modify( via_board );
++
++        via_board->SetPosition( VECTOR2I( via->Pos().x, via->Pos().y ) );
++        via_board->SetWidth( PADSTACK::ALL_LAYERS, via->Diameter( 0 ) );
++        via_board->SetDrill( via->Drill() );
++        via_board->SetNet( static_cast<NETINFO_ITEM*>( via->Net() ) );
++        via_board->SetViaType( via->ViaType() ); // MUST be before SetLayerPair()
++        via_board->Padstack().SetUnconnectedLayerMode( via->UnconnectedLayerMode() );
++        via_board->SetIsFree( via->IsFree() );
++        via_board->SetLayerPair( GetBoardLayerFromPNSLayer( via->Layers().Start() ),
++                                 GetBoardLayerFromPNSLayer( via->Layers().End() ) );
++
++        PNS_LAYER_RANGE holeLayers = via->HoleLayers();
++
++        if( holeLayers.Start() >= 0 && holeLayers.End() >= 0 )
++        {
++            via_board->SetPrimaryDrillStartLayer( GetBoardLayerFromPNSLayer( holeLayers.Start() ) );
++            via_board->SetPrimaryDrillEndLayer( GetBoardLayerFromPNSLayer( holeLayers.End() ) );
++        }
++
++        via_board->SetFrontPostMachining( via->HolePostMachining() );
++        via_board->SetSecondaryDrillSize( via->SecondaryDrill() );
++
++        if( std::optional<PNS_LAYER_RANGE> secondaryLayers = via->SecondaryHoleLayers() )
++        {
++            via_board->SetSecondaryDrillStartLayer( GetBoardLayerFromPNSLayer( secondaryLayers->Start() ) );
++            via_board->SetSecondaryDrillEndLayer( GetBoardLayerFromPNSLayer( secondaryLayers->End() ) );
++        }
++        else
++        {
++            via_board->SetSecondaryDrillStartLayer( UNDEFINED_LAYER );
++            via_board->SetSecondaryDrillEndLayer( UNDEFINED_LAYER );
++        }
++
++        break;
++    }
++
++    case PNS::ITEM::SOLID_T:
++    {
++        if( aItem->Parent()->Type() == PCB_PAD_T )
++        {
++            PAD*     pad = static_cast<PAD*>( aItem->Parent() );
++            VECTOR2I pos = static_cast<PNS::SOLID*>( aItem )->Pos();
++
++            // Don't add to commit; we'll add the parent footprints when processing the m_fpOffsets
++
++            m_fpOffsets[pad].p_old = pad->GetPosition();
++            m_fpOffsets[pad].p_new = pos;
++        }
++        break;
++    }
++
++    default:
++        m_commit->Modify( aItem->Parent() );
++        break;
++    }
++}
++
++
++void PNS_KICAD_IFACE::UpdateItem( PNS::ITEM* aItem )
++{
++    modifyBoardItem( aItem );
++}
++
++
++BOARD_CONNECTED_ITEM* PNS_KICAD_IFACE::createBoardItem( PNS::ITEM* aItem )
++{
++    BOARD_CONNECTED_ITEM* newBoardItem = nullptr;
++    NETINFO_ITEM* net = static_cast<NETINFO_ITEM*>( aItem->Net() );
++
++    if( !net )
++        net = NETINFO_LIST::OrphanedItem();
++
++    switch( aItem->Kind() )
++    {
++    case PNS::ITEM::ARC_T:
++    {
++        PNS::ARC* arc = static_cast<PNS::ARC*>( aItem );
++        PCB_ARC*  new_arc = new PCB_ARC( m_board, static_cast<const SHAPE_ARC*>( arc->Shape( -1 ) ) );
++        new_arc->SetWidth( arc->Width() );
++        new_arc->SetLayer( GetBoardLayerFromPNSLayer( arc->Layers().Start() ) );
++        new_arc->SetNet( net );
++
++        if( aItem->GetSourceItem() && aItem->GetSourceItem()->IsType( { PCB_TRACE_T, PCB_ARC_T } ) )
++        {
++            PCB_TRACK* sourceTrack = static_cast<PCB_TRACK*>( aItem->GetSourceItem() );
++            new_arc->SetHasSolderMask( sourceTrack->HasSolderMask() );
++            new_arc->SetLocalSolderMaskMargin( sourceTrack->GetLocalSolderMaskMargin() );
++        }
++
++        newBoardItem = new_arc;
++        break;
++    }
++
++    case PNS::ITEM::SEGMENT_T:
++    {
++        PNS::SEGMENT* seg = static_cast<PNS::SEGMENT*>( aItem );
++        PCB_TRACK*    track = new PCB_TRACK( m_board );
++        const SEG&    s = seg->Seg();
++        track->SetStart( VECTOR2I( s.A.x, s.A.y ) );
++        track->SetEnd( VECTOR2I( s.B.x, s.B.y ) );
++        track->SetWidth( seg->Width() );
++        track->SetLayer( GetBoardLayerFromPNSLayer( seg->Layers().Start() ) );
++        track->SetNet( net );
++
++        if( aItem->GetSourceItem() && aItem->GetSourceItem()->IsType( { PCB_TRACE_T, PCB_ARC_T } ) )
++        {
++            PCB_TRACK* sourceTrack = static_cast<PCB_TRACK*>( aItem->GetSourceItem() );
++            track->SetHasSolderMask( sourceTrack->HasSolderMask() );
++            track->SetLocalSolderMaskMargin( sourceTrack->GetLocalSolderMaskMargin() );
++        }
++
++        newBoardItem = track;
++        break;
++    }
++
++    case PNS::ITEM::VIA_T:
++    {
++        PCB_VIA*  via_board = new PCB_VIA( m_board );
++        PNS::VIA* via = static_cast<PNS::VIA*>( aItem );
++        via_board->SetPosition( VECTOR2I( via->Pos().x, via->Pos().y ) );
++        via_board->SetWidth( PADSTACK::ALL_LAYERS, via->Diameter( 0 ) );
++        via_board->SetDrill( via->Drill() );
++        via_board->SetNet( net );
++        via_board->SetViaType( via->ViaType() ); // MUST be before SetLayerPair()
++        via_board->Padstack().SetUnconnectedLayerMode( via->UnconnectedLayerMode() );
++        via_board->SetIsFree( via->IsFree() );
++        via_board->SetLayerPair( GetBoardLayerFromPNSLayer( via->Layers().Start() ),
++                                 GetBoardLayerFromPNSLayer( via->Layers().End() ) );
++
++        PNS_LAYER_RANGE holeLayers = via->HoleLayers();
++
++        if( holeLayers.Start() >= 0 && holeLayers.End() >= 0 )
++        {
++            via_board->SetPrimaryDrillStartLayer( GetBoardLayerFromPNSLayer( holeLayers.Start() ) );
++            via_board->SetPrimaryDrillEndLayer( GetBoardLayerFromPNSLayer( holeLayers.End() ) );
++        }
++
++        via_board->SetFrontPostMachining( via->HolePostMachining() );
++        via_board->SetSecondaryDrillSize( via->SecondaryDrill() );
++
++        if( std::optional<PNS_LAYER_RANGE> secondaryLayers = via->SecondaryHoleLayers() )
++        {
++            via_board->SetSecondaryDrillStartLayer( GetBoardLayerFromPNSLayer( secondaryLayers->Start() ) );
++            via_board->SetSecondaryDrillEndLayer( GetBoardLayerFromPNSLayer( secondaryLayers->End() ) );
++        }
++        else
++        {
++            via_board->SetSecondaryDrillStartLayer( UNDEFINED_LAYER );
++            via_board->SetSecondaryDrillEndLayer( UNDEFINED_LAYER );
++        }
++
++        if( aItem->GetSourceItem() && aItem->GetSourceItem()->Type() == PCB_VIA_T )
++        {
++            PCB_VIA* sourceVia = static_cast<PCB_VIA*>( aItem->GetSourceItem() );
++            via_board->SetFrontTentingMode( sourceVia->GetFrontTentingMode() );
++            via_board->SetBackTentingMode( sourceVia->GetBackTentingMode() );
++        }
++
++        newBoardItem = via_board;
++        break;
++    }
++
++    case PNS::ITEM::SOLID_T:
++    {
++        PAD*     pad = static_cast<PAD*>( aItem->Parent() );
++        VECTOR2I pos = static_cast<PNS::SOLID*>( aItem )->Pos();
++
++        m_fpOffsets[pad].p_new = pos;
++        return nullptr;
++    }
++
++    default:
++        return nullptr;
++    }
++
++    if( net->GetNetCode() <= 0 )
++    {
++        NETINFO_ITEM* newNetInfo = newBoardItem->GetNet();
++
++        newNetInfo->SetParent( m_board );
++        newNetInfo->SetNetClass( m_board->GetDesignSettings().m_NetSettings->GetDefaultNetclass() );
++    }
++
++    if( newBoardItem )
++    {
++        if( aItem->IsLocked() )
++            newBoardItem->SetLocked( true );
++
++        if( BOARD_ITEM* src = aItem->GetSourceItem() )
++        {
++            if( m_itemGroups.contains( src ) )
++                m_replacementMap[src].push_back( newBoardItem );
++        }
++        else
++        {
++            // This is a new item, which goes in the entered group (if any)
++            m_replacementMap[ENTERED_GROUP_MAGIC_NUMBER].push_back( newBoardItem );
++        }
++    }
++
++    return newBoardItem;
++}
++
++
++void PNS_KICAD_IFACE::AddItem( PNS::ITEM* aItem )
++{
++    BOARD_CONNECTED_ITEM* boardItem = createBoardItem( aItem );
++
++    if( boardItem )
++    {
++        aItem->SetParent( boardItem );
++        boardItem->ClearFlags();
++
++        m_commit->Add( boardItem );
++    }
++}
++
++
++void PNS_KICAD_IFACE::Commit()
++{
++    PCB_SELECTION_TOOL*  selTool = m_tool->GetManager()->GetTool<PCB_SELECTION_TOOL>();
++    std::set<FOOTPRINT*> processedFootprints;
++
++    EraseView();
++
++    for( const auto& [ pad, fpOffset ] : m_fpOffsets )
++    {
++        VECTOR2I   offset = fpOffset.p_new - fpOffset.p_old;
++        FOOTPRINT* footprint = pad->GetParentFootprint();
++        VECTOR2I   p_orig = footprint->GetPosition();
++        VECTOR2I   p_new = p_orig + offset;
++
++        if( processedFootprints.find( footprint ) != processedFootprints.end() )
++            continue;
++
++        processedFootprints.insert( footprint );
++        m_commit->Modify( footprint );
++        footprint->SetPosition( p_new );
++    }
++
++    m_fpOffsets.clear();
++
++    for( const auto& [ src, items ] : m_replacementMap )
++    {
++        EDA_GROUP* group = nullptr;
++
++        if( src == ENTERED_GROUP_MAGIC_NUMBER )
++            group = selTool ? selTool->GetEnteredGroup() : nullptr;
++        else if( auto it = m_itemGroups.find( src ); it != m_itemGroups.end() )
++            group = it->second;
++
++        if( group )
++        {
++            m_commit->Modify( group->AsEdaItem(), nullptr, RECURSE_MODE::NO_RECURSE );
++
++            for( BOARD_ITEM* bi : items )
++                group->AddItem( bi );
++        }
++    }
++
++    m_itemGroups.clear();
++    m_replacementMap.clear();
++
++    m_commit->Push( _( "Routing" ), m_commitFlags | SKIP_ENTERED_GROUP );
++    m_commit = std::make_unique<BOARD_COMMIT>( m_tool );
++}
++
++
++EDA_UNITS PNS_KICAD_IFACE::GetUnits() const
++{
++    return static_cast<EDA_UNITS>( m_tool->GetManager()->GetSettings()->m_System.units );
++}
++
++
++void PNS_KICAD_IFACE::SetView( KIGFX::VIEW* aView )
++{
++    wxLogTrace( wxT( "PNS" ), wxT( "SetView %p" ), aView );
++
++    if( m_previewItems )
++    {
++        m_previewItems->FreeItems();
++        delete m_previewItems;
++    }
++
++    m_view = aView;
++    m_previewItems = new KIGFX::VIEW_GROUP( m_view );
++    m_previewItems->SetLayer( LAYER_SELECT_OVERLAY ) ;
++
++    if(m_view)
++        m_view->Add( m_previewItems );
++
++    delete m_debugDecorator;
++
++    auto dec = new PNS_PCBNEW_DEBUG_DECORATOR( this );
++    m_debugDecorator = dec;
++
++    dec->SetDebugEnabled( ADVANCED_CFG::GetCfg().m_ShowRouterDebugGraphics );
++
++    if( ADVANCED_CFG::GetCfg().m_ShowRouterDebugGraphics )
++        dec->SetView( m_view );
++}
++
++
++int PNS_KICAD_IFACE::GetNetCode( PNS::NET_HANDLE aNet ) const
++{
++    if( aNet )
++        return static_cast<NETINFO_ITEM*>( aNet )->GetNetCode();
++    else
++        return -1;
++}
++
++
++wxString PNS_KICAD_IFACE::GetNetName( PNS::NET_HANDLE aNet ) const
++{
++    if( aNet )
++        return static_cast<NETINFO_ITEM*>( aNet )->GetNetname();
++    else
++        return wxEmptyString;
++}
++
++
++void PNS_KICAD_IFACE::UpdateNet( PNS::NET_HANDLE aNet )
++{
++    wxLogTrace( wxT( "PNS" ), wxT( "Update-net %s" ), GetNetName( aNet ) );
++}
++
++
++void PNS_KICAD_IFACE::SetHostTool( PCB_TOOL_BASE* aTool )
++{
++    m_tool = aTool;
++    m_commit = std::make_unique<BOARD_COMMIT>( m_tool );
++}
+diff --git a/pcbnew/router/CMakeLists.txt b/pcbnew/router/CMakeLists.txt
+--- a/pcbnew/router/CMakeLists.txt
++++ b/pcbnew/router/CMakeLists.txt
+@@ -22,6 +22,7 @@
+ set( PCBNEW_PNS_SRCS
+     time_limit.cpp
+     pns_kicad_iface.cpp
++    pns_kicad_iface_view.cpp
+     pns_algo_base.cpp
+     pns_arc.cpp
+     pns_component_dragger.cpp
+@@ -63,6 +64,7 @@
+ set( PCBNEW_PNS_QA_SRCS
+     time_limit.cpp
+     pns_kicad_iface.cpp
++    pns_kicad_iface_view.cpp
+     pns_algo_base.cpp
+     pns_arc.cpp
+     pns_component_dragger.cpp

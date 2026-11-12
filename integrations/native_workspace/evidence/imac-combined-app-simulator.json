@@ -1,0 +1,82 @@
+{
+  "schema": 1,
+  "date": "2026-10-29",
+  "source_revision": "6d005816960a9ed64005c80e24241b181212e866",
+  "scope": "Combined NATIVE_KICAD + NATIVE_FREECAD app, Debug, x86_64 iPad simulator (iOS 26.2, Intel iMac). No arm64, release or physical-iPad result.",
+  "kicad_core": {
+    "units": 631,
+    "archive_sha256": "b787fafdfbe801b1a3a3fe9401a2a57958c4035783096053639bca1c054dcf42"
+  },
+  "link_response_sha256": "f545a4ecf688b9bf5a3a45865efdf64386b94b84d5392276ef3b70778aacf24f",
+  "mixed_probe_two_orders": {
+    "passed": true,
+    "runtime_unchanged": true,
+    "runtime_file_count": 1722
+  },
+  "app": {
+    "bytes": 599293952,
+    "executable_sha256": "ecbfe4fee329ced1111805fe17589ba20cff0da0a36ef7b2d458b625dbbfe7a4",
+    "dynamic_links": [
+      "/usr/lib/libsqlite3.dylib",
+      "/usr/lib/libiconv.2.dylib",
+      "/usr/lib/libobjc.A.dylib",
+      "/System/Library/Frameworks/Foundation.framework/Foundation",
+      "/System/Library/Frameworks/UIKit.framework/UIKit",
+      "/System/Library/Frameworks/CoreServices.framework/CoreServices",
+      "/System/Library/Frameworks/IOKit.framework/Versions/A/IOKit",
+      "/System/Library/Frameworks/CoreFoundation.framework/CoreFoundation",
+      "/System/Library/Frameworks/UniformTypeIdentifiers.framework/UniformTypeIdentifiers",
+      "/usr/lib/libSystem.B.dylib",
+      "/System/Library/Frameworks/MobileCoreServices.framework/MobileCoreServices",
+      "/System/Library/Frameworks/CFNetwork.framework/CFNetwork",
+      "/System/Library/Frameworks/AudioToolbox.framework/AudioToolbox",
+      "/System/Library/Frameworks/CoreGraphics.framework/CoreGraphics",
+      "/System/Library/Frameworks/OpenGLES.framework/OpenGLES",
+      "/System/Library/Frameworks/QuartzCore.framework/QuartzCore",
+      "/System/Library/Frameworks/GLKit.framework/GLKit",
+      "/System/Library/Frameworks/CoreText.framework/CoreText",
+      "/System/Library/Frameworks/WebKit.framework/WebKit",
+      "/System/Library/Frameworks/Security.framework/Security",
+      "/usr/lib/libc++.1.dylib",
+      "/System/Library/Frameworks/CryptoKit.framework/CryptoKit",
+      "/System/Library/Frameworks/SceneKit.framework/SceneKit",
+      "/System/Library/Frameworks/SwiftUI.framework/SwiftUI",
+      "/usr/lib/swift/libswiftCore.dylib",
+      "/usr/lib/swift/libswiftCoreFoundation.dylib",
+      "/usr/lib/swift/libswiftCoreImage.dylib",
+      "/usr/lib/swift/libswiftDarwin.dylib",
+      "/usr/lib/swift/libswiftDispatch.dylib",
+      "/usr/lib/swift/libswiftGLKit.dylib",
+      "/usr/lib/swift/libswiftMetal.dylib",
+      "/usr/lib/swift/libswiftModelIO.dylib",
+      "/usr/lib/swift/libswiftOSLog.dylib",
+      "/usr/lib/swift/libswiftObjectiveC.dylib",
+      "/usr/lib/swift/libswiftObservation.dylib",
+      "/usr/lib/swift/libswiftQuartzCore.dylib",
+      "/usr/lib/swift/libswiftSceneKit.dylib",
+      "/usr/lib/swift/libswiftSpatial.dylib",
+      "/usr/lib/swift/libswiftUniformTypeIdentifiers.dylib",
+      "/usr/lib/swift/libswiftXPC.dylib",
+      "/usr/lib/swift/libswift_Concurrency.dylib",
+      "/usr/lib/swift/libswiftos.dylib",
+      "/usr/lib/swift/libswiftsimd.dylib",
+      "/usr/lib/swift/libswiftCoreGraphics.dylib"
+    ]
+  },
+  "combined_ui_tests": [
+    "NativeFreeCADTests testLandscapeExactPreviewTransactionsSaveReopenAndSTL passed",
+    "NativeFreeCADTests testPortraitExactPreviewTransactionsSaveReopenAndSTL passed",
+    "NativeKiCadTests testKiCadDRC passed",
+    "NativeKiCadTests testKiCadERC passed",
+    "NativeKiCadTests testLibrarySymbolsAndFootprintChooser passed",
+    "NativeKiCadTests testRouteWithKiCadRouter passed"
+  ],
+  "default_edition_ui_tests": [
+    "EnclosureUndoTests testSliderUndoRedo failed",
+    "ScreenshotTests testCaptureDrawing passed",
+    "ScreenshotTests testCaptureLibraries passed",
+    "ScreenshotTests testCaptureSchematic passed",
+    "ScreenshotTests testCaptureTools passed"
+  ],
+  "notes": "EnclosureUndoTests failed once on the first cold launch (inspector tap before the workspace took touches), then passed three reruns; the test now retries that tap."
+}

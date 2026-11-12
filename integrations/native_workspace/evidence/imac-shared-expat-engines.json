@@ -1,0 +1,89 @@
+{
+  "schema": 1,
+  "date": "2026-10-29",
+  "source_revision": "57a64a09295b063c8fbcde0cc9d8eec9486180d5",
+  "status": "Fresh shared-Expat CPython/FreeCAD build, package and both standalone C ABI simulator cases passed",
+  "sdk": "iphonesimulator",
+  "architecture": "x86_64",
+  "scope": "Standalone C ABI validation with union dependencies; no combined/app/physical-device acceptance",
+  "package_manifest_sha256": "737bee19061ebf50dea7dcdca4f08149773ce312fc579a038c839aec51a4b443",
+  "simulator_receipt_sha256": "c076637da3ddb8e4c84816e97f6d47b78badcec622c9943dbdfc001323981dad",
+  "python_receipt_sha256": "7390d95d0b2e8541d77d3e2ed16529a13135299cdabdfca56a06c17eb1bb0083",
+  "probe_sha256": "72a046da7adfa90d559888b3d3bb9a723250985b5c4cc4221387502591bb9dd7",
+  "probe_bytes": 94760928,
+  "core_sha256": "29b787f129110b85c843a34a150b1fe9d57e3f1cb35aeacfbecf2a63c67c2240",
+  "dependencies_sha256": "2d92c1b24e2a6012241669bd0d065bb59d6221c2ceeba316b5b2da081a5f7abd",
+  "runtime_resources": 1722,
+  "resource_hashes_reverified": true,
+  "cases": {
+    "demo": {
+      "passed": true,
+      "exports": {
+        "enclosure.FCStd": {
+          "bytes": 31561,
+          "sha256": "661fa78f2426e11d43d1805dca8e5f1d4c718f8ed925b1290df9198486e6e4cf"
+        },
+        "tray.step": {
+          "bytes": 15125,
+          "sha256": "72e2db51d8f2e537a24cc73320429be2765471e5135c35bff0ba6f86fc3fd2ef"
+        },
+        "lid.step": {
+          "bytes": 6961,
+          "sha256": "20edb89b2df573736b74379f0179c5dca54adf91cca986c034ceeed10812d76a"
+        },
+        "tray.stl": {
+          "bytes": 52084,
+          "sha256": "9a92b8f045963f6828530872809e32c62ea5b37830a3b343dfadfb094bc7f8b1"
+        },
+        "lid.stl": {
+          "bytes": 684,
+          "sha256": "ad34c69c0d602491ef614422b2fa1724b7f40f6d74fbc039453f21e47e4026f1"
+        }
+      },
+      "triangle_counts": {
+        "tray": 1040,
+        "lid": 12
+      }
+    },
+    "roundtrip": {
+      "passed": true,
+      "exports": {
+        "enclosure.FCStd": {
+          "bytes": 37877,
+          "sha256": "7176fa35c1da93a94ce56fb7da601775d73561e99bf45ab6fa0063de258c844e"
+        },
+        "tray.step": {
+          "bytes": 18253,
+          "sha256": "9cef9ab1d154af8f3a518b41dc7feffc91b9c76db789c237a207909f9cb67a26"
+        },
+        "lid.step": {
+          "bytes": 6973,
+          "sha256": "5a7f13b287bab74fbb251531cc3482f959b85cd581e6930454a6b5a902199947"
+        },
+        "tray.stl": {
+          "bytes": 102684,
+          "sha256": "888747829e5e8af0d442c2d3364a53eab6c163fbb668548cdea64689a68c18e9"
+        },
+        "lid.stl": {
+          "bytes": 684,
+          "sha256": "4c8ef461e33af9b40ebf9d5ce3f0eaf1acdf9b28c987c67c0149ec896167977a"
+        }
+      },
+      "triangle_counts": {
+        "tray": 2052,
+        "lid": 12
+      }
+    }
+  },
+  "owned_simulator_cleanup": {
+    "shutdown": {
+      "returncode": 0
+    },
+    "delete": {
+      "returncode": 0
+    }
+  },
+  "app_checks_run": false,
+  "combined_native_accepted": false,
+  "physical_device_execution": false
+}

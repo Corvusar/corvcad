@@ -1,0 +1,10 @@
+Source: KiCad 10.0.6 / thirdparty/lemon/lemon.c
+
+/*
+** This file contains all sources (including headers) to the LEMON
+** LALR(1) parser generator.  The sources have been combined into a
+** single file to make it easy to include LEMON in the source tree
+** and Makefile of another program.
+**
+** The author of this program disclaims copyright.
+*/

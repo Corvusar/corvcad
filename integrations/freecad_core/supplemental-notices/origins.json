@@ -1,0 +1,8 @@
+{
+  "GitInfo-MIT.txt": {
+    "url": "https://raw.githubusercontent.com/cppmf/GitInfo.cmake/87dd0de1d5930f551d417518a471cbc9d192a7c8/LICENSE",
+    "commit": "87dd0de1d5930f551d417518a471cbc9d192a7c8",
+    "sha256": "ff51d539d89619627c08dd29b79f92de4a45420fbcc30cb51527ce40c7e3b0b3",
+    "reason": "The pinned FreeCAD libE57Format/cmake/GitInfo.cmake attributes cppmf but does not carry the upstream MIT grant; retain the official notice separately."
+  }
+}

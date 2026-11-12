@@ -1,0 +1,25 @@
+{
+  "schema": 1,
+  "provider": "Codemagic",
+  "app_id": "6adef14098c06b067e3a725c",
+  "build_id": "6ae04fa3cc6c87aa9f261b3d",
+  "commit": "2ea6eca31d1e62de93458500123c638b9fe1ef61",
+  "run_url": "https://codemagic.io/app/6adef14098c06b067e3a725c/build/6ae04fa3cc6c87aa9f261b3d",
+  "result": "failed",
+  "scope": "F4 command/native adapter targets compiled and linked successfully; resource staging failed before C ABI execution or app build/tests",
+  "failure": "Missing Mod/Material/Init.py; independent upstream ALL resource-copy targets were skipped by executable-only build selection",
+  "native_adapter_compiled": true,
+  "native_runtime_tested": false,
+  "app_executed": false,
+  "provider_compile_action": {
+    "name": "Compile FreeCAD for the target SDK",
+    "status": "success",
+    "startedAt": "2026-10-27T07:25:12.019000+00:00",
+    "finishedAt": "2026-10-27T07:40:06.470000+00:00"
+  },
+  "saved_decoded_log": {
+    "name": "6ae04fa3cc6c87aa9f261b3d-step-9.log",
+    "bytes": 955,
+    "sha256": "1e5c1254a64fa0a84eb9f34cbe10a0842bdfcb388c351d4a4abfb8add0e1a32f"
+  }
+}

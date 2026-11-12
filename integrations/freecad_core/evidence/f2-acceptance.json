@@ -1,0 +1,68 @@
+{
+  "schema": 1,
+  "gate": "F2",
+  "status": "desktop build/input audit complete",
+  "reviewer": "Codex",
+  "date": "2026-10-25",
+  "run_url": "https://github.com/Corvusar/corvcad/actions/runs/40189353513",
+  "tested_commit": "ed56aa701de27f43ac269c648c62211eea7ca474",
+  "source_capture_run": "https://github.com/Corvusar/corvcad/actions/runs/40187987258",
+  "local_regression_tests": 55,
+  "platforms": {
+    "linux": {
+      "artifact_id": 12597043016,
+      "artifact_sha256": "4a05b0ae3219e050fecacd26ab44d7a55f8b33dc25525d90bb3db0d84d440ab4",
+      "job_id": 121156838714,
+      "lock_comparison": "exact match",
+      "objects": 673,
+      "target_artifacts": 12,
+      "upstream_tests": 669,
+      "skips": 3,
+      "source_generator_inputs": 2145,
+      "external_input_files": 7482,
+      "package_records": 129,
+      "reports": {
+        "upstream": {
+          "path": "f2-accepted-linux-upstream.json",
+          "sha256": "d7d13d2223e97a10be3f6a1fa7567970bc944999d21946c1ca771c3e2952e838"
+        },
+        "demo": {
+          "path": "f2-accepted-linux-demo.json",
+          "sha256": "e72c23fb3273281951cdc01138a62b41259cbc538918907a3abcf6009fc78e38"
+        },
+        "roundtrip": {
+          "path": "f2-accepted-linux-roundtrip.json",
+          "sha256": "5482cc40dad7c31f98db68c3fbac56ac4d0af0f45b86028ae039c25e1ae27b85"
+        }
+      }
+    },
+    "macos": {
+      "artifact_id": 12597323989,
+      "artifact_sha256": "286a3a17de53b663c997efd07191c81fd4305bb802f9b5ab44ea6de3e99f0286",
+      "job_id": 121156838490,
+      "lock_comparison": "exact match",
+      "objects": 673,
+      "target_artifacts": 12,
+      "upstream_tests": 669,
+      "skips": 3,
+      "source_generator_inputs": 2157,
+      "external_input_files": 8855,
+      "package_records": 27,
+      "reports": {
+        "upstream": {
+          "path": "f2-accepted-macos-upstream.json",
+          "sha256": "04907c4687221bef460e7c47a32c3ea28cf038c64d80d81dea7da5fac5487e48"
+        },
+        "demo": {
+          "path": "f2-accepted-macos-demo.json",
+          "sha256": "332edca4048307f661d7e8365d0f5eacd4b00196fd62e8ec6806e0c72d5189dd"
+        },
+        "roundtrip": {
+          "path": "f2-accepted-macos-roundtrip.json",
+          "sha256": "18462e10fdd32cc194cc8873b834a00315e25762222e9b74228ac8576d5aa90c"
+        }
+      }
+    }
+  },
+  "scope": "Headless desktop build, tests and reviewed input inventory. F3 static iOS linking, F4 app integration, F5 device validation and native binary distribution remain separate."
+}

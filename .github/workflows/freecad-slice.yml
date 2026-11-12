@@ -1,0 +1,126 @@
+name: FreeCAD F2 headless source slice
+# Manual investigation only. Does not release a binary or accept gate F2 by itself.
+on:
+  workflow_dispatch:
+    inputs:
+      platform:
+        type: choice
+        options: [all, linux, macos]
+        default: all
+  workflow_call:
+    inputs:
+      platform:
+        type: string
+        default: all
+permissions:
+  contents: read
+jobs:
+  source:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: ${{ fromJSON(inputs.platform == 'linux' && '["ubuntu-24.04"]' || inputs.platform == 'macos' && '["macos-15"]' || '["ubuntu-24.04","macos-15"]') }}
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 120
+    env:
+      QT_QPA_PLATFORM: offscreen
+      HOMEBREW_NO_AUTO_UPDATE: '1'
+      HOMEBREW_NO_INSTALL_CLEANUP: '1'
+      CCACHE_DIR: ${{ github.workspace }}/build/freecad-core/ccache
+      CCACHE_BASEDIR: ${{ github.workspace }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Linux build dependencies
+        if: runner.os == 'Linux'
+        run: |
+          sudo apt-get update -q
+          sudo apt-get install -y --no-install-recommends cmake ninja-build ccache g++ python3-dev python3-ply python3-yaml libboost-program-options-dev libboost-regex-dev libboost-thread-dev libboost-date-time-dev libxerces-c-dev libeigen3-dev libfmt-dev libyaml-cpp-dev zlib1g-dev libfreetype-dev libfontconfig1-dev libicu-dev libtbb-dev qt6-base-dev qt6-tools-dev qt6-tools-dev-tools libocct-foundation-dev libocct-modeling-data-dev libocct-modeling-algorithms-dev libocct-ocaf-dev libocct-data-exchange-dev libocct-visualization-dev swig bison flex
+          mkdir -p build/freecad-core/evidence
+          dpkg-query -W -f='${binary:Package}\t${Version}\n' > build/freecad-core/evidence/host-packages.tsv
+          echo 'F2_PYTHON=/usr/bin/python3' >> "$GITHUB_ENV"
+          # Select the owned distro CMake/Ninja instead of untracked image tools.
+          echo '/usr/bin' >> "$GITHUB_PATH"
+      - name: macOS build dependencies
+        if: runner.os == 'macOS'
+        run: |
+          brew install cmake ninja ccache boost xerces-c eigen@3 fmt yaml-cpp freetype icu4c qtbase qttools opencascade swig python@3.11 bison flex
+          mkdir -p build/freecad-core/evidence
+          brew info --json=v2 --installed > build/freecad-core/evidence/host-packages.json
+          echo "F2_PYTHON=$(brew --prefix python@3.11)/bin/python3.11" >> "$GITHUB_ENV"
+          echo "CMAKE_PREFIX_PATH=$(brew --prefix qtbase):$(brew --prefix qttools):$(brew --prefix icu4c):$(brew --prefix opencascade):$(brew --prefix eigen@3):$(brew --prefix python@3.11)" >> "$GITHUB_ENV"
+          echo "ICU_ROOT=$(brew --prefix icu4c)" >> "$GITHUB_ENV"
+          linguist_config=$(find -L "$(brew --prefix qttools)" -name Qt6LinguistToolsConfig.cmake -print -quit)
+          test -n "$linguist_config"
+          echo "F2_LINGUIST_DIR=$(dirname "$linguist_config")" >> "$GITHUB_ENV"
+          echo "F2_EIGEN_DIR=$(brew --prefix eigen@3)/share/eigen3/cmake" >> "$GITHUB_ENV"
+      - uses: actions/cache/restore@v4
+        id: compiler-cache
+        with:
+          path: ${{ env.CCACHE_DIR }}
+          key: freecad-f2-${{ runner.os }}-${{ hashFiles('integrations/freecad_core/slice.json') }}-${{ github.run_id }}-${{ github.run_attempt }}
+          restore-keys: |
+            freecad-f2-${{ runner.os }}-${{ hashFiles('integrations/freecad_core/slice.json') }}-
+            freecad-f2-${{ runner.os }}-
+      - name: Verify source-preserving tools
+        run: |
+          "$F2_PYTHON" -m unittest discover -s integrations/freecad_core -p test_contract.py -v
+          "$F2_PYTHON" -m unittest discover -s integrations/freecad_core -p test_source_profile.py -v
+          "$F2_PYTHON" -m unittest discover -s integrations/freecad_core -p test_inventory.py -v
+          "$F2_PYTHON" -m unittest discover -s integrations/freecad_core -p test_retain_inventory.py -v
+          "$F2_PYTHON" -m unittest discover -s integrations/freecad_core -p test_verify_inventory.py -v
+          "$F2_PYTHON" -m unittest discover -s integrations/freecad_core -p test_closure.py -v
+          "$F2_PYTHON" -m unittest discover -s integrations/freecad_core -p test_licenses.py -v
+          "$F2_PYTHON" -m unittest discover -s integrations/freecad_core -p test_verify_closure.py -v
+          "$F2_PYTHON" -m unittest discover -s integrations/freecad_core -p test_retain_closure.py -v
+          ccache --max-size 2G
+      - name: Configure selected headless source
+        run: |
+          set -o pipefail
+          extra=()
+          if [ -n "${F2_LINGUIST_DIR:-}" ]; then
+            extra+=("-DQt6LinguistTools_DIR=$F2_LINGUIST_DIR" "-DEigen3_DIR=$F2_EIGEN_DIR")
+          fi
+          "$F2_PYTHON" integrations/freecad_core/slice.py configure -DPython3_EXECUTABLE="$F2_PYTHON" "${extra[@]}" 2>&1 | tee build/freecad-core/evidence/configure.log
+          "$F2_PYTHON" integrations/freecad_core/verify_inventory.py --source build/freecad-core/FreeCAD
+      - name: Build
+        id: build
+        run: |
+          set -o pipefail
+          cmake --build build/freecad-core/headless --parallel 3 2>&1 | tee build/freecad-core/evidence/build.log
+      - name: Inventory the actual source build
+        if: always()
+        run: |
+          extra=()
+          if [ "${{ steps.build.outcome }}" = success ]; then
+            extra+=(--require-complete)
+          fi
+          "$F2_PYTHON" integrations/freecad_core/inventory.py --source build/freecad-core/FreeCAD --build build/freecad-core/headless --output build/freecad-core/evidence "${extra[@]}"
+      - name: Run upstream App tests and the F1 models
+        run: |
+          "$F2_PYTHON" integrations/freecad_core/test_slice.py --build build/freecad-core/headless --output build/freecad-core/evidence
+      - name: Capture generator and dependency closure
+        run: |
+          "$F2_PYTHON" integrations/freecad_core/closure.py --source build/freecad-core/FreeCAD --build build/freecad-core/headless --output build/freecad-core/evidence
+          "$F2_PYTHON" integrations/freecad_core/licenses.py --source build/freecad-core/FreeCAD --inventory build/freecad-core/evidence/closure.json --output build/freecad-core/evidence/license-catalog.json
+          if [ -f integrations/freecad_core/audit/dependency-lock.json ]; then
+            platform=linux
+            if [ "$RUNNER_OS" = macOS ]; then platform=macos; fi
+            "$F2_PYTHON" integrations/freecad_core/verify_closure.py --source build/freecad-core/FreeCAD --capture build/freecad-core/evidence/closure.json --platform "$platform"
+          fi
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: freecad-f2-${{ matrix.os }}
+          path: |
+            build/freecad-core/evidence/
+            build/freecad-core/headless/configure-command.json
+            build/freecad-core/headless/CMakeCache.txt
+            build/freecad-core/headless/compile_commands.json
+            build/freecad-core/headless/.cmake/api/v1/reply/
+          if-no-files-found: error
+          retention-days: 7
+      - uses: actions/cache/save@v4
+        if: always()
+        with:
+          path: ${{ env.CCACHE_DIR }}
+          key: ${{ steps.compiler-cache.outputs.cache-primary-key }}

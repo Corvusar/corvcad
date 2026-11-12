@@ -1,0 +1,44 @@
+{
+  "schema": 1,
+  "date": "2026-10-29",
+  "source_revision": "fe0f1d3aebe43b1c6094ebcb5e5f3908a6d9f5f9",
+  "status": "KiCad shared-prefix core compilation and isolated core preflight passed",
+  "sdk": "iphonesimulator",
+  "architecture": "x86_64",
+  "compiled_units": 631,
+  "actual_source_header_inputs": 4544,
+  "receipt_sha256": "67f478c73b90f35b2ec0490bd5682c36542da390b56bee9dc0e922ba5cc6e0ac",
+  "core": {
+    "sha256": "b660300fc969cf4c98e7210f63207fb1ae93429e3fc863a8f8d804d875af315f",
+    "bytes": 79543880
+  },
+  "dependency_receipt": "6da7495f80a6a9de11798fe9f07650842d677e6a452ccbe0d575dc21a699b365",
+  "replacement": {
+    "omitted": [
+      "corvcad/engine/src/schematic_route.cpp",
+      "corvcad/integrations/kicad_core/session/board_test.c",
+      "kicad/thirdparty/fmt/src/format.cc"
+    ],
+    "required_standins": [
+      "corvcad/integrations/kicad_core/headless/simulator_stub.cpp"
+    ],
+    "fmt": "one union vcpkg header/library implementation",
+    "fmt_core_compatibility": "FMT_DEPRECATED_HEAVY_CORE=1"
+  },
+  "supplemental_headers": {
+    "corvcad/integrations/native_workspace/headless/ios/dialog_plot.h": {
+      "sha256_lf": "512ece50815f54b072711ad7f725c145e7027c2580ed46782d49f529b8561261",
+      "license": "GPL-3.0-or-later",
+      "scope": "Omit desktop plot-dialog declaration for pcbplot.cpp only; retain the native plot implementation"
+    }
+  },
+  "all_object_and_input_hashes_rechecked": true,
+  "baseline_audit_reverified": true,
+  "strong_symbol_conflicts": 0,
+  "core_preflight_sha256": "ec963205254d7e73ea5170c2d22966b845b7ad57049ef1239a760ad7ced0ef98",
+  "runtime_checks_run": false,
+  "app_checks_run": false,
+  "combined_native_accepted": false,
+  "physical_device_execution": false,
+  "next": "Fresh shared-PCRE2 wx and shared-Expat Python/FreeCAD builds, then actual raw combined link and two-order simulator checks."
+}

@@ -1,0 +1,11 @@
+*.py text eol=lf
+*.json text eol=lf
+# Unified-diff blank context lines carry a required space prefix.
+patches/*.patch text eol=lf whitespace=-blank-at-eol
+licenses/*.txt text eol=lf
+# Preserve archive notice/package bytes for checksum verification.
+audit/notices/** -text whitespace=-blank-at-eol,-blank-at-eof
+audit/host-packages/* -text
+audit/dependencies/** -text whitespace=-blank-at-eol,-blank-at-eof
+audit/closure/** -text whitespace=-blank-at-eol,-blank-at-eof
+supplemental-notices/*.txt -text

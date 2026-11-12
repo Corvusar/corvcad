@@ -1,0 +1,39 @@
+{
+  "homebrew_version": "4.3.20-36-gf0be97f",
+  "used_options": [],
+  "unused_options": [],
+  "built_as_bottle": true,
+  "poured_from_bottle": true,
+  "loaded_from_api": true,
+  "loaded_from_internal_api": true,
+  "installed_on_request": false,
+  "changed_files": [
+    "lib/pkgconfig/libb2.pc"
+  ],
+  "time": 1792926850,
+  "source_modified_time": 1552232191,
+  "compiler": "clang",
+  "aliases": [],
+  "runtime_dependencies": [],
+  "source": {
+    "spec": "stable",
+    "versions": {
+      "stable": "0.98.1",
+      "head": null,
+      "version_scheme": 0,
+      "compatibility_version": null
+    },
+    "path": "/Users/runner/Library/Caches/Homebrew/api/internal/packages.arm64_sequoia.jws.json",
+    "tap_git_head": "a7496e08a4f47d93bf30ba518e3dfae9f1dbab3b",
+    "tap": "homebrew/core"
+  },
+  "arch": "arm64",
+  "built_on": {
+    "os": "Macintosh",
+    "os_version": "macOS 15",
+    "cpu_family": "dunno",
+    "xcode": "16.0",
+    "clt": "16.0.0.0.1.1724870825",
+    "preferred_perl": "5.34"
+  }
+}

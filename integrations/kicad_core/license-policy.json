@@ -1,0 +1,47 @@
+{
+  "schema": 1,
+  "description": "Reviewed defaults for the measured KiCad 10.0.6 inputs. File notices and SPDX additions are retained; this is not a blanket relicensing of upstream files.",
+  "vendored": {
+    "clipper2": ["BSL-1.0", "thirdparty/clipper2/LICENSE"],
+    "compoundfilereader": ["MIT", "thirdparty/compoundfilereader/LICENSE.MIT"],
+    "delaunator": ["MIT", "thirdparty/delaunator/LICENSE.MIT"],
+    "dynamic_bitset": ["MIT", "thirdparty/dynamic_bitset/LICENSE"],
+    "expected": ["CC0-1.0", "thirdparty/expected/COPYING"],
+    "fast_float": ["MIT OR Apache-2.0 OR BSL-1.0", "thirdparty/fast_float/LICENSE-MIT", "thirdparty/fast_float/LICENSE-APACHE", "thirdparty/fast_float/LICENSE-BOOST"],
+    "fmt": ["MIT", "thirdparty/fmt/LICENSE"],
+    "glad": ["CC0-1.0 AND Apache-2.0", "thirdparty/glad/include/glad/gl.h", "LICENSE.CC0", "LICENSE.APACHE-2.0"],
+    "libpopcnt": ["BSD-2-Clause", "thirdparty/libpopcnt/LICENSE"],
+    "magic_enum": ["MIT", "thirdparty/magic_enum/LICENSE"],
+    "nanoflann": ["BSD-2-Clause", "thirdparty/nanoflann/LICENSE.BSD"],
+    "nanosvg": ["Zlib", "thirdparty/nanosvg/LICENSE.zlib"],
+    "nlohmann_json": ["MIT", "thirdparty/nlohmann_json/LICENSE.MIT"],
+    "pegtl": ["BSL-1.0", "thirdparty/pegtl/LICENSE_1_0.txt"],
+    "picosha2": ["MIT", "thirdparty/picosha2/LICENSE.MIT"],
+    "rtree": ["GPL-3.0-or-later", "thirdparty/rtree/LICENSE.GPLv3"],
+    "thread-pool": ["MIT", "thirdparty/thread-pool/LICENSE.txt"],
+    "zint": ["BSD-3-Clause", "thirdparty/zint/backend/library.c", "thirdparty/zint/README"],
+    "lemon": ["LicenseRef-Public-Domain", "thirdparty/lemon/lemon.c", "thirdparty/lemon/lempar.c"]
+  },
+  "overrides": {
+    "thirdparty/glad/include/KHR/khrplatform.h": ["MIT", "File permission notice"],
+    "libs/kimath/include/geometry/polygon_triangulation.h": ["GPL-3.0-or-later AND ISC", "File header, including K-3D and Mapbox attribution"],
+    "libs/kimath/include/math/util.h": ["GPL-2.0-or-later AND Apache-2.0", "KiCad LICENSE.README and file notices"]
+  },
+  "vcpkg_overrides": {
+    "libiconv": ["LGPL-2.1-or-later AND GPL-3.0-or-later", "GNU libiconv library and tools; installed-only unless present in the selected link map"],
+    "pthread": ["LicenseRef-System-Package", "Empty vcpkg port: resolves the SDK pthread implementation; no package code is distributed"],
+    "vcpkg-make": ["MIT AND GPL-2.0-or-later", "Installed copyright: MIT CMake scripts and GPL Automake build helper scripts; host build tool"]
+  },
+  "wx_bundled": {
+    "expat": ["MIT", "src/expat/expat/COPYING"],
+    "jpeg": ["IJG", "src/jpeg/README"],
+    "png": ["libpng-2.0", "src/png/LICENSE"],
+    "tiff": ["libtiff", "src/tiff/LICENSE.md"],
+    "zlib": ["Zlib", "src/zlib/LICENSE"],
+    "webp": ["BSD-3-Clause", "3rdparty/libwebp/COPYING", "3rdparty/libwebp/PATENTS"],
+    "pcre2": ["BSD-3-Clause", "3rdparty/pcre/COPYING", "3rdparty/pcre/LICENCE.md"],
+    "nanosvg": ["Zlib", "3rdparty/nanosvg/LICENSE.txt"],
+    "lunasvg": ["MIT", "3rdparty/lunasvg/LICENSE"],
+    "plutovg": ["MIT", "3rdparty/lunasvg/plutovg/LICENSE"]
+  }
+}

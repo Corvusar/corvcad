@@ -1,0 +1,24 @@
+{
+  "name": "corvcad-freecad-ios-investigation",
+  "version-string": "0.1.0",
+  "builtin-baseline": "9e593bb18ea69cc5095e012465dcd675a822ed0d",
+  "dependencies": [
+    "boost-convert", "boost-format", "boost-geometry", "boost-iostreams",
+    "boost-program-options", "boost-regex", "boost-thread", "boost-date-time",
+    "boost-scope-exit", "boost-signals2", "boost-uuid",
+    "eigen3", "fmt", "freetype", "icu", "libffi", "yaml-cpp", "zlib",
+    { "name": "xerces-c", "default-features": false },
+    {
+      "name": "qtbase",
+      "default-features": false,
+      "features": ["concurrent", "network", "thread", "appstore-compliant"]
+    },
+    {
+      "name": "qttools",
+      "host": true,
+      "default-features": false,
+      "features": ["linguist"]
+    }
+  ],
+  "overrides": [ { "name": "eigen3", "version": "3.4.0", "port-version": 5 } ]
+}

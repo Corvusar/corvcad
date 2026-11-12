@@ -1,0 +1,1990 @@
+CorvCAD patch series for KiCad 10.0.6 (caf7377), on top of 0001: let the schematic slice
+compile against the wxWidgets iOS port (osx_iphone), which has no property grid, AUI, GL
+canvas, status bar or info bar (wxUSE_PROPGRID/AUI/GLCANVAS/STATUSBAR/INFOBAR are 0).
+
+Applied by integrations/kicad_core/fetch.py. The desktop probe still builds every unit and
+matches kicad-cli; split per item before sending upstream.
+
+1. Editor-only code moves out of model files: ERC/DRC tree model (RC_TREE_MODEL) from
+   rc_item.cpp to the new common/rc_tree_model.cpp; STATUSBAR_REPORTER::Report() to
+   widgets/kistatusbar.cpp; WarnUserIfOperatingSystemUnsupported() from common.cpp to
+   confirm.cpp.
+2. The property system uses a small wxPGChoices stand-in (properties/pg_choices_fallback.h,
+   same semantics) when wxWidgets has no property grid.
+3. AUI pane state in settings (aui_settings.cpp, JSON_SETTINGS, EESCHEMA_SETTINGS defaults) is
+   compiled only when wxUSE_AUI.
+4. iOS (__WXOSX_IPHONE__): PGM_BASE skips the tooltip setup and the preferred-editor file
+   dialog, which wx iOS declares but does not implement; the "all files" wildcard is "*".
+5. Headers stop pulling in editor widgets: gl_context_mgr.h forward-declares wxGLCanvas and
+   wxGLContext, sch_field.h forward-declares SCINTILLA_TRICKS and wxStyledTextEvent (users
+   include scintilla_tricks.h), ibis_parser.h drops wx_html_report_panel.h, git_progress.h
+   reports through PROGRESS_REPORTER, and sch_text/sch_textbox drop sch_navigate_tool.h.
+diff --git a/common/CMakeLists.txt b/common/CMakeLists.txt
+index 2c431548..979a8875 100644
+--- a/common/CMakeLists.txt
++++ b/common/CMakeLists.txt
+@@ -790,6 +790,7 @@ set( COMMON_SRCS
+     printout.cpp
+     ptree.cpp
+     rc_item.cpp
++    rc_tree_model.cpp
+     refdes_utils.cpp
+     reference_image.cpp
+     render_settings.cpp
+diff --git a/common/common.cpp b/common/common.cpp
+index 6f015590..17c23c70 100644
+--- a/common/common.cpp
++++ b/common/common.cpp
+@@ -23,7 +23,6 @@
+  * 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA
+  */
+ 
+-#include <eda_base_frame.h>
+ #include <kiplatform/app.h>
+ #include <project.h>
+ #include <common.h>
+@@ -37,7 +36,6 @@
+ #include <mutex>
+ #include <wx/config.h>
+ #include <wx/log.h>
+-#include <wx/msgdlg.h>
+ #include <wx/stdpaths.h>
+ #include <wx/url.h>
+ #include <wx/utils.h>
+@@ -810,25 +808,3 @@ bool matchWild( const char* pat, const char* text, bool dot_special )
+         }
+     }
+ }
+-
+-
+-bool WarnUserIfOperatingSystemUnsupported()
+-{
+-    if( !KIPLATFORM::APP::IsOperatingSystemUnsupported() )
+-        return false;
+-
+-    // wxLogGui shows queued messages when a modal opens
+-    // A second modal inside this dialog makes GTK fail
+-    wxLog::FlushActive();
+-
+-    KICAD_MESSAGE_DIALOG dialog( nullptr,
+-                                 _( "This operating system is not supported "
+-                                    "by KiCad and its dependencies." ),
+-                                 _( "Unsupported Operating System" ), wxOK | wxICON_EXCLAMATION );
+-
+-    dialog.SetExtendedMessage( _( "Any issues with KiCad on this system cannot "
+-                                  "be reported to the official bugtracker." ) );
+-    dialog.ShowModal();
+-
+-    return true;
+-}
+diff --git a/common/confirm.cpp b/common/confirm.cpp
+index ed30a853..f6f8ea91 100644
+--- a/common/confirm.cpp
++++ b/common/confirm.cpp
+@@ -22,7 +22,9 @@
+  * 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA
+  */
+ 
++#include <common.h>
+ #include <confirm.h>
++#include <kiplatform/app.h>
+ 
+ #include <functional>
+ #include <wx/app.h>
+@@ -311,3 +313,25 @@ int SelectSingleOption( wxWindow* aParent, const wxString& aTitle,
+     return dlg.GetSelection();
+ }
+ 
++
++// Declared in common.h; defined with the other message dialogs.
++bool WarnUserIfOperatingSystemUnsupported()
++{
++    if( !KIPLATFORM::APP::IsOperatingSystemUnsupported() )
++        return false;
++
++    // wxLogGui shows queued messages when a modal opens
++    // A second modal inside this dialog makes GTK fail
++    wxLog::FlushActive();
++
++    KICAD_MESSAGE_DIALOG dialog( nullptr,
++                                 _( "This operating system is not supported "
++                                    "by KiCad and its dependencies." ),
++                                 _( "Unsupported Operating System" ), wxOK | wxICON_EXCLAMATION );
++
++    dialog.SetExtendedMessage( _( "Any issues with KiCad on this system cannot "
++                                  "be reported to the official bugtracker." ) );
++    dialog.ShowModal();
++
++    return true;
++}
+diff --git a/common/git/git_progress.h b/common/git/git_progress.h
+index 8c0fc277..50dbdbc1 100644
+--- a/common/git/git_progress.h
++++ b/common/git/git_progress.h
+@@ -24,7 +24,7 @@
+ #ifndef GIT_PROGRESS_H_
+ #define GIT_PROGRESS_H_
+ 
+-#include <widgets/wx_progress_reporters.h>
++#include <progress_reporter.h>
+ #include <import_export.h>
+ 
+ #include <memory>
+@@ -38,7 +38,7 @@ public:
+         m_progressReporter.reset();
+     }
+ 
+-    void SetProgressReporter( std::unique_ptr<WX_PROGRESS_REPORTER> aProgressReporter )
++    void SetProgressReporter( std::unique_ptr<PROGRESS_REPORTER> aProgressReporter )
+     {
+         m_progressReporter = std::move( aProgressReporter );
+     }
+@@ -47,9 +47,10 @@ public:
+     {
+         if( m_progressReporter )
+         {
++            // No known fraction: only update the message (PROGRESS_REPORTER has no pulse).
+             if( aCurrent == m_previousProgress || aTotal == 0 )
+             {
+-                m_progressReporter->Pulse( aMessage );
++                m_progressReporter->Report( aMessage );
+             }
+             else
+             {
+@@ -68,7 +69,7 @@ public:
+ protected:
+     int m_previousProgress;
+ 
+-    std::unique_ptr<WX_PROGRESS_REPORTER> m_progressReporter;
++    std::unique_ptr<PROGRESS_REPORTER> m_progressReporter;
+ };
+ 
+ #endif // GIT_PROGRESS_H__
+diff --git a/common/kicad_gl/gl_context_mgr.cpp b/common/kicad_gl/gl_context_mgr.cpp
+index 3222aed7..9576ccbf 100644
+--- a/common/kicad_gl/gl_context_mgr.cpp
++++ b/common/kicad_gl/gl_context_mgr.cpp
+@@ -23,6 +23,9 @@
+  * 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA
+  */
+ 
++#include <kicad_gl/kiglad.h> // Must be included first
++#include <wx/glcanvas.h>
++
+ #include <kicad_gl/gl_context_mgr.h>
+ #include <wx/debug.h>
+ 
+diff --git a/common/pgm_base.cpp b/common/pgm_base.cpp
+index a874861d..552ca3cc 100644
+--- a/common/pgm_base.cpp
++++ b/common/pgm_base.cpp
+@@ -261,6 +261,10 @@ const wxString& PGM_BASE::GetTextEditor( bool aCanShowFileChooser )
+ 
+ const wxString PGM_BASE::AskUserForPreferredEditor( const wxString& aDefaultEditor )
+ {
++#ifdef __WXOSX_IPHONE__
++    // wxWidgets' iOS port has no file dialog; the iPad front end picks files itself.
++    return wxEmptyString;
++#else
+     // Create a mask representing the executable files in the current platform
+ #ifdef __WINDOWS__
+     wxString mask( _( "Executable file" ) + wxT( " (*.exe)|*.exe" ) );
+@@ -277,6 +281,7 @@ const wxString PGM_BASE::AskUserForPreferredEditor( const wxString& aDefaultEdit
+     // the dialog).
+     return wxFileSelector( _( "Select Preferred Editor" ), path, name, wxT( "." ) + ext,
+                            mask, wxFD_OPEN | wxFD_FILE_MUST_EXIST, nullptr );
++#endif
+ }
+ 
+ 
+@@ -516,11 +521,13 @@ bool PGM_BASE::InitPgm( bool aHeadless, bool aSkipPyInit, bool aIsUnitTest )
+ 
+     // This sets the maximum tooltip display duration to 10s (up from 5) but only affects
+     // Windows as other platforms display tooltips while the mouse is not moving
++#ifndef __WXOSX_IPHONE__    // the iOS port implements no tooltips
+     if( !aHeadless )
+     {
+         wxToolTip::Enable( true );
+         wxToolTip::SetAutoPop( 10000 );
+     }
++#endif
+ 
+     if( ADVANCED_CFG::GetCfg().m_UpdateUIEventInterval != 0 )
+         wxUpdateUIEvent::SetUpdateInterval( ADVANCED_CFG::GetCfg().m_UpdateUIEventInterval );
+diff --git a/common/rc_item.cpp b/common/rc_item.cpp
+index eb2ceeb9..b98009c6 100644
+--- a/common/rc_item.cpp
++++ b/common/rc_item.cpp
+@@ -22,19 +22,13 @@
+  */
+ 
+ 
+-#include <wx/wupdlock.h>
+-#include <wx/dataview.h>
+-#include <wx/settings.h>
+-#include <widgets/ui_common.h>
+ #include <marker_base.h>
+-#include <eda_draw_frame.h>
+ #include <rc_item.h>
+ #include <rc_json_schema.h>
+ #include <eda_item.h>
+ #include <base_units.h>
+ #include <units_provider.h>
+ 
+-#define WX_DATAVIEW_WINDOW_PADDING 6
+ 
+ 
+ wxString RC_ITEM::GetErrorMessage( bool aTranslate ) const
+@@ -230,626 +224,3 @@ void RC_ITEM::GetJsonViolation( RC_JSON::VIOLATION& aViolation, UNITS_PROVIDER*
+         aViolation.items.emplace_back( item );
+     }
+ }
+-
+-
+-KIID RC_TREE_MODEL::ToUUID( wxDataViewItem aItem )
+-{
+-    const RC_TREE_NODE* node = RC_TREE_MODEL::ToNode( aItem );
+-
+-    if( node && node->m_RcItem )
+-    {
+-        const std::shared_ptr<RC_ITEM> rc_item = node->m_RcItem;
+-
+-        switch( node->m_Type )
+-        {
+-        case RC_TREE_NODE::MARKER:
+-        case RC_TREE_NODE::COMMENT:
+-            // rc_item->GetParent() can be null, if the parent is not existing
+-            // when a RC item has no corresponding ERC/DRC marker
+-            if( rc_item->GetParent() )
+-                return rc_item->GetParent()->GetUUID();
+-
+-            break;
+-
+-        case RC_TREE_NODE::MAIN_ITEM: return rc_item->GetMainItemID();
+-        case RC_TREE_NODE::AUX_ITEM:  return rc_item->GetAuxItemID();
+-        case RC_TREE_NODE::AUX_ITEM2: return rc_item->GetAuxItem2ID();
+-        case RC_TREE_NODE::AUX_ITEM3: return rc_item->GetAuxItem3ID();
+-        }
+-    }
+-
+-    return niluuid;
+-}
+-
+-
+-RC_TREE_MODEL::RC_TREE_MODEL( EDA_DRAW_FRAME* aParentFrame, wxDataViewCtrl* aView ) :
+-        m_editFrame( aParentFrame ),
+-        m_view( aView ),
+-        m_severities( 0 ),
+-        m_rcItemsProvider( nullptr )
+-{
+-}
+-
+-
+-RC_TREE_NODE* RC_TREE_MODEL::createNode( RC_TREE_NODE* aParent,
+-                                         const std::shared_ptr<RC_ITEM>& aRcItem,
+-                                         RC_TREE_NODE::NODE_TYPE aType )
+-{
+-    RC_TREE_NODE* node = new RC_TREE_NODE( aParent, aRcItem, aType );
+-
+-    node->m_Handle = &m_handles.emplace_back();
+-    node->m_Handle->m_Node = node;
+-
+-    return node;
+-}
+-
+-
+-void RC_TREE_MODEL::retireNodeTree( RC_TREE_NODE* aNode )
+-{
+-    if( !aNode )
+-        return;
+-
+-    if( aNode->m_Handle )
+-        aNode->m_Handle->m_Node = nullptr;
+-
+-    for( RC_TREE_NODE* child : aNode->m_Children )
+-        retireNodeTree( child );
+-}
+-
+-
+-void RC_TREE_MODEL::deleteNodeTree( RC_TREE_NODE* aNode )
+-{
+-    if( !aNode )
+-        return;
+-
+-    delete aNode;
+-}
+-
+-
+-void RC_TREE_MODEL::clearTree()
+-{
+-    for( RC_TREE_NODE* topLevelNode : m_tree )
+-    {
+-        retireNodeTree( topLevelNode );
+-        deleteNodeTree( topLevelNode );
+-    }
+-
+-    m_tree.clear();
+-}
+-
+-
+-RC_TREE_MODEL::~RC_TREE_MODEL()
+-{
+-    clearTree();
+-}
+-
+-
+-void RC_TREE_MODEL::rebuildTree( std::shared_ptr<RC_ITEMS_PROVIDER> aProvider, int aSeverities )
+-{
+-    m_rcItemsProvider = std::move( aProvider );
+-
+-    if( aSeverities != m_severities )
+-        m_severities = aSeverities;
+-
+-    if( m_rcItemsProvider )
+-        m_rcItemsProvider->SetSeverities( m_severities );
+-
+-    clearTree();
+-
+-    // wxDataView::ExpandAll() pukes with large lists
+-    int count = 0;
+-
+-    if( m_rcItemsProvider )
+-        count = std::min( 1000, m_rcItemsProvider->GetCount() );
+-
+-    for( int i = 0; i < count; ++i )
+-    {
+-        std::shared_ptr<RC_ITEM> rcItem = m_rcItemsProvider->GetItem( i );
+-
+-        m_tree.push_back( createNode( nullptr, rcItem, RC_TREE_NODE::MARKER ) );
+-        RC_TREE_NODE* n = m_tree.back();
+-
+-        if( rcItem->GetMainItemID() != niluuid )
+-            n->m_Children.push_back( createNode( n, rcItem, RC_TREE_NODE::MAIN_ITEM ) );
+-
+-        if( rcItem->GetAuxItemID() != niluuid )
+-            n->m_Children.push_back( createNode( n, rcItem, RC_TREE_NODE::AUX_ITEM ) );
+-
+-        if( rcItem->GetAuxItem2ID() != niluuid )
+-            n->m_Children.push_back( createNode( n, rcItem, RC_TREE_NODE::AUX_ITEM2 ) );
+-
+-        if( rcItem->GetAuxItem3ID() != niluuid )
+-            n->m_Children.push_back( createNode( n, rcItem, RC_TREE_NODE::AUX_ITEM3 ) );
+-
+-        if( MARKER_BASE* marker = rcItem->GetParent() )
+-        {
+-            if( marker->IsExcluded() && !marker->GetComment().IsEmpty() )
+-                n->m_Children.push_back( createNode( n, rcItem, RC_TREE_NODE::COMMENT ) );
+-        }
+-    }
+-}
+-
+-
+-void RC_TREE_MODEL::rebuildModel( std::shared_ptr<RC_ITEMS_PROVIDER> aProvider, int aSeverities )
+-{
+-    wxWindowUpdateLocker updateLock( m_view );
+-
+-    std::shared_ptr<RC_ITEM> selectedRcItem = nullptr;
+-
+-    if( m_view )
+-    {
+-        RC_TREE_NODE* selectedNode = ToNode( m_view->GetSelection() );
+-        selectedRcItem = selectedNode ? selectedNode->m_RcItem : nullptr;
+-
+-        // Even with the updateLock, wxWidgets sometimes ties its knickers in a knot trying
+-        // to run a wxdataview_selection_changed_callback() on a row that has been deleted.
+-        m_view->UnselectAll();
+-    }
+-
+-    BeforeReset();
+-
+-    rebuildTree( std::move( aProvider ), aSeverities );
+-
+-    // Must be called after a significant change of items to force the
+-    // wxDataViewModel to reread all of them, repopulating itself entirely.
+-    AfterReset();
+-
+-#ifdef __WXGTK__
+-    // The fastest method to update wxDataViewCtrl is to rebuild from
+-    // scratch by calling Cleared(). Linux requires to reassociate model to
+-    // display data, but Windows will create multiple associations.
+-    // On MacOS, this crashes KiCad. See https://gitlab.com/kicad/code/kicad/-/issues/3666
+-    // and https://gitlab.com/kicad/code/kicad/-/issues/3653
+-    m_view->AssociateModel( this );
+-#endif
+-
+-    m_view->ClearColumns();
+-
+-    int width = m_view->GetClientSize().GetWidth() - WX_DATAVIEW_WINDOW_PADDING;
+-
+-    if( width <= 0 )
+-        width = 600;
+-
+-    m_view->AppendTextColumn( wxEmptyString, 0, wxDATAVIEW_CELL_INERT, width );
+-
+-    ExpandAll();
+-
+-    // Most annoyingly wxWidgets won't tell us the scroll position (and no, all the usual
+-    // routines don't work), so we can only restore the scroll position based on a selection.
+-    if( selectedRcItem )
+-    {
+-        for( RC_TREE_NODE* candidate : m_tree )
+-        {
+-            if( candidate->m_RcItem == selectedRcItem )
+-            {
+-                m_view->Select( ToItem( candidate ) );
+-                m_view->EnsureVisible( ToItem( candidate ) );
+-                break;
+-            }
+-        }
+-    }
+-}
+-
+-
+-void RC_TREE_MODEL::Update( std::shared_ptr<RC_ITEMS_PROVIDER> aProvider, int aSeverities )
+-{
+-    rebuildModel( aProvider, aSeverities );
+-}
+-
+-
+-void RC_TREE_MODEL::ExpandAll()
+-{
+-    for( RC_TREE_NODE* topLevelNode : m_tree )
+-        m_view->Expand( ToItem( topLevelNode ) );
+-}
+-
+-
+-bool RC_TREE_MODEL::IsContainer( wxDataViewItem const& aItem ) const
+-{
+-    const RC_TREE_NODE* node = ToNode( aItem );
+-
+-    if( !aItem.IsOk() )    // tree root
+-        return true;
+-
+-    if( node == nullptr )
+-        return false;
+-
+-    return node->m_Type == RC_TREE_NODE::MARKER;
+-}
+-
+-
+-wxDataViewItem RC_TREE_MODEL::GetParent( wxDataViewItem const& aItem ) const
+-{
+-    const RC_TREE_NODE* node = ToNode( aItem );
+-    return node ? ToItem( node->m_Parent ) : wxDataViewItem();
+-}
+-
+-
+-unsigned int RC_TREE_MODEL::GetChildren( wxDataViewItem const& aItem,
+-                                         wxDataViewItemArray&  aChildren ) const
+-{
+-    const RC_TREE_NODE* node = ToNode( aItem );
+-    const std::vector<RC_TREE_NODE*>& children = node ? node->m_Children : m_tree;
+-
+-    if( aItem.IsOk() && !node )
+-        return 0;
+-
+-    for( const RC_TREE_NODE* child : children )
+-        aChildren.push_back( ToItem( child ) );
+-
+-    return children.size();
+-}
+-
+-
+-void RC_TREE_MODEL::GetValue( wxVariant& aVariant, wxDataViewItem const& aItem,
+-                              unsigned int aCol ) const
+-{
+-    if( !aItem.IsOk() || m_view->IsFrozen() || m_tree.empty() )
+-        return;
+-
+-    const RC_TREE_NODE*            node = ToNode( aItem );
+-
+-    if( !node || !node->m_RcItem )
+-        return;
+-
+-    const std::shared_ptr<RC_ITEM> rcItem = node->m_RcItem;
+-    MARKER_BASE*                   marker = rcItem->GetParent();
+-    EDA_ITEM*                      item = nullptr;
+-    wxString                       msg;
+-
+-    switch( node->m_Type )
+-    {
+-    case RC_TREE_NODE::MARKER:
+-        if( marker )
+-        {
+-            SEVERITY severity = marker->GetSeverity();
+-
+-            if( severity == RPT_SEVERITY_EXCLUSION )
+-            {
+-                if( m_editFrame->GetSeverity( rcItem->GetErrorCode() ) == RPT_SEVERITY_WARNING )
+-                    msg = _( "Excluded warning: " );
+-                else
+-                    msg = _( "Excluded error: " );
+-            }
+-            else if( severity == RPT_SEVERITY_WARNING )
+-            {
+-                msg = _( "Warning: " );
+-            }
+-            else
+-            {
+-                msg = _( "Error: " );
+-            }
+-        }
+-
+-        msg += rcItem->GetErrorMessage( true );
+-        break;
+-
+-    case RC_TREE_NODE::MAIN_ITEM:
+-        if( marker && marker->GetMarkerType() == MARKER_BASE::MARKER_DRAWING_SHEET )
+-            msg = _( "Drawing Sheet" );
+-        else
+-            item = m_editFrame->ResolveItem( rcItem->GetMainItemID() );
+-
+-        break;
+-
+-    case RC_TREE_NODE::AUX_ITEM:
+-        item = m_editFrame->ResolveItem( rcItem->GetAuxItemID() );
+-        break;
+-
+-    case RC_TREE_NODE::AUX_ITEM2:
+-        item = m_editFrame->ResolveItem( rcItem->GetAuxItem2ID() );
+-        break;
+-
+-    case RC_TREE_NODE::AUX_ITEM3:
+-        item = m_editFrame->ResolveItem( rcItem->GetAuxItem3ID() );
+-        break;
+-
+-    case RC_TREE_NODE::COMMENT:
+-        if( marker )
+-            msg = marker->GetComment();
+-
+-        break;
+-    }
+-
+-    if( item )
+-        msg += item->GetItemDescription( m_editFrame, true );
+-
+-    msg.Replace( wxS( "\n" ), wxS( " " ) );
+-    aVariant = msg;
+-}
+-
+-
+-bool RC_TREE_MODEL::GetAttr( wxDataViewItem const&   aItem,
+-                             unsigned int            aCol,
+-                             wxDataViewItemAttr&     aAttr ) const
+-{
+-    if( !aItem.IsOk() || m_view->IsFrozen() || m_tree.empty() )
+-        return false;
+-
+-    const RC_TREE_NODE* node = ToNode( aItem );
+-
+-    if( !node || !node->m_RcItem )
+-        return false;
+-
+-    bool ret = false;
+-    bool heading = node->m_Type == RC_TREE_NODE::MARKER;
+-
+-    if( heading )
+-    {
+-        aAttr.SetBold( true );
+-        ret = true;
+-    }
+-
+-    if( node->m_RcItem->GetParent()
+-            && node->m_RcItem->GetParent()->GetSeverity() == RPT_SEVERITY_EXCLUSION )
+-    {
+-        wxColour textColour = wxSystemSettings::GetColour( wxSYS_COLOUR_LISTBOXTEXT );
+-        double   brightness = KIGFX::COLOR4D( textColour ).GetBrightness();
+-
+-        if( brightness > 0.5 )
+-        {
+-            int lightness = static_cast<int>( brightness * ( heading ? 50 : 60 ) );
+-            aAttr.SetColour( textColour.ChangeLightness( lightness ) );
+-        }
+-        else
+-        {
+-            aAttr.SetColour( textColour.ChangeLightness( heading ? 170 : 165 ) );
+-        }
+-
+-        aAttr.SetItalic( true );   // Strikethrough would be better, if wxWidgets supported it
+-        ret = true;
+-    }
+-
+-    return ret;
+-}
+-
+-
+-void RC_TREE_MODEL::ValueChanged( RC_TREE_NODE* aNode )
+-{
+-    if( aNode->m_Type != RC_TREE_NODE::MARKER )
+-    {
+-        ValueChanged( aNode->m_Parent );
+-        return;
+-    }
+-
+-    wxDataViewItem markerItem = ToItem( aNode );
+-
+-    wxDataViewModel::ValueChanged( markerItem, 0 );
+-
+-    for( const RC_TREE_NODE* child : aNode->m_Children )
+-        wxDataViewModel::ValueChanged( ToItem( child ), 0 );
+-
+-    // Comment items can come and go depening on exclusion state and comment content.
+-    //
+-    const std::shared_ptr<RC_ITEM> rcItem = aNode->m_RcItem;
+-    MARKER_BASE*                   marker = rcItem ? rcItem->GetParent() : nullptr;
+-
+-    if( marker )
+-    {
+-        bool          needsCommentNode = marker->IsExcluded() && !marker->GetComment().IsEmpty();
+-        RC_TREE_NODE* commentNode = aNode->m_Children.empty() ? nullptr : aNode->m_Children.back();
+-
+-        if( commentNode && commentNode->m_Type != RC_TREE_NODE::COMMENT )
+-            commentNode = nullptr;
+-
+-        if( needsCommentNode && !commentNode )
+-        {
+-            commentNode = createNode( aNode, rcItem, RC_TREE_NODE::COMMENT );
+-            wxDataViewItemArray newItems;
+-            newItems.push_back( ToItem( commentNode ) );
+-
+-            aNode->m_Children.push_back( commentNode );
+-            ItemsAdded( markerItem, newItems );
+-        }
+-        else if( commentNode && !needsCommentNode )
+-        {
+-            wxDataViewItemArray deletedItems;
+-            deletedItems.push_back( ToItem( commentNode ) );
+-
+-            aNode->m_Children.erase( aNode->m_Children.end() - 1 );
+-            retireNodeTree( commentNode );
+-            ItemsDeleted( markerItem, deletedItems );
+-            deleteNodeTree( commentNode );
+-        }
+-    }
+-}
+-
+-
+-void RC_TREE_MODEL::DeleteCurrentItem( bool aDeep )
+-{
+-    DeleteItems( true, true, aDeep );
+-}
+-
+-
+-void RC_TREE_MODEL::DeleteItems( bool aCurrentOnly, bool aIncludeExclusions, bool aDeep )
+-{
+-    RC_TREE_NODE* current_node = m_view ? ToNode( m_view->GetCurrentItem() ) : nullptr;
+-    const std::shared_ptr<RC_ITEM> current_item = current_node ? current_node->m_RcItem : nullptr;
+-
+-    std::vector<wxDataViewItem> expanded;
+-
+-    if( aCurrentOnly && !current_item )
+-    {
+-        wxBell();
+-        return;
+-    }
+-
+-    // wxWidgets 3.1.x on MacOS (at least) loses the expanded state of the tree when deleting
+-    // items.
+-    if( m_view && aCurrentOnly )
+-    {
+-        for( RC_TREE_NODE* node : m_tree )
+-        {
+-            if( m_view->IsExpanded( ToItem( node ) ) )
+-                expanded.push_back( ToItem( node ) );
+-        }
+-    }
+-
+-    int  lastGood = -1;
+-    bool itemDeleted = false;
+-
+-    if( m_view )
+-    {
+-        m_view->UnselectAll();
+-        m_view->Freeze();
+-    }
+-
+-    if( !m_rcItemsProvider )
+-    {
+-        if( m_view )
+-            m_view->Thaw();
+-
+-        return;
+-    }
+-
+-    for( int i = m_rcItemsProvider->GetCount() - 1; i >= 0; --i )
+-    {
+-        std::shared_ptr<RC_ITEM> rcItem = m_rcItemsProvider->GetItem( i );
+-        MARKER_BASE*             marker = rcItem->GetParent();
+-        bool                     excluded = false;
+-
+-        if( marker && marker->GetSeverity() == RPT_SEVERITY_EXCLUSION )
+-            excluded = true;
+-
+-        if( aCurrentOnly && itemDeleted && lastGood >= 0 )
+-            break;
+-
+-        if( aCurrentOnly && rcItem != current_item )
+-        {
+-            lastGood = i;
+-            continue;
+-        }
+-
+-        if( excluded && !aIncludeExclusions )
+-            continue;
+-
+-        if( i < (int) m_tree.size() )   // Careful; tree is truncated for large datasets
+-        {
+-            wxDataViewItem      markerItem = ToItem( m_tree[i] );
+-            wxDataViewItemArray childItems;
+-            wxDataViewItem      parentItem = ToItem( m_tree[i]->m_Parent );
+-
+-            for( RC_TREE_NODE* child : m_tree[i]->m_Children )
+-            {
+-                childItems.push_back( ToItem( child ) );
+-                retireNodeTree( child );
+-            }
+-
+-            ItemsDeleted( markerItem, childItems );
+-
+-            retireNodeTree( m_tree[i] );
+-            RC_TREE_NODE* deletedNode = m_tree[i];
+-            m_tree.erase( m_tree.begin() + i );
+-            ItemDeleted( parentItem, markerItem );
+-            deleteNodeTree( deletedNode );
+-        }
+-
+-        // Only deep delete the current item here; others will be done by the caller, which
+-        // can more efficiently delete all markers on the board.
+-        m_rcItemsProvider->DeleteItem( i, aDeep && aCurrentOnly );
+-
+-        if( lastGood > i )
+-            lastGood--;
+-
+-        itemDeleted = true;
+-    }
+-
+-    if( m_view && aCurrentOnly && lastGood >= 0 )
+-    {
+-        for( const wxDataViewItem& item : expanded )
+-        {
+-            if( item.IsOk() )
+-                m_view->Expand( item );
+-        }
+-
+-        wxDataViewItem selItem = ToItem( m_tree[ lastGood ] );
+-        m_view->Select( selItem );
+-
+-        // wxEVT_COMMAND_DATAVIEW_SELECTION_CHANGED doesn't get propogated from the Select()
+-        // call on (at least) MSW.
+-        wxDataViewEvent selectEvent( wxEVT_COMMAND_DATAVIEW_SELECTION_CHANGED, m_view, selItem );
+-        m_view->GetEventHandler()->ProcessEvent( selectEvent );
+-    }
+-
+-    if( m_view )
+-        m_view->Thaw();
+-}
+-
+-
+-void RC_TREE_MODEL::PrevMarker()
+-{
+-    RC_TREE_NODE* currentNode = ToNode( m_view->GetCurrentItem() );
+-    RC_TREE_NODE* prevMarker = nullptr;
+-
+-    while( currentNode && currentNode->m_Type != RC_TREE_NODE::MARKER )
+-        currentNode = currentNode->m_Parent;
+-
+-    for( RC_TREE_NODE* candidate : m_tree )
+-    {
+-        if( candidate == currentNode )
+-            break;
+-        else
+-            prevMarker = candidate;
+-    }
+-
+-    if( prevMarker )
+-        m_view->Select( ToItem( prevMarker ) );
+-}
+-
+-
+-void RC_TREE_MODEL::NextMarker()
+-{
+-    RC_TREE_NODE* currentNode = ToNode( m_view->GetCurrentItem() );
+-
+-    while( currentNode && currentNode->m_Type != RC_TREE_NODE::MARKER )
+-        currentNode = currentNode->m_Parent;
+-
+-    RC_TREE_NODE* nextMarker = nullptr;
+-    bool          trigger = currentNode == nullptr;
+-
+-    for( RC_TREE_NODE* candidate : m_tree )
+-    {
+-        if( candidate == currentNode )
+-        {
+-            trigger = true;
+-        }
+-        else if( trigger )
+-        {
+-            nextMarker = candidate;
+-            break;
+-        }
+-    }
+-
+-    if( nextMarker )
+-        m_view->Select( ToItem( nextMarker ) );
+-}
+-
+-
+-void RC_TREE_MODEL::SelectMarker( const MARKER_BASE* aMarker )
+-{
+-    wxCHECK( !m_view->IsFrozen(), /* void */ );
+-
+-    for( RC_TREE_NODE* candidate : m_tree )
+-    {
+-        if( candidate->m_RcItem->GetParent() == aMarker )
+-        {
+-            m_view->Select( ToItem( candidate ) );
+-            return;
+-        }
+-    }
+-}
+-
+-
+-void RC_TREE_MODEL::CenterMarker( const MARKER_BASE* aMarker )
+-{
+-    wxCHECK( !m_view->IsFrozen(), /* void */ );
+-
+-    for( RC_TREE_NODE* candidate : m_tree )
+-    {
+-        if( candidate->m_RcItem->GetParent() == aMarker )
+-        {
+-            m_view->EnsureVisible( ToItem( candidate ) );
+-            return;
+-        }
+-    }
+-}
+diff --git a/common/rc_tree_model.cpp b/common/rc_tree_model.cpp
+new file mode 100644
+index 00000000..b7772e91
+--- /dev/null
++++ b/common/rc_tree_model.cpp
+@@ -0,0 +1,660 @@
++/*
++ * This program source code file is part of KiCad, a free EDA CAD application.
++ *
++ * Copyright The KiCad Developers, see AUTHORS.txt for contributors.
++ *
++ * This program is free software; you can redistribute it and/or
++ * modify it under the terms of the GNU General Public License
++ * as published by the Free Software Foundation; either version 2
++ * of the License, or (at your option) any later version.
++ *
++ * This program is distributed in the hope that it will be useful,
++ * but WITHOUT ANY WARRANTY; without even the implied warranty of
++ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
++ * GNU General Public License for more details.
++ *
++ * You should have received a copy of the GNU General Public License
++ * along with this program; if not, you may find one here:
++ * http://www.gnu.org/licenses/old-licenses/gpl-2.0.html
++ * or you may search the http://www.gnu.org website for the version 2 license,
++ * or you may write to the Free Software Foundation, Inc.,
++ * 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA
++ */
++
++// RC_TREE_MODEL: the wxDataViewCtrl model behind the ERC and DRC dialogs. Kept apart from
++// rc_item.cpp so the RC_ITEM model does not link wx GUI classes.
++
++#include <wx/wupdlock.h>
++#include <wx/dataview.h>
++#include <wx/settings.h>
++#include <widgets/ui_common.h>
++#include <marker_base.h>
++#include <eda_draw_frame.h>
++#include <rc_item.h>
++#include <eda_item.h>
++#include <base_units.h>
++#include <units_provider.h>
++
++#define WX_DATAVIEW_WINDOW_PADDING 6
++
++KIID RC_TREE_MODEL::ToUUID( wxDataViewItem aItem )
++{
++    const RC_TREE_NODE* node = RC_TREE_MODEL::ToNode( aItem );
++
++    if( node && node->m_RcItem )
++    {
++        const std::shared_ptr<RC_ITEM> rc_item = node->m_RcItem;
++
++        switch( node->m_Type )
++        {
++        case RC_TREE_NODE::MARKER:
++        case RC_TREE_NODE::COMMENT:
++            // rc_item->GetParent() can be null, if the parent is not existing
++            // when a RC item has no corresponding ERC/DRC marker
++            if( rc_item->GetParent() )
++                return rc_item->GetParent()->GetUUID();
++
++            break;
++
++        case RC_TREE_NODE::MAIN_ITEM: return rc_item->GetMainItemID();
++        case RC_TREE_NODE::AUX_ITEM:  return rc_item->GetAuxItemID();
++        case RC_TREE_NODE::AUX_ITEM2: return rc_item->GetAuxItem2ID();
++        case RC_TREE_NODE::AUX_ITEM3: return rc_item->GetAuxItem3ID();
++        }
++    }
++
++    return niluuid;
++}
++
++
++RC_TREE_MODEL::RC_TREE_MODEL( EDA_DRAW_FRAME* aParentFrame, wxDataViewCtrl* aView ) :
++        m_editFrame( aParentFrame ),
++        m_view( aView ),
++        m_severities( 0 ),
++        m_rcItemsProvider( nullptr )
++{
++}
++
++
++RC_TREE_NODE* RC_TREE_MODEL::createNode( RC_TREE_NODE* aParent,
++                                         const std::shared_ptr<RC_ITEM>& aRcItem,
++                                         RC_TREE_NODE::NODE_TYPE aType )
++{
++    RC_TREE_NODE* node = new RC_TREE_NODE( aParent, aRcItem, aType );
++
++    node->m_Handle = &m_handles.emplace_back();
++    node->m_Handle->m_Node = node;
++
++    return node;
++}
++
++
++void RC_TREE_MODEL::retireNodeTree( RC_TREE_NODE* aNode )
++{
++    if( !aNode )
++        return;
++
++    if( aNode->m_Handle )
++        aNode->m_Handle->m_Node = nullptr;
++
++    for( RC_TREE_NODE* child : aNode->m_Children )
++        retireNodeTree( child );
++}
++
++
++void RC_TREE_MODEL::deleteNodeTree( RC_TREE_NODE* aNode )
++{
++    if( !aNode )
++        return;
++
++    delete aNode;
++}
++
++
++void RC_TREE_MODEL::clearTree()
++{
++    for( RC_TREE_NODE* topLevelNode : m_tree )
++    {
++        retireNodeTree( topLevelNode );
++        deleteNodeTree( topLevelNode );
++    }
++
++    m_tree.clear();
++}
++
++
++RC_TREE_MODEL::~RC_TREE_MODEL()
++{
++    clearTree();
++}
++
++
++void RC_TREE_MODEL::rebuildTree( std::shared_ptr<RC_ITEMS_PROVIDER> aProvider, int aSeverities )
++{
++    m_rcItemsProvider = std::move( aProvider );
++
++    if( aSeverities != m_severities )
++        m_severities = aSeverities;
++
++    if( m_rcItemsProvider )
++        m_rcItemsProvider->SetSeverities( m_severities );
++
++    clearTree();
++
++    // wxDataView::ExpandAll() pukes with large lists
++    int count = 0;
++
++    if( m_rcItemsProvider )
++        count = std::min( 1000, m_rcItemsProvider->GetCount() );
++
++    for( int i = 0; i < count; ++i )
++    {
++        std::shared_ptr<RC_ITEM> rcItem = m_rcItemsProvider->GetItem( i );
++
++        m_tree.push_back( createNode( nullptr, rcItem, RC_TREE_NODE::MARKER ) );
++        RC_TREE_NODE* n = m_tree.back();
++
++        if( rcItem->GetMainItemID() != niluuid )
++            n->m_Children.push_back( createNode( n, rcItem, RC_TREE_NODE::MAIN_ITEM ) );
++
++        if( rcItem->GetAuxItemID() != niluuid )
++            n->m_Children.push_back( createNode( n, rcItem, RC_TREE_NODE::AUX_ITEM ) );
++
++        if( rcItem->GetAuxItem2ID() != niluuid )
++            n->m_Children.push_back( createNode( n, rcItem, RC_TREE_NODE::AUX_ITEM2 ) );
++
++        if( rcItem->GetAuxItem3ID() != niluuid )
++            n->m_Children.push_back( createNode( n, rcItem, RC_TREE_NODE::AUX_ITEM3 ) );
++
++        if( MARKER_BASE* marker = rcItem->GetParent() )
++        {
++            if( marker->IsExcluded() && !marker->GetComment().IsEmpty() )
++                n->m_Children.push_back( createNode( n, rcItem, RC_TREE_NODE::COMMENT ) );
++        }
++    }
++}
++
++
++void RC_TREE_MODEL::rebuildModel( std::shared_ptr<RC_ITEMS_PROVIDER> aProvider, int aSeverities )
++{
++    wxWindowUpdateLocker updateLock( m_view );
++
++    std::shared_ptr<RC_ITEM> selectedRcItem = nullptr;
++
++    if( m_view )
++    {
++        RC_TREE_NODE* selectedNode = ToNode( m_view->GetSelection() );
++        selectedRcItem = selectedNode ? selectedNode->m_RcItem : nullptr;
++
++        // Even with the updateLock, wxWidgets sometimes ties its knickers in a knot trying
++        // to run a wxdataview_selection_changed_callback() on a row that has been deleted.
++        m_view->UnselectAll();
++    }
++
++    BeforeReset();
++
++    rebuildTree( std::move( aProvider ), aSeverities );
++
++    // Must be called after a significant change of items to force the
++    // wxDataViewModel to reread all of them, repopulating itself entirely.
++    AfterReset();
++
++#ifdef __WXGTK__
++    // The fastest method to update wxDataViewCtrl is to rebuild from
++    // scratch by calling Cleared(). Linux requires to reassociate model to
++    // display data, but Windows will create multiple associations.
++    // On MacOS, this crashes KiCad. See https://gitlab.com/kicad/code/kicad/-/issues/3666
++    // and https://gitlab.com/kicad/code/kicad/-/issues/3653
++    m_view->AssociateModel( this );
++#endif
++
++    m_view->ClearColumns();
++
++    int width = m_view->GetClientSize().GetWidth() - WX_DATAVIEW_WINDOW_PADDING;
++
++    if( width <= 0 )
++        width = 600;
++
++    m_view->AppendTextColumn( wxEmptyString, 0, wxDATAVIEW_CELL_INERT, width );
++
++    ExpandAll();
++
++    // Most annoyingly wxWidgets won't tell us the scroll position (and no, all the usual
++    // routines don't work), so we can only restore the scroll position based on a selection.
++    if( selectedRcItem )
++    {
++        for( RC_TREE_NODE* candidate : m_tree )
++        {
++            if( candidate->m_RcItem == selectedRcItem )
++            {
++                m_view->Select( ToItem( candidate ) );
++                m_view->EnsureVisible( ToItem( candidate ) );
++                break;
++            }
++        }
++    }
++}
++
++
++void RC_TREE_MODEL::Update( std::shared_ptr<RC_ITEMS_PROVIDER> aProvider, int aSeverities )
++{
++    rebuildModel( aProvider, aSeverities );
++}
++
++
++void RC_TREE_MODEL::ExpandAll()
++{
++    for( RC_TREE_NODE* topLevelNode : m_tree )
++        m_view->Expand( ToItem( topLevelNode ) );
++}
++
++
++bool RC_TREE_MODEL::IsContainer( wxDataViewItem const& aItem ) const
++{
++    const RC_TREE_NODE* node = ToNode( aItem );
++
++    if( !aItem.IsOk() )    // tree root
++        return true;
++
++    if( node == nullptr )
++        return false;
++
++    return node->m_Type == RC_TREE_NODE::MARKER;
++}
++
++
++wxDataViewItem RC_TREE_MODEL::GetParent( wxDataViewItem const& aItem ) const
++{
++    const RC_TREE_NODE* node = ToNode( aItem );
++    return node ? ToItem( node->m_Parent ) : wxDataViewItem();
++}
++
++
++unsigned int RC_TREE_MODEL::GetChildren( wxDataViewItem const& aItem,
++                                         wxDataViewItemArray&  aChildren ) const
++{
++    const RC_TREE_NODE* node = ToNode( aItem );
++    const std::vector<RC_TREE_NODE*>& children = node ? node->m_Children : m_tree;
++
++    if( aItem.IsOk() && !node )
++        return 0;
++
++    for( const RC_TREE_NODE* child : children )
++        aChildren.push_back( ToItem( child ) );
++
++    return children.size();
++}
++
++
++void RC_TREE_MODEL::GetValue( wxVariant& aVariant, wxDataViewItem const& aItem,
++                              unsigned int aCol ) const
++{
++    if( !aItem.IsOk() || m_view->IsFrozen() || m_tree.empty() )
++        return;
++
++    const RC_TREE_NODE*            node = ToNode( aItem );
++
++    if( !node || !node->m_RcItem )
++        return;
++
++    const std::shared_ptr<RC_ITEM> rcItem = node->m_RcItem;
++    MARKER_BASE*                   marker = rcItem->GetParent();
++    EDA_ITEM*                      item = nullptr;
++    wxString                       msg;
++
++    switch( node->m_Type )
++    {
++    case RC_TREE_NODE::MARKER:
++        if( marker )
++        {
++            SEVERITY severity = marker->GetSeverity();
++
++            if( severity == RPT_SEVERITY_EXCLUSION )
++            {
++                if( m_editFrame->GetSeverity( rcItem->GetErrorCode() ) == RPT_SEVERITY_WARNING )
++                    msg = _( "Excluded warning: " );
++                else
++                    msg = _( "Excluded error: " );
++            }
++            else if( severity == RPT_SEVERITY_WARNING )
++            {
++                msg = _( "Warning: " );
++            }
++            else
++            {
++                msg = _( "Error: " );
++            }
++        }
++
++        msg += rcItem->GetErrorMessage( true );
++        break;
++
++    case RC_TREE_NODE::MAIN_ITEM:
++        if( marker && marker->GetMarkerType() == MARKER_BASE::MARKER_DRAWING_SHEET )
++            msg = _( "Drawing Sheet" );
++        else
++            item = m_editFrame->ResolveItem( rcItem->GetMainItemID() );
++
++        break;
++
++    case RC_TREE_NODE::AUX_ITEM:
++        item = m_editFrame->ResolveItem( rcItem->GetAuxItemID() );
++        break;
++
++    case RC_TREE_NODE::AUX_ITEM2:
++        item = m_editFrame->ResolveItem( rcItem->GetAuxItem2ID() );
++        break;
++
++    case RC_TREE_NODE::AUX_ITEM3:
++        item = m_editFrame->ResolveItem( rcItem->GetAuxItem3ID() );
++        break;
++
++    case RC_TREE_NODE::COMMENT:
++        if( marker )
++            msg = marker->GetComment();
++
++        break;
++    }
++
++    if( item )
++        msg += item->GetItemDescription( m_editFrame, true );
++
++    msg.Replace( wxS( "\n" ), wxS( " " ) );
++    aVariant = msg;
++}
++
++
++bool RC_TREE_MODEL::GetAttr( wxDataViewItem const&   aItem,
++                             unsigned int            aCol,
++                             wxDataViewItemAttr&     aAttr ) const
++{
++    if( !aItem.IsOk() || m_view->IsFrozen() || m_tree.empty() )
++        return false;
++
++    const RC_TREE_NODE* node = ToNode( aItem );
++
++    if( !node || !node->m_RcItem )
++        return false;
++
++    bool ret = false;
++    bool heading = node->m_Type == RC_TREE_NODE::MARKER;
++
++    if( heading )
++    {
++        aAttr.SetBold( true );
++        ret = true;
++    }
++
++    if( node->m_RcItem->GetParent()
++            && node->m_RcItem->GetParent()->GetSeverity() == RPT_SEVERITY_EXCLUSION )
++    {
++        wxColour textColour = wxSystemSettings::GetColour( wxSYS_COLOUR_LISTBOXTEXT );
++        double   brightness = KIGFX::COLOR4D( textColour ).GetBrightness();
++
++        if( brightness > 0.5 )
++        {
++            int lightness = static_cast<int>( brightness * ( heading ? 50 : 60 ) );
++            aAttr.SetColour( textColour.ChangeLightness( lightness ) );
++        }
++        else
++        {
++            aAttr.SetColour( textColour.ChangeLightness( heading ? 170 : 165 ) );
++        }
++
++        aAttr.SetItalic( true );   // Strikethrough would be better, if wxWidgets supported it
++        ret = true;
++    }
++
++    return ret;
++}
++
++
++void RC_TREE_MODEL::ValueChanged( RC_TREE_NODE* aNode )
++{
++    if( aNode->m_Type != RC_TREE_NODE::MARKER )
++    {
++        ValueChanged( aNode->m_Parent );
++        return;
++    }
++
++    wxDataViewItem markerItem = ToItem( aNode );
++
++    wxDataViewModel::ValueChanged( markerItem, 0 );
++
++    for( const RC_TREE_NODE* child : aNode->m_Children )
++        wxDataViewModel::ValueChanged( ToItem( child ), 0 );
++
++    // Comment items can come and go depening on exclusion state and comment content.
++    //
++    const std::shared_ptr<RC_ITEM> rcItem = aNode->m_RcItem;
++    MARKER_BASE*                   marker = rcItem ? rcItem->GetParent() : nullptr;
++
++    if( marker )
++    {
++        bool          needsCommentNode = marker->IsExcluded() && !marker->GetComment().IsEmpty();
++        RC_TREE_NODE* commentNode = aNode->m_Children.empty() ? nullptr : aNode->m_Children.back();
++
++        if( commentNode && commentNode->m_Type != RC_TREE_NODE::COMMENT )
++            commentNode = nullptr;
++
++        if( needsCommentNode && !commentNode )
++        {
++            commentNode = createNode( aNode, rcItem, RC_TREE_NODE::COMMENT );
++            wxDataViewItemArray newItems;
++            newItems.push_back( ToItem( commentNode ) );
++
++            aNode->m_Children.push_back( commentNode );
++            ItemsAdded( markerItem, newItems );
++        }
++        else if( commentNode && !needsCommentNode )
++        {
++            wxDataViewItemArray deletedItems;
++            deletedItems.push_back( ToItem( commentNode ) );
++
++            aNode->m_Children.erase( aNode->m_Children.end() - 1 );
++            retireNodeTree( commentNode );
++            ItemsDeleted( markerItem, deletedItems );
++            deleteNodeTree( commentNode );
++        }
++    }
++}
++
++
++void RC_TREE_MODEL::DeleteCurrentItem( bool aDeep )
++{
++    DeleteItems( true, true, aDeep );
++}
++
++
++void RC_TREE_MODEL::DeleteItems( bool aCurrentOnly, bool aIncludeExclusions, bool aDeep )
++{
++    RC_TREE_NODE* current_node = m_view ? ToNode( m_view->GetCurrentItem() ) : nullptr;
++    const std::shared_ptr<RC_ITEM> current_item = current_node ? current_node->m_RcItem : nullptr;
++
++    std::vector<wxDataViewItem> expanded;
++
++    if( aCurrentOnly && !current_item )
++    {
++        wxBell();
++        return;
++    }
++
++    // wxWidgets 3.1.x on MacOS (at least) loses the expanded state of the tree when deleting
++    // items.
++    if( m_view && aCurrentOnly )
++    {
++        for( RC_TREE_NODE* node : m_tree )
++        {
++            if( m_view->IsExpanded( ToItem( node ) ) )
++                expanded.push_back( ToItem( node ) );
++        }
++    }
++
++    int  lastGood = -1;
++    bool itemDeleted = false;
++
++    if( m_view )
++    {
++        m_view->UnselectAll();
++        m_view->Freeze();
++    }
++
++    if( !m_rcItemsProvider )
++    {
++        if( m_view )
++            m_view->Thaw();
++
++        return;
++    }
++
++    for( int i = m_rcItemsProvider->GetCount() - 1; i >= 0; --i )
++    {
++        std::shared_ptr<RC_ITEM> rcItem = m_rcItemsProvider->GetItem( i );
++        MARKER_BASE*             marker = rcItem->GetParent();
++        bool                     excluded = false;
++
++        if( marker && marker->GetSeverity() == RPT_SEVERITY_EXCLUSION )
++            excluded = true;
++
++        if( aCurrentOnly && itemDeleted && lastGood >= 0 )
++            break;
++
++        if( aCurrentOnly && rcItem != current_item )
++        {
++            lastGood = i;
++            continue;
++        }
++
++        if( excluded && !aIncludeExclusions )
++            continue;
++
++        if( i < (int) m_tree.size() )   // Careful; tree is truncated for large datasets
++        {
++            wxDataViewItem      markerItem = ToItem( m_tree[i] );
++            wxDataViewItemArray childItems;
++            wxDataViewItem      parentItem = ToItem( m_tree[i]->m_Parent );
++
++            for( RC_TREE_NODE* child : m_tree[i]->m_Children )
++            {
++                childItems.push_back( ToItem( child ) );
++                retireNodeTree( child );
++            }
++
++            ItemsDeleted( markerItem, childItems );
++
++            retireNodeTree( m_tree[i] );
++            RC_TREE_NODE* deletedNode = m_tree[i];
++            m_tree.erase( m_tree.begin() + i );
++            ItemDeleted( parentItem, markerItem );
++            deleteNodeTree( deletedNode );
++        }
++
++        // Only deep delete the current item here; others will be done by the caller, which
++        // can more efficiently delete all markers on the board.
++        m_rcItemsProvider->DeleteItem( i, aDeep && aCurrentOnly );
++
++        if( lastGood > i )
++            lastGood--;
++
++        itemDeleted = true;
++    }
++
++    if( m_view && aCurrentOnly && lastGood >= 0 )
++    {
++        for( const wxDataViewItem& item : expanded )
++        {
++            if( item.IsOk() )
++                m_view->Expand( item );
++        }
++
++        wxDataViewItem selItem = ToItem( m_tree[ lastGood ] );
++        m_view->Select( selItem );
++
++        // wxEVT_COMMAND_DATAVIEW_SELECTION_CHANGED doesn't get propogated from the Select()
++        // call on (at least) MSW.
++        wxDataViewEvent selectEvent( wxEVT_COMMAND_DATAVIEW_SELECTION_CHANGED, m_view, selItem );
++        m_view->GetEventHandler()->ProcessEvent( selectEvent );
++    }
++
++    if( m_view )
++        m_view->Thaw();
++}
++
++
++void RC_TREE_MODEL::PrevMarker()
++{
++    RC_TREE_NODE* currentNode = ToNode( m_view->GetCurrentItem() );
++    RC_TREE_NODE* prevMarker = nullptr;
++
++    while( currentNode && currentNode->m_Type != RC_TREE_NODE::MARKER )
++        currentNode = currentNode->m_Parent;
++
++    for( RC_TREE_NODE* candidate : m_tree )
++    {
++        if( candidate == currentNode )
++            break;
++        else
++            prevMarker = candidate;
++    }
++
++    if( prevMarker )
++        m_view->Select( ToItem( prevMarker ) );
++}
++
++
++void RC_TREE_MODEL::NextMarker()
++{
++    RC_TREE_NODE* currentNode = ToNode( m_view->GetCurrentItem() );
++
++    while( currentNode && currentNode->m_Type != RC_TREE_NODE::MARKER )
++        currentNode = currentNode->m_Parent;
++
++    RC_TREE_NODE* nextMarker = nullptr;
++    bool          trigger = currentNode == nullptr;
++
++    for( RC_TREE_NODE* candidate : m_tree )
++    {
++        if( candidate == currentNode )
++        {
++            trigger = true;
++        }
++        else if( trigger )
++        {
++            nextMarker = candidate;
++            break;
++        }
++    }
++
++    if( nextMarker )
++        m_view->Select( ToItem( nextMarker ) );
++}
++
++
++void RC_TREE_MODEL::SelectMarker( const MARKER_BASE* aMarker )
++{
++    wxCHECK( !m_view->IsFrozen(), /* void */ );
++
++    for( RC_TREE_NODE* candidate : m_tree )
++    {
++        if( candidate->m_RcItem->GetParent() == aMarker )
++        {
++            m_view->Select( ToItem( candidate ) );
++            return;
++        }
++    }
++}
++
++
++void RC_TREE_MODEL::CenterMarker( const MARKER_BASE* aMarker )
++{
++    wxCHECK( !m_view->IsFrozen(), /* void */ );
++
++    for( RC_TREE_NODE* candidate : m_tree )
++    {
++        if( candidate->m_RcItem->GetParent() == aMarker )
++        {
++            m_view->EnsureVisible( ToItem( candidate ) );
++            return;
++        }
++    }
++}
+diff --git a/common/reporter.cpp b/common/reporter.cpp
+index e5f8f678..4115aaf7 100644
+--- a/common/reporter.cpp
++++ b/common/reporter.cpp
+@@ -30,11 +30,9 @@
+ #include <reporter.h>
+ #include <font/fontconfig.h>
+ #include <string_utils.h>
+-#include <widgets/wx_infobar.h>
+ #include <wx/crt.h>
+ #include <wx/log.h>
+ #include <wx/textctrl.h>
+-#include <wx/statusbr.h>
+ #include <wx/tokenzr.h>
+ 
+ 
+@@ -338,17 +336,3 @@ REPORTER& REDIRECT_REPORTER::Report( const wxString& aText, SEVERITY aSeverity )
+ 
+     return *this;
+ }
+-
+-
+-REPORTER& STATUSBAR_REPORTER::Report( const wxString& aText, SEVERITY aSeverity )
+-{
+-    REPORTER::Report( aText, aSeverity );
+-
+-    if( m_statusBar )
+-    {
+-        // The message will be ellipsized automatically
+-        m_statusBar->SetStatusText( aText, m_position );
+-    }
+-
+-    return *this;
+-}
+diff --git a/common/settings/aui_settings.cpp b/common/settings/aui_settings.cpp
+index 1da4639e..c4123d6c 100644
+--- a/common/settings/aui_settings.cpp
++++ b/common/settings/aui_settings.cpp
+@@ -24,7 +24,9 @@
+ #include <json_common.h>
+ 
+ #include <wx/gdicmn.h>
++#if wxUSE_AUI
+ #include <wx/aui/framemanager.h>
++#endif
+ 
+ 
+ void to_json( nlohmann::json& aJson, const wxPoint& aPoint )
+@@ -115,6 +117,8 @@ bool operator<( const wxRect& aLhs, const wxRect& aRhs )
+ }
+ 
+ 
++// wxAuiPaneInfo only exists where wxWidgets builds AUI (not on iOS).
++#if wxUSE_AUI
+ void to_json( nlohmann::json& aJson, const wxAuiPaneInfo& aPaneInfo )
+ {
+     aJson = nlohmann::json
+@@ -247,3 +251,5 @@ bool operator==( const wxAuiPaneInfo& aLhs, const wxAuiPaneInfo& aRhs )
+ 
+     return true;
+ }
++
++#endif // wxUSE_AUI
+diff --git a/common/settings/json_settings.cpp b/common/settings/json_settings.cpp
+index b05419d2..9f3402be 100644
+--- a/common/settings/json_settings.cpp
++++ b/common/settings/json_settings.cpp
+@@ -33,7 +33,10 @@
+ #include <settings/bom_settings.h>
+ #include <settings/grid_settings.h>
+ #include <settings/aui_settings.h>
++#include <wx/defs.h>
++#if wxUSE_AUI
+ #include <wx/aui/framemanager.h>
++#endif
+ #include <wx/config.h>
+ #include <wx/debug.h>
+ #include <wx/fileconf.h>
+@@ -687,8 +690,10 @@ template KICOMMON_API std::optional<wxSize>
+                       JSON_SETTINGS::Get<wxSize>( const std::string& aPath ) const;
+ template KICOMMON_API std::optional<wxRect>
+                       JSON_SETTINGS::Get<wxRect>( const std::string& aPath ) const;
++#if wxUSE_AUI
+ template KICOMMON_API std::optional<wxAuiPaneInfo>
+                       JSON_SETTINGS::Get<wxAuiPaneInfo>( const std::string& aPath ) const;
++#endif
+ template KICOMMON_API std::optional<KIGFX::CROSS_HAIR_MODE>
+                       JSON_SETTINGS::Get<KIGFX::CROSS_HAIR_MODE>( const std::string& aPath ) const;
+ 
+@@ -726,8 +731,10 @@ template KICOMMON_API void JSON_SETTINGS::Set<GRID>( const std::string& aPath, G
+ template KICOMMON_API void JSON_SETTINGS::Set<wxPoint>( const std::string& aPath, wxPoint aValue );
+ template KICOMMON_API void JSON_SETTINGS::Set<wxSize>( const std::string& aPath, wxSize aValue );
+ template KICOMMON_API void JSON_SETTINGS::Set<wxRect>( const std::string& aPath, wxRect aValue );
++#if wxUSE_AUI
+ template KICOMMON_API void JSON_SETTINGS::Set<wxAuiPaneInfo>( const std::string& aPath,
+                                                               wxAuiPaneInfo      aValue );
++#endif
+ template KICOMMON_API void JSON_SETTINGS::Set<KIGFX::CROSS_HAIR_MODE>( const std::string& aPath,
+                                                                         KIGFX::CROSS_HAIR_MODE aValue );
+ 
+diff --git a/common/widgets/kistatusbar.cpp b/common/widgets/kistatusbar.cpp
+index 066bd290..39d5db20 100644
+--- a/common/widgets/kistatusbar.cpp
++++ b/common/widgets/kistatusbar.cpp
+@@ -654,8 +654,22 @@ void KISTATUSBAR::SetStatusWidths( int aSize, const int* aWidths )
+ }
+ 
+ 
+-// STATUSBAR_WARNING_REPORTER (reporter.h) lives beside the status bar it writes to, so
+-// reporter.cpp stays free of editor widgets.
++// STATUSBAR_REPORTER and STATUSBAR_WARNING_REPORTER (reporter.h) live beside the status bar they
++// write to, so reporter.cpp stays free of editor widgets.
++REPORTER& STATUSBAR_REPORTER::Report( const wxString& aText, SEVERITY aSeverity )
++{
++    REPORTER::Report( aText, aSeverity );
++
++    if( m_statusBar )
++    {
++        // The message will be ellipsized automatically
++        m_statusBar->SetStatusText( aText, m_position );
++    }
++
++    return *this;
++}
++
++
+ class STATUSBAR_WARNING_REPORTER_IMPL
+ {
+ public:
+diff --git a/common/wildcards_and_files_ext.cpp b/common/wildcards_and_files_ext.cpp
+index 68838c51..9646470c 100644
+--- a/common/wildcards_and_files_ext.cpp
++++ b/common/wildcards_and_files_ext.cpp
+@@ -87,9 +87,14 @@ wxString AddFileExtListToFilter( const std::vector<std::string>& aExts )
+     if( aExts.size() == 0 )
+     {
+         // The "all files" wildcard is different on different systems
++#ifdef __WXOSX_IPHONE__
++        // wxWidgets' iOS port has no file dialog, so no default wildcard string.
++        const wxString allFiles = wxS( "*" );
++#else
++        const wxString allFiles = wxFileSelectorDefaultWildcardStr;
++#endif
+         wxString filter;
+-        filter << wxS( " (" ) << wxFileSelectorDefaultWildcardStr << wxS( ")|" )
+-               << wxFileSelectorDefaultWildcardStr;
++        filter << wxS( " (" ) << allFiles << wxS( ")|" ) << allFiles;
+         return filter;
+     }
+ 
+diff --git a/eeschema/dialogs/dialog_table_properties.cpp b/eeschema/dialogs/dialog_table_properties.cpp
+index fb28200e..76a18644 100644
+--- a/eeschema/dialogs/dialog_table_properties.cpp
++++ b/eeschema/dialogs/dialog_table_properties.cpp
+@@ -34,6 +34,7 @@
+ #include <sch_commit.h>
+ #include <tool/tool_manager.h>
+ #include <dialog_table_properties.h>
++#include <scintilla_tricks.h>
+ 
+ 
+ DIALOG_TABLE_PROPERTIES::DIALOG_TABLE_PROPERTIES( SCH_EDIT_FRAME* aFrame, SCH_TABLE* aTable ) :
+diff --git a/eeschema/dialogs/dialog_tablecell_properties.cpp b/eeschema/dialogs/dialog_tablecell_properties.cpp
+index d1220b84..7f689bc6 100644
+--- a/eeschema/dialogs/dialog_tablecell_properties.cpp
++++ b/eeschema/dialogs/dialog_tablecell_properties.cpp
+@@ -34,6 +34,7 @@
+ #include <tool/tool_manager.h>
+ #include <dialogs/html_message_box.h>
+ #include <dialog_tablecell_properties.h>
++#include <scintilla_tricks.h>
+ 
+ DIALOG_TABLECELL_PROPERTIES::DIALOG_TABLECELL_PROPERTIES( SCH_EDIT_FRAME* aFrame, std::vector<SCH_TABLECELL*> aCells ) :
+         DIALOG_TABLECELL_PROPERTIES_BASE( aFrame ),
+diff --git a/eeschema/eeschema_settings.cpp b/eeschema/eeschema_settings.cpp
+index e93d6054..74928096 100644
+--- a/eeschema/eeschema_settings.cpp
++++ b/eeschema/eeschema_settings.cpp
+@@ -64,6 +64,8 @@ const nlohmann::json defaultBomPlugins =
+         };
+ 
+ 
++// Editor pane layouts; wxAuiPaneInfo only exists where wxWidgets builds AUI (not on iOS).
++#if wxUSE_AUI
+ const wxAuiPaneInfo& defaultNetNavigatorPaneInfo()
+ {
+     static wxAuiPaneInfo paneInfo;
+@@ -171,6 +173,7 @@ const wxAuiPaneInfo& defaultRemoteSymbolPaneInfo( wxWindow* aWindow )
+ 
+     return paneInfo;
+ }
++#endif // wxUSE_AUI
+ 
+ 
+ EESCHEMA_SETTINGS::EESCHEMA_SETTINGS() :
+diff --git a/eeschema/eeschema_settings.h b/eeschema/eeschema_settings.h
+index 42ce35c4..40c974bf 100644
+--- a/eeschema/eeschema_settings.h
++++ b/eeschema/eeschema_settings.h
+@@ -23,7 +23,11 @@
+ 
+ #pragma once
+ 
++#include <wx/defs.h>
++
++#if wxUSE_AUI
+ #include <wx/aui/framemanager.h>
++#endif
+ 
+ #include <map>
+ 
+@@ -34,11 +38,13 @@
+ using KIGFX::COLOR4D;
+ 
+ 
++#if wxUSE_AUI
+ extern const wxAuiPaneInfo& defaultNetNavigatorPaneInfo();
+ extern const wxAuiPaneInfo& defaultPropertiesPaneInfo( wxWindow* aWindow );
+ extern const wxAuiPaneInfo& defaultSchSelectionFilterPaneInfo( wxWindow* aWindow );
+ extern const wxAuiPaneInfo& defaultDesignBlocksPaneInfo( wxWindow* aWindow );
+ extern const wxAuiPaneInfo& defaultRemoteSymbolPaneInfo( wxWindow* aWindow );
++#endif
+ 
+ 
+ 
+diff --git a/eeschema/fields_grid_table.cpp b/eeschema/fields_grid_table.cpp
+index 4fbbfc0e..911fa21f 100644
+--- a/eeschema/fields_grid_table.cpp
++++ b/eeschema/fields_grid_table.cpp
+@@ -48,6 +48,7 @@
+ #include <widgets/grid_combobox.h>
+ #include <pgm_base.h>
+ #include <project_sch.h>
++#include <scintilla_tricks.h>
+ 
+ 
+ enum
+diff --git a/eeschema/sch_field.h b/eeschema/sch_field.h
+index d904524e..e024e16c 100644
+--- a/eeschema/sch_field.h
++++ b/eeschema/sch_field.h
+@@ -31,11 +31,12 @@
+ #include <template_fieldnames.h>
+ #include <general.h>
+ #include <string_utils.h>
+-#include "scintilla_tricks.h"
+ #include <algorithm>
+ 
+ class SCH_EDIT_FRAME;
+ class SCH_TEXT;
++class SCINTILLA_TRICKS;
++class wxStyledTextEvent;
+ 
+ 
+ struct SCH_FIELD_RENDER_CACHE_DATA
+diff --git a/eeschema/sch_text.cpp b/eeschema/sch_text.cpp
+index b7170f55..7de31668 100644
+--- a/eeschema/sch_text.cpp
++++ b/eeschema/sch_text.cpp
+@@ -45,7 +45,6 @@
+ #include <project/net_settings.h>
+ #include <core/mirror.h>
+ #include <core/kicad_algo.h>
+-#include <tools/sch_navigate_tool.h>
+ #include <trigo.h>
+ #include <markup_parser.h>
+ #include <properties/property.h>
+diff --git a/eeschema/sch_textbox.cpp b/eeschema/sch_textbox.cpp
+index 00e5fdfc..a5b54b28 100644
+--- a/eeschema/sch_textbox.cpp
++++ b/eeschema/sch_textbox.cpp
+@@ -38,7 +38,6 @@
+ #include <trigo.h>
+ #include <geometry/geometry_utils.h>
+ #include <sch_textbox.h>
+-#include <tools/sch_navigate_tool.h>
+ #include <markup_parser.h>
+ #include <properties/property.h>
+ #include <properties/property_mgr.h>
+diff --git a/eeschema/sim/kibis/ibis_parser.h b/eeschema/sim/kibis/ibis_parser.h
+index 90a368e2..401429c8 100644
+--- a/eeschema/sim/kibis/ibis_parser.h
++++ b/eeschema/sim/kibis/ibis_parser.h
+@@ -41,7 +41,6 @@
+ 
+ #include <wx/string.h>
+ #include <reporter.h>
+-#include "widgets/wx_html_report_panel.h"
+ #include <iostream>
+ #include <fstream>
+ #include <vector>
+diff --git a/include/kicad_gl/gl_context_mgr.h b/include/kicad_gl/gl_context_mgr.h
+index 632ab4ff..9f32311c 100644
+--- a/include/kicad_gl/gl_context_mgr.h
++++ b/include/kicad_gl/gl_context_mgr.h
+@@ -27,8 +27,9 @@
+ #ifndef GL_CONTEXT_MANAGER_H
+ #define GL_CONTEXT_MANAGER_H
+ 
+-#include <kicad_gl/kiglad.h> // Must be included first
+-#include <wx/glcanvas.h>
++// Pointers only, so ports without wxGLCanvas (iOS) can still hold the manager.
++class wxGLCanvas;
++class wxGLContext;
+ 
+ #include <kicommon.h>
+ 
+diff --git a/include/properties/pg_choices_fallback.h b/include/properties/pg_choices_fallback.h
+new file mode 100644
+index 00000000..8a4d386b
+--- /dev/null
++++ b/include/properties/pg_choices_fallback.h
+@@ -0,0 +1,116 @@
++/*
++ * This program source code file is part of KiCad, a free EDA CAD application.
++ *
++ * Copyright The KiCad Developers, see AUTHORS.txt for contributors.
++ *
++ * This program is free software: you can redistribute it and/or modify it
++ * under the terms of the GNU General Public License as published by the
++ * Free Software Foundation, either version 3 of the License, or (at your
++ * option) any later version.
++ *
++ * This program is distributed in the hope that it will be useful, but
++ * WITHOUT ANY WARRANTY; without even the implied warranty of
++ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
++ * General Public License for more details.
++ *
++ * You should have received a copy of the GNU General Public License along
++ * with this program.  If not, see <http://www.gnu.org/licenses/>.
++ */
++
++#ifndef PG_CHOICES_FALLBACK_H
++#define PG_CHOICES_FALLBACK_H
++
++// The property system stores enum choices in wxPGChoices. wxWidgets ports without the
++// property grid (wxUSE_PROPGRID 0, such as iOS) do not declare it, so this provides the part
++// of its interface the property system uses, with the same semantics. Only included when
++// wxWidgets does not provide the real class.
++
++#include <wx/arrstr.h>
++#include <wx/dynarray.h>
++#include <wx/string.h>
++
++#include <limits>
++#include <utility>
++#include <vector>
++
++constexpr int wxPG_INVALID_VALUE = std::numeric_limits<int>::max();
++
++class wxPGChoices
++{
++public:
++    /// Values default to the entry's index, as in wxPGChoices.
++    void Add( const wxString& aLabel, int aValue = wxPG_INVALID_VALUE )
++    {
++        if( aValue == wxPG_INVALID_VALUE )
++            aValue = (int) m_items.size();
++
++        m_items.emplace_back( aLabel, aValue );
++    }
++
++    unsigned int GetCount() const { return (unsigned int) m_items.size(); }
++    bool         IsOk() const { return !m_items.empty(); }
++    void         Clear() { m_items.clear(); }
++
++    const wxString& GetLabel( unsigned int aIndex ) const { return m_items[aIndex].first; }
++    int             GetValue( unsigned int aIndex ) const { return m_items[aIndex].second; }
++
++    int Index( int aValue ) const
++    {
++        for( size_t i = 0; i < m_items.size(); i++ )
++        {
++            if( m_items[i].second == aValue )
++                return (int) i;
++        }
++
++        return -1;
++    }
++
++    int Index( const wxString& aLabel ) const
++    {
++        for( size_t i = 0; i < m_items.size(); i++ )
++        {
++            if( m_items[i].first == aLabel )
++                return (int) i;
++        }
++
++        return -1;
++    }
++
++    void RemoveAt( size_t aIndex, size_t aCount = 1 )
++    {
++        m_items.erase( m_items.begin() + aIndex, m_items.begin() + aIndex + aCount );
++    }
++
++    wxArrayString GetLabels() const
++    {
++        wxArrayString labels;
++
++        for( const auto& [label, value] : m_items )
++            labels.Add( label );
++
++        return labels;
++    }
++
++    /// Values for the labels in @a aStrings, in that order, with wxPG_INVALID_VALUE for an
++    /// unknown label; empty when there are no choices. Same as wxPGChoices.
++    wxArrayInt GetValuesForStrings( const wxArrayString& aStrings ) const
++    {
++        wxArrayInt values;
++
++        if( IsOk() )
++        {
++            for( const wxString& label : aStrings )
++            {
++                int index = Index( label );
++                values.Add( index >= 0 ? m_items[index].second : wxPG_INVALID_VALUE );
++            }
++        }
++
++        return values;
++    }
++
++private:
++    std::vector<std::pair<wxString, int>> m_items;
++};
++
++#endif // PG_CHOICES_FALLBACK_H
+diff --git a/include/properties/property.h b/include/properties/property.h
+index 97703d0f..7209bc7a 100644
+--- a/include/properties/property.h
++++ b/include/properties/property.h
+@@ -35,7 +35,12 @@
+ #include <wx/bitmap.h>
+ #include <wx/font.h>        // required for propgrid
+ #include <wx/validate.h>    // required for propgrid
++
++#if wxUSE_PROPGRID
+ #include <wx/propgrid/property.h>
++#else
++#include <properties/pg_choices_fallback.h>    // ports without the property grid (iOS)
++#endif
+ 
+ #ifdef DEBUG
+ #include <wx/wxcrt.h>
+diff --git a/include/settings/json_settings.h b/include/settings/json_settings.h
+index a79b9804..783f46a4 100644
+--- a/include/settings/json_settings.h
++++ b/include/settings/json_settings.h
+@@ -403,7 +403,9 @@ extern template std::optional<GRID> JSON_SETTINGS::Get<GRID>( const std::string&
+ extern template std::optional<wxPoint> JSON_SETTINGS::Get<wxPoint>( const std::string& aPath ) const;
+ extern template std::optional<wxSize> JSON_SETTINGS::Get<wxSize>( const std::string& aPath ) const;
+ extern template std::optional<wxRect> JSON_SETTINGS::Get<wxRect>( const std::string& aPath ) const;
++#if wxUSE_AUI
+ extern template std::optional<wxAuiPaneInfo> JSON_SETTINGS::Get<wxAuiPaneInfo>( const std::string& aPath ) const;
++#endif
+ extern template std::optional<KIGFX::CROSS_HAIR_MODE> JSON_SETTINGS::Get<KIGFX::CROSS_HAIR_MODE>( const std::string& aPath ) const;
+ 
+ #endif

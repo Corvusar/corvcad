@@ -1,0 +1,46 @@
+{
+  "homebrew_version": "6.0.19-35-g9574410",
+  "used_options": [],
+  "unused_options": [],
+  "built_as_bottle": true,
+  "poured_from_bottle": true,
+  "loaded_from_api": true,
+  "loaded_from_internal_api": true,
+  "installed_on_request": true,
+  "changed_files": [
+    "share/cmake/Modules/CMakeFindFrameworks.cmake",
+    "share/cmake/Modules/FindGTK2.cmake",
+    "share/cmake/Modules/FindPython/Support.cmake",
+    "share/cmake/Modules/FindRuby.cmake",
+    "share/cmake/Modules/GNUInstallDirs.cmake",
+    "share/cmake/Modules/Platform/Darwin.cmake"
+  ],
+  "linkage_files": [],
+  "binary_relocation_files": [],
+  "time": 1788753938,
+  "source_modified_time": 1787670630,
+  "compiler": "clang",
+  "aliases": [],
+  "runtime_dependencies": [],
+  "source": {
+    "spec": "stable",
+    "versions": {
+      "stable": "4.4.3",
+      "head": null,
+      "version_scheme": 0,
+      "compatibility_version": null
+    },
+    "path": "/Users/runner/Library/Caches/Homebrew/api/internal/packages.arm64_sequoia.jws.json",
+    "tap_git_head": "a7496e08a4f47d93bf30ba518e3dfae9f1dbab3b",
+    "tap": "homebrew/core"
+  },
+  "arch": "arm64",
+  "built_on": {
+    "os": "Macintosh",
+    "os_version": "macOS 15.7",
+    "cpu_family": "dunno",
+    "xcode": "26.3",
+    "clt": "26.3.0.0.1.1771626560",
+    "preferred_perl": "5.34"
+  }
+}

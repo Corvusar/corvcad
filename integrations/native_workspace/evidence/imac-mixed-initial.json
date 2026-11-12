@@ -1,0 +1,37 @@
+{
+  "schema": 1,
+  "date": "2026-10-29",
+  "source_revision": "4c0a6f0470c549d98261a2ac40410e2d51747d1b",
+  "status": "First combined archive preflight rejected two NanoSVG private-global collisions",
+  "sdk": "iphonesimulator",
+  "architecture": "x86_64",
+  "selected_raw_archives": 201,
+  "preflight_sha256": "a050eaf5573369c95de4130f03ff563b20f38ae172ffc14d2176c71c5e3c914d",
+  "conflicts": {
+    "__Z14nsvg__parseXMLPcPFvPvPKcPS2_EPFvS0_S2_ES7_S0_": [
+      {
+        "archive": "libcorvcad_kicad.a",
+        "member": "e5504a7a7c6943cf-nanosvg.cpp.o"
+      },
+      {
+        "archive": "libwx_osx_iphoneu_core-3.3-x86_64-apple-darwin.a",
+        "member": "corelib_bmpsvg.o"
+      }
+    ],
+    "_nsvg__colors": [
+      {
+        "archive": "libcorvcad_kicad.a",
+        "member": "e5504a7a7c6943cf-nanosvg.cpp.o"
+      },
+      {
+        "archive": "libwx_osx_iphoneu_core-3.3-x86_64-apple-darwin.a",
+        "member": "corelib_bmpsvg.o"
+      }
+    ]
+  },
+  "resolution": "Prefix wx private nsvg__parseXML and nsvg__colors at compile time; keep distinct public APIs and pinned sources. Fresh wx and strict whole-input preflight required.",
+  "actual_link_attempted": false,
+  "mixed_simulator_checks_run": false,
+  "combined_native_accepted": false,
+  "physical_device_execution": false
+}

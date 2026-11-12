@@ -1,0 +1,31 @@
+{
+  "schema": 1,
+  "provider": "Codemagic",
+  "app_id": "6adef14098c06b067e3a725c",
+  "build_id": "6adfb5bb49af9ae3e9fbcff3",
+  "commit": "7a8d9980642f3842248a84bd50748ff5757dd48a",
+  "run_url": "https://codemagic.io/app/6adef14098c06b067e3a725c/build/6adfb5bb49af9ae3e9fbcff3",
+  "result": "failed",
+  "scope": "F4 source/package regressions and portable engine tests passed; deferred CMake configuration failed before FreeCAD native adapter compilation or app execution",
+  "failure": "Subdirectories may not be created during deferred execution.",
+  "passed_checks": {
+    "f3_regressions": 97,
+    "package_regressions": 4,
+    "portable_engine_ctest": 6,
+    "dependency_inventory": "passed",
+    "cpython_target_probe": "passed",
+    "occt_target_archives": "passed"
+  },
+  "native_adapter_compiled": false,
+  "app_executed": false,
+  "saved_decoded_logs": {
+    "6adfb5bb49af9ae3e9fbcff3-step-4.log": {
+      "sha256": "7c9d40bc9fcf894f962fa19a5d0c9a106787599726cc1573b05923228628d9a6",
+      "bytes": 16197
+    },
+    "6adfb5bb49af9ae3e9fbcff3-step-8.log": {
+      "sha256": "03ccdf857cef7e67a4f7ac3db2e163de63740783ad35b4a8433b7c3aecad2fc5",
+      "bytes": 10726
+    }
+  }
+}

@@ -1,0 +1,78 @@
+name: Build and test
+# Manual only (owner's decision 2026-10-24): nothing runs on push, pull request or tag.
+# Start it from the Actions tab or the workflow_dispatch API.
+on:
+  workflow_dispatch:
+    inputs:
+      mechanical_ios:
+        description: Run the isolated FreeCAD F3 iOS investigation
+        type: boolean
+        default: false
+      mechanical_stage:
+        description: F3 investigation stage
+        type: choice
+        options: [all, python, dependencies, static-desktop, occt, ios]
+        default: all
+      mechanical_runner_labels:
+        description: F3 macOS runner labels as a JSON array
+        type: string
+        default: '["macos-15"]'
+permissions:
+  contents: read
+jobs:
+  engine:
+    if: ${{ !inputs.mechanical_ios }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Configure
+        run: cmake -S engine -B build/engine -DCMAKE_BUILD_TYPE=Release
+      - name: Build
+        run: cmake --build build/engine --parallel
+      - name: Test
+        run: ctest --test-dir build/engine --output-on-failure
+      - name: Test KiCad source inventory verification
+        run: python3 -m unittest discover -s integrations/kicad_core -p test_audit.py -v
+      - name: Export fixture STL
+        run: build/engine/corvcad_cli engine/tests/fixtures/demo.kicad_pcb build/demo.stl
+      - uses: actions/upload-artifact@v4
+        with:
+          name: engine-demo-stl
+          path: build/demo.stl
+  ipad:
+    if: ${{ !inputs.mechanical_ios }}
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install XcodeGen
+        run: brew install xcodegen
+      - name: Generate Xcode project
+        run: xcodegen generate --spec app/project.yml
+      - name: Build iPadOS app (unsigned)
+        run: >-
+          xcodebuild -project app/CorvCAD.xcodeproj -scheme CorvCAD
+          -configuration Release -sdk iphoneos -destination 'generic/platform=iOS'
+          -derivedDataPath build/DerivedData CODE_SIGNING_ALLOWED=NO build
+      - name: Package unsigned IPA
+        run: |
+          mkdir -p build/Payload
+          cp -R build/DerivedData/Build/Products/Release-iphoneos/CorvCAD.app build/Payload/
+          cd build
+          zip -qr CorvCAD-unsigned.ipa Payload
+      - uses: actions/upload-artifact@v4
+        with:
+          name: CorvCAD-unsigned-IPA
+          path: build/CorvCAD-unsigned.ipa
+      - name: Attach IPA to tagged release
+        if: startsWith(github.ref, 'refs/tags/v')
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh release create "${GITHUB_REF_NAME}" build/CorvCAD-unsigned.ipa --generate-notes
+    permissions:
+      contents: write
+  mechanical-ios:
+    if: ${{ inputs.mechanical_ios }}
+    uses: ./.github/workflows/mechanical-ios.yml
+    with:
+      stage: ${{ inputs.mechanical_stage || 'all' }}
+      runner_labels: ${{ inputs.mechanical_runner_labels || '["macos-15"]' }}

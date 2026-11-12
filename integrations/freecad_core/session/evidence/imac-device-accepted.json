@@ -1,0 +1,68 @@
+{
+  "schema": 1,
+  "sdk": "iphoneos",
+  "architecture": "arm64",
+  "system_links": [
+    "/usr/lib/libsqlite3.dylib",
+    "/usr/lib/libiconv.2.dylib",
+    "/usr/lib/libobjc.A.dylib",
+    "/System/Library/Frameworks/Foundation.framework/Foundation",
+    "/System/Library/Frameworks/UIKit.framework/UIKit",
+    "/System/Library/Frameworks/CoreServices.framework/CoreServices",
+    "/System/Library/Frameworks/IOKit.framework/Versions/A/IOKit",
+    "/System/Library/Frameworks/CoreFoundation.framework/CoreFoundation",
+    "/System/Library/Frameworks/UniformTypeIdentifiers.framework/UniformTypeIdentifiers",
+    "/usr/lib/libSystem.B.dylib",
+    "/System/Library/Frameworks/MobileCoreServices.framework/MobileCoreServices",
+    "/usr/lib/libc++.1.dylib"
+  ],
+  "probe_bytes": 91427224,
+  "probe_sha256": "f88573cfab7e5ea7f761d6775f0898aeebc6b46d6f4250bf26961a59d7ebde63",
+  "scope": "Arm64 iOS native C ABI/probe and app compilation/link; bundle payload independently hash checked. No physical-device execution.",
+  "status": "device C ABI and app link validated; no device execution",
+  "app_code_images": [
+    {
+      "name": "CorvCAD",
+      "architecture": "arm64",
+      "bytes": 71984,
+      "sha256": "f575dc73edff4cc9627554f755581befae69e74a313280f7c45ce4b20e56542d",
+      "build_version": "/Users/<user>/corvcad-freecad-f4/build/freecad-ios-intel/f4-device-evidence/DerivedData/Build/Products/Debug-iphoneos/CorvCAD.app/CorvCAD:\nLoad command 11\n      cmd LC_BUILD_VERSION\n  cmdsize 32\n platform IOS\n    minos 17.0\n      sdk 26.2\n   ntools 1\n     tool LD\n  version 1230.1\n"
+    },
+    {
+      "name": "CorvCAD.debug.dylib",
+      "architecture": "arm64",
+      "bytes": 94100168,
+      "sha256": "51b196db506783947e8aecffe17446a62226b1d5ab5aeef1b74eb04fd5a476b8",
+      "build_version": "/Users/<user>/corvcad-freecad-f4/build/freecad-ios-intel/f4-device-evidence/DerivedData/Build/Products/Debug-iphoneos/CorvCAD.app/CorvCAD.debug.dylib:\nLoad command 10\n      cmd LC_BUILD_VERSION\n  cmdsize 32\n platform IOS\n    minos 17.0\n      sdk 26.2\n   ntools 1\n     tool LD\n  version 1230.1\n"
+    }
+  ],
+  "source_revision": "7856f63",
+  "native_sources_unchanged_since": "fba4dec",
+  "app": {
+    "architecture": "arm64",
+    "bytes": 71984,
+    "sha256": "f575dc73edff4cc9627554f755581befae69e74a313280f7c45ce4b20e56542d",
+    "build_version": "/Users/<user>/corvcad-freecad-f4/build/freecad-ios-intel/f4-device-evidence/DerivedData/Build/Products/Debug-iphoneos/CorvCAD.app/CorvCAD:\nLoad command 11\n      cmd LC_BUILD_VERSION\n  cmdsize 32\n platform IOS\n    minos 17.0\n      sdk 26.2\n   ntools 1\n     tool LD\n  version 1230.1\n",
+    "dynamic_links": "/Users/<user>/corvcad-freecad-f4/build/freecad-ios-intel/f4-device-evidence/DerivedData/Build/Products/Debug-iphoneos/CorvCAD.app/CorvCAD:\n\t@rpath/CorvCAD.debug.dylib (compatibility version 0.0.0, current version 0.0.0)\n\t/usr/lib/libc++.1.dylib (compatibility version 1.0.0, current version 2000.67.0)\n\t/usr/lib/libSystem.B.dylib (compatibility version 1.0.0, current version 1356.0.0)\n",
+    "bundled_resources_verified": 1712
+  },
+  "package": {
+    "core_sha256": "d29dad386e8285a2d130c5d1f7a601e7224175671751ba538d3d5a6aa2f9bba2",
+    "dependencies_sha256": "366c4e5e4af33b1d389d11ef54e3bba12b691ff648df097ff8b5bf75d44b54c7",
+    "resource_bytes": 31623620
+  },
+  "source_files": {
+    "app/Sources/WorkspaceView.swift": "2e20a14b0147c1f38123839c0d22db9fdf3b8fa0222913f7e8cff16183eaaf03",
+    "app/Sources/MechanicalSession.swift": "51e67be64fb245327c8d05a987c945f6fc6baf31f4e6e26b6bec8df0cd092ebc",
+    "integrations/freecad_core/session/mechanical_session.cpp": "f549aa7f32ca854d1dfc5603efd1113086911b31029c7bca4157854cadab194d",
+    "integrations/freecad_core/session/mechanical_session_test.cpp": "ca233a8c7ef2ed1170f15b694213e6622592b44edd88fe5b8f95f7e101942530",
+    "engine/include/corvcad/mechanical_session_c_api.h": "95c263d891a2e0ac1a246472b9d12054d32cf74fefe4898e60bcd9415cf7fcac"
+  },
+  "source_files_sha256_lf": {
+    "app/Sources/WorkspaceView.swift": "5a2ad502e860504c3b4c2f505a77910c81fce064f771d95809a227a9f4e12f6c",
+    "app/Sources/MechanicalSession.swift": "b7e483e8240ed8502a423ed02e4139b7ec41393d80808fc16b2a1d8e1f7544ab",
+    "integrations/freecad_core/session/mechanical_session.cpp": "f549aa7f32ca854d1dfc5603efd1113086911b31029c7bca4157854cadab194d",
+    "integrations/freecad_core/session/mechanical_session_test.cpp": "ca233a8c7ef2ed1170f15b694213e6622592b44edd88fe5b8f95f7e101942530",
+    "engine/include/corvcad/mechanical_session_c_api.h": "03a13c762692496a19f066594810c8749d66b4483f5f20d485c8112b70ac0d80"
+  }
+}

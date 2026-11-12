@@ -1,0 +1,88 @@
+{
+  "schema": 1,
+  "vcpkg": {
+    "repository": "https://github.com/microsoft/vcpkg.git",
+    "commit": "9e593bb18ea69cc5095e012465dcd675a822ed0d"
+  },
+  "minimum_ios": "17.0",
+  "references": {
+    "kicad": {
+      "path": "integrations/kicad_core/upstream.json",
+      "revision": "9e57e24",
+      "sha256_lf": "bfa53c96036ceee7765edc51c928907b940fcb626bcb30acbf28bc931d6d56da"
+    },
+    "freecad": {
+      "path": "integrations/freecad_core/upstream.json",
+      "revision": "09352fd",
+      "sha256_lf": "06623645779c44c4d03608935988dcab2098cf47849d6e7593fc001496795e0c"
+    },
+    "freecad_slice": {
+      "path": "integrations/freecad_core/slice.json",
+      "revision": "09352fd",
+      "sha256_lf": "f32cae5326abb071cce1ea7bb82c0075de1a837d1b66b4688300b169d3a3cc7c"
+    },
+    "freecad_ios_inputs": {
+      "path": "integrations/freecad_core/ios/inputs.json",
+      "revision": "09352fd",
+      "sha256_lf": "dece93150efc1bc3a78d02fbf33eccefa7733ca7dc6d836bac8b4316c7b47876"
+    },
+    "freecad_manifest": {
+      "path": "integrations/freecad_core/ios/vcpkg.json",
+      "revision": "09352fd",
+      "sha256_lf": "4ed480041192563250256b37c602ab7ca539d511b38e09ce572c70583b8f52c6"
+    },
+    "freecad_static_profile": {
+      "path": "integrations/freecad_core/ios/static-profile.json",
+      "revision": "09352fd",
+      "sha256_lf": "6d8d82d3485db6c1472e8d5bf622a885d1cc7693ef509c6583b2a15adf3d7f5f"
+    },
+    "freecad_ios_profile": {
+      "path": "integrations/freecad_core/ios/ios-profile.json",
+      "revision": "09352fd",
+      "sha256_lf": "ec5fa674e5c13fb424986e96f128456804f12634b4ebb463ca0a0c44a68e6ab0"
+    },
+    "triplet_arm64-ios": {
+      "path": "integrations/freecad_core/ios/triplets/arm64-ios.cmake",
+      "revision": "09352fd",
+      "sha256_lf": "515fe28315cc74432ad8f1ca8d1f3215cbeede1e44ca92a6e4abfef63d258036"
+    },
+    "triplet_arm64-ios-simulator": {
+      "path": "integrations/freecad_core/ios/triplets/arm64-ios-simulator.cmake",
+      "revision": "09352fd",
+      "sha256_lf": "7076c8b3a06441ec82c64e140f39c134f2465efb93d7fc183da1346a25ca551d"
+    },
+    "triplet_x64-ios-simulator": {
+      "path": "integrations/freecad_core/ios/triplets/x64-ios-simulator.cmake",
+      "revision": "09352fd",
+      "sha256_lf": "bb36fc003c4624b4d8065ace308aafdb6e9941d92e576de4e42f384e387fdcf0"
+    }
+  },
+  "source_policy": {
+    "eigen": "Use FreeCAD Eigen3.4.0#5 override for all union header consumers. KiCad selected iOS prefix has no Eigen package.",
+    "fmt": "Blocked for combined acceptance until KiCad vendored fmt12.1.0 and FreeCAD vcpkg fmt12.2.0 headers/compiled symbols are unified and inventoried.",
+    "wx_codecs": "Existing KiCad profiles include bundled wxzlib/wxpng and vcpkg zlib/libpng. A union manifest does not establish unique strong symbols; inspect actual combined link map.",
+    "inventory": "Candidate dependency provenance only. KiCad measured compiler/linker inventory refresh and combined tests are required before native acceptance.",
+    "cache": "Each SDK owns its installed prefix. Reuse only vcpkg ABI-verified binary-cache entries; do not copy archives from accepted SDK prefixes.",
+    "host_headers": "Host triplet overlays set CMAKE_NO_SYSTEM_FROM_IMPORTED=ON for CMake ports, preserving imported vcpkg dependency include precedence over compiler-injected Homebrew paths. Target iOS triplets are unchanged."
+  },
+  "additional_dependencies": [
+    "expat"
+  ],
+  "additional_dependency_reasons": {
+    "expat": "The combined wxWidgets build selects --with-expat=sys instead of the historical bundled wxexpat archive; do not rely on Fontconfig or another incidental transitive dependency."
+  },
+  "host_triplets": {
+    "x64-osx": {
+      "path": "integrations/native_workspace/triplets/x64-osx.cmake",
+      "sha256_lf": "28ed768fa17b9251c20fe9c035dff124bba990383ce9230b37edb784b0418132",
+      "upstream_path": "triplets/community/x64-osx.cmake",
+      "upstream_revision": "9e593bb18ea69cc5095e012465dcd675a822ed0d"
+    },
+    "arm64-osx": {
+      "path": "integrations/native_workspace/triplets/arm64-osx.cmake",
+      "sha256_lf": "1d5735b8445a4cba3a21e1ea09b9829282e4f04a42afd1c1c1ac48c3f4975294",
+      "upstream_path": "triplets/arm64-osx.cmake",
+      "upstream_revision": "9e593bb18ea69cc5095e012465dcd675a822ed0d"
+    }
+  }
+}

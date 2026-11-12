@@ -1,0 +1,210 @@
+diff --git a/cMake/FreeCAD_Helpers/SetupPython.cmake b/cMake/FreeCAD_Helpers/SetupPython.cmake
+--- a/cMake/FreeCAD_Helpers/SetupPython.cmake
++++ b/cMake/FreeCAD_Helpers/SetupPython.cmake
+@@ -1,7 +1,37 @@
+ macro(SetupPython)
+ # -------------------------------- Python --------------------------------
+ 
+-    find_package(Python3 COMPONENTS Interpreter Development REQUIRED)
++    if(CMAKE_SYSTEM_NAME STREQUAL "iOS")
++        if(NOT FREECAD_STATIC_MODULES)
++            message(FATAL_ERROR "The CorvCAD iOS profile requires static modules")
++        endif()
++        # The executable runs on macOS for generators. Only headers/archive are
++        # target artifacts; never require an emulator to execute target Python.
++        foreach(artifact Python3_EXECUTABLE Python3_INCLUDE_DIR Python3_LIBRARY)
++            if(NOT IS_ABSOLUTE "${${artifact}}" OR NOT EXISTS "${${artifact}}")
++                message(FATAL_ERROR "Explicit iOS Python artifact required: ${artifact}")
++            endif()
++        endforeach()
++        set(_corvcad_host_python "${Python3_EXECUTABLE}")
++        execute_process(COMMAND "${_corvcad_host_python}" -c
++            "import sys; print('.'.join(map(str, sys.version_info[:3])))"
++            RESULT_VARIABLE _corvcad_host_status OUTPUT_VARIABLE _corvcad_host_version
++            OUTPUT_STRIP_TRAILING_WHITESPACE)
++        if(NOT _corvcad_host_status EQUAL 0 OR NOT _corvcad_host_version STREQUAL "3.13.7")
++            message(FATAL_ERROR "The iOS generators require host CPython 3.13.7")
++        endif()
++        # Hide the host executable from target development discovery, including
++        # CMake 4.1+ with CMP0190 NEW. It is restored for all generator commands.
++        set(Python3_EXECUTABLE "")
++        find_package(Python3 3.13.7 EXACT COMPONENTS Development.Embed REQUIRED)
++        if(NOT Python3_VERSION STREQUAL _corvcad_host_version)
++            message(FATAL_ERROR "Host and target CPython versions differ")
++        endif()
++        set(Python3_EXECUTABLE "${_corvcad_host_python}")
++        set(Python3_Interpreter_FOUND TRUE)
++    else()
++        find_package(Python3 COMPONENTS Interpreter Development REQUIRED)
++    endif()
+ 
+     if (${Python3_VERSION} VERSION_LESS "3.10")
+          message(FATAL_ERROR "To build FreeCAD you need at least Python 3.10\n")
+diff --git a/src/FCConfig.h b/src/FCConfig.h
+--- a/src/FCConfig.h
++++ b/src/FCConfig.h
+@@ -54,6 +54,11 @@
+ 
+ #   endif
+ #elif defined(__APPLE__)
++#   include <TargetConditionals.h>
++#   if TARGET_OS_IOS
++#   define FC_OS_IOS
++#   endif
++// Keep the existing portable Darwin branches; FC_OS_IOS gates embedding changes.
+ #   ifndef FC_OS_MACOSX
+ #   define FC_OS_MACOSX
+ #   endif
+diff --git a/src/Base/Interpreter.cpp b/src/Base/Interpreter.cpp
+--- a/src/Base/Interpreter.cpp
++++ b/src/Base/Interpreter.cpp
+@@ -24,6 +24,8 @@
+  ***************************************************************************/
+ 
+ #include <sstream>
++#include <cstdlib>
++#include <cstring>
+ #include <boost/regex.hpp>
+ 
+ #include <FCConfig.h>
+@@ -611,6 +613,65 @@
+ #else
+ namespace
+ {
++#ifdef FC_OS_IOS
++// The iOS embedding profile executes geometry in this process. Fail explicitly
++// if a helper tries to launch another executable, including through os wrappers.
++int denyIOSProcessCreation(const char* event, PyObject*, void*)
++{
++    static const char* denied[] = {"subprocess.Popen", "os.system", "os.fork",
++        "os.forkpty", "os.posix_spawn", "os.exec", "os.spawn"};
++    for (const char* name : denied) {
++        if (std::strcmp(event, name) == 0) {
++            PyErr_SetString(PyExc_RuntimeError, "Process creation is unavailable in CorvCAD iOS");
++            return -1;
++        }
++    }
++    return 0;
++}
++
++void initInterpreter(int argc, char* argv[])
++{
++    // The embedding harness supplies its reviewed, read-only runtime directory.
++    // This is deliberately independent of Python environment/path discovery.
++    const char* stdlib = std::getenv("CORVCAD_PYTHON_STDLIB");
++    if (!stdlib || stdlib[0] != '/') {
++        throw Base::RuntimeError("CORVCAD_PYTHON_STDLIB must be an absolute bundled path");
++    }
++    if (PySys_AddAuditHook(denyIOSProcessCreation, nullptr) < 0) {
++        throw Base::RuntimeError("Failed to install the iOS process audit hook");
++    }
++    PyConfig config;
++    PyConfig_InitIsolatedConfig(&config);
++    config.isolated = 1;
++    config.use_environment = 0;
++    config.user_site_directory = 0;
++    config.site_import = 0;
++    config.write_bytecode = 0;
++    config.install_signal_handlers = 0;
++    config.safe_path = 1;
++    config.module_search_paths_set = 1;
++    PyStatus status = PyConfig_SetBytesArgv(&config, argc, argv);
++    if (!PyStatus_Exception(status)) {
++        status = PyConfig_SetBytesString(&config, &config.stdlib_dir, stdlib);
++    }
++    wchar_t* path = Py_DecodeLocale(stdlib, nullptr);
++    if (!path) {
++        PyConfig_Clear(&config);
++        throw Base::RuntimeError("Failed to decode bundled iOS Python path");
++    }
++    if (!PyStatus_Exception(status)) {
++        status = PyWideStringList_Append(&config.module_search_paths, path);
++    }
++    PyMem_RawFree(path);
++    if (!PyStatus_Exception(status)) {
++        status = Py_InitializeFromConfig(&config);
++    }
++    PyConfig_Clear(&config);
++    if (PyStatus_Exception(status)) {
++        throw Base::RuntimeError("Failed to initialize isolated iOS Python");
++    }
++}
++#else
+ void initInterpreter(int argc, char* argv[])
+ {
+     PyStatus status;
+@@ -646,6 +707,7 @@
+ 
+     Py_Initialize();
+ }
++#endif  // FC_OS_IOS
+ }  // namespace
+ std::string InterpreterSingleton::init(int argc, char* argv[])
+ {
+diff --git a/src/Main/CMakeLists.txt b/src/Main/CMakeLists.txt
+--- a/src/Main/CMakeLists.txt
++++ b/src/Main/CMakeLists.txt
+@@ -58,6 +58,12 @@
+ )
+ 
+ add_executable(FreeCADMainCmd ${FreeCADMainCmd_SRCS})
++
++if(FREECAD_STATIC_MODULES AND CMAKE_SYSTEM_NAME STREQUAL "iOS")
++    # Headless harness owns main(); Qt 6.11 uses this lowercase property to
++    # avoid the UIKit platform-plugin entry point inherited through QtCore.
++    set_property(TARGET FreeCADMainCmd PROPERTY qt_no_entrypoint TRUE)
++endif()
+ 
+ SET(FreeCADMainCmd_LIBS
+     FreeCADApp
+@@ -109,6 +115,40 @@
+         # Keep registration objects and Qt resources in static archives alive.
+         target_link_options(FreeCADMainCmd PRIVATE "LINKER:-force_load,$<TARGET_FILE:${module}>")
+     endforeach()
++    if(CMAKE_SYSTEM_NAME STREQUAL "iOS")
++        # Share the reviewed vcpkg archives with FreeCAD rather than linking a
++        # second SDK implementation. Zlib already propagates from FreeCADBase.
++        foreach(archive CORVCAD_IOS_FFI_LIBRARY CORVCAD_IOS_BZIP2_LIBRARY)
++            if(NOT IS_ABSOLUTE "${${archive}}" OR NOT EXISTS "${${archive}}")
++                message(FATAL_ERROR "Explicit static iOS dependency required: ${archive}")
++            endif()
++        endforeach()
++        target_link_libraries(FreeCADMainCmd
++            "${CORVCAD_IOS_FFI_LIBRARY}" "${CORVCAD_IOS_BZIP2_LIBRARY}"
++            sqlite3 iconv objc "-framework Foundation" "-framework UIKit")
++        # OCCT's exported static targets do not carry the full toolkit closure.
++        # Require the measured closure explicitly before adding its archives.
++        if(NOT CORVCAD_IOS_OCCT_LIBRARIES)
++            message(FATAL_ERROR "Explicit measured iOS OCCT toolkit closure required")
++        endif()
++        set(_corvcad_occt_actual "${OpenCASCADE_LIBRARIES}")
++        set(_corvcad_occt_expected "${CORVCAD_IOS_OCCT_LIBRARIES}")
++        list(SORT _corvcad_occt_actual)
++        list(SORT _corvcad_occt_expected)
++        if(NOT _corvcad_occt_actual STREQUAL _corvcad_occt_expected)
++            message(FATAL_ERROR "OCCT exports differ from the measured iOS toolkit closure")
++        endif()
++        foreach(toolkit IN LISTS OpenCASCADE_LIBRARIES)
++            if(NOT TARGET "${toolkit}")
++                message(FATAL_ERROR "Missing static iOS OCCT toolkit target: ${toolkit}")
++            endif()
++            get_target_property(_corvcad_occt_type "${toolkit}" TYPE)
++            if(NOT _corvcad_occt_type STREQUAL "STATIC_LIBRARY")
++                message(FATAL_ERROR "Non-static iOS OCCT toolkit target: ${toolkit}")
++            endif()
++        endforeach()
++        target_link_libraries(FreeCADMainCmd ${OpenCASCADE_LIBRARIES})
++    endif()
+ endif()
+ 
+ if(NOT FREECAD_STATIC_MODULES)
+diff --git a/src/Mod/Mesh/App/WildMagic4/Wm4System.cpp b/src/Mod/Mesh/App/WildMagic4/Wm4System.cpp
+--- a/src/Mod/Mesh/App/WildMagic4/Wm4System.cpp
++++ b/src/Mod/Mesh/App/WildMagic4/Wm4System.cpp
+@@ -37,5 +37,5 @@
+ 
+ // support for locating the application directory
+-#ifdef __APPLE__
++#if defined(__APPLE__) && !defined(__aarch64__) && !defined(__x86_64__)
+ #include <Carbon/Carbon.h>
+ #endif

@@ -1,0 +1,60 @@
+{
+  "schema": 1,
+  "status": "passed",
+  "run_url": "https://github.com/Corvusar/corvcad/actions/runs/40183927695",
+  "repository_commit": "a3ea0c7af154bbc356c811cc7555fc92e2aeeca4",
+  "source_commit": "4fd3bf320d9566a27e60069fc8387448aaa3a094",
+  "profile_sha256": "f32cae5326abb071cce1ea7bb82c0075de1a837d1b66b4688300b169d3a3cc7c",
+  "purpose": "Validate retained source snapshot/verifier from fresh Linux and macOS checkouts; repeat source builds, upstream suites and both F1 proofs",
+  "platforms": {
+    "linux": {
+      "job_id": 121140600632,
+      "artifact_id": 12595526414,
+      "artifact_sha256": "4a8d32d69738d485c4bbc76c809ffb5561773997314b774d8c3a6aba1675f036",
+      "source_snapshot_verification": {
+        "status": "source snapshot verified; audit review remains open",
+        "source_inputs": 1339,
+        "notices": 14
+      },
+      "produced_objects": 673,
+      "target_artifacts": 12,
+      "upstream_tests_run": 669,
+      "upstream_tests_skipped": 3,
+      "model_reports": {
+        "demo": {
+          "status": "passed",
+          "sha256": "77cb03a9a057cfebbee55535afc9c4954df734ee465622372dd7a99867831c3c"
+        },
+        "roundtrip": {
+          "status": "passed",
+          "sha256": "4bd9d70e264e96d8c0c3a99287a7888f0d6e68649a9a159cba7d00fd30da422c"
+        }
+      }
+    },
+    "macos": {
+      "job_id": 121140600830,
+      "artifact_id": 12594689682,
+      "artifact_sha256": "d0f69fba9a2bdba3ebc17230375197f72d9295a406ad9ec8464ceb8e3eceada6",
+      "source_snapshot_verification": {
+        "status": "source snapshot verified; audit review remains open",
+        "source_inputs": 1339,
+        "notices": 14
+      },
+      "produced_objects": 673,
+      "target_artifacts": 12,
+      "upstream_tests_run": 669,
+      "upstream_tests_skipped": 3,
+      "model_reports": {
+        "demo": {
+          "status": "passed",
+          "sha256": "2f8eab7e04732650ff0d51c80676f65eb306f43caf7ea9c9b4b5dda12cf701d4"
+        },
+        "roundtrip": {
+          "status": "passed",
+          "sha256": "bb7dce9550fbead33d74fdd5c19c84abc9b4c4a90eba049d00b479ea467ba910"
+        }
+      }
+    }
+  },
+  "remaining_acceptance": "Dependency locks/notices, per-file licence classification and generator-input closure remain open; this is not F2 gate acceptance."
+}

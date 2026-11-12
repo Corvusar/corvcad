@@ -1,0 +1,248 @@
+name: FreeCAD F3 iOS investigation
+# Manual only. Called through ci.yml while this workflow is not on main.
+on:
+  workflow_dispatch:
+    inputs:
+      stage:
+        type: choice
+        options: [all, python, dependencies, static-desktop, occt, ios]
+        default: all
+      runner_labels:
+        description: macOS runner labels as a JSON array
+        type: string
+        default: '["macos-15"]'
+  workflow_call:
+    inputs:
+      stage:
+        type: string
+        default: all
+      runner_labels:
+        type: string
+        default: '["macos-15"]'
+permissions:
+  contents: read
+jobs:
+  python:
+    if: ${{ inputs.stage == 'all' || inputs.stage == 'python' }}
+    runs-on: ${{ fromJSON(inputs.runner_labels) }}
+    timeout-minutes: 50
+    strategy:
+      fail-fast: false
+      matrix:
+        sdk: [iphonesimulator, iphoneos]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/cache@v4
+        with:
+          path: |
+            build/freecad-ios/python/Python-3.13.7
+            build/freecad-ios/python/Python-3.13.7.tar.xz
+            build/freecad-ios/python/host
+          key: f3-cpython-host-3.13.7-${{ runner.os }}-${{ runner.arch }}-v1
+      - name: Record Apple toolchain
+        run: |
+          test "$(uname -m)" = arm64
+          xcodebuild -version
+          xcrun simctl list runtimes
+      - name: Source and sharing-boundary regression tests
+        run: python3 -m unittest discover -s integrations/freecad_core/ios -v
+      - name: Build static CPython with built-in extensions
+        run: |
+          python3 integrations/freecad_core/ios/build_python.py --sdk '${{ matrix.sdk }}' > python-build.log 2>&1 || { tail -100 python-build.log; exit 1; }
+      - name: Link embedding probe and run on simulator
+        run: bash integrations/freecad_core/ios/probe.sh build/freecad-ios/python '${{ matrix.sdk }}'
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: f3-python-${{ matrix.sdk }}-evidence
+          path: |
+            python-build.log
+            build/freecad-ios/python/${{ matrix.sdk }}/*.json
+            build/freecad-ios/python/${{ matrix.sdk }}/*.txt
+            build/freecad-ios/python/${{ matrix.sdk }}/config.log
+          if-no-files-found: error
+          retention-days: 7
+  dependencies:
+    if: ${{ inputs.stage == 'all' || inputs.stage == 'dependencies' }}
+    runs-on: ${{ fromJSON(inputs.runner_labels) }}
+    timeout-minutes: 90
+    strategy:
+      fail-fast: false
+      matrix:
+        triplet: [arm64-ios-simulator, arm64-ios]
+    env:
+      VCPKG_BINARY_SOURCES: clear;files,${{ github.workspace }}/build/freecad-ios/binary-cache,readwrite
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/cache/restore@v4
+        id: deps-cache
+        with:
+          path: build/freecad-ios/binary-cache
+          key: f3-vcpkg-${{ matrix.triplet }}-${{ hashFiles('integrations/freecad_core/ios/inputs.json', 'integrations/freecad_core/ios/vcpkg.json', 'integrations/freecad_core/ios/triplets/*') }}-${{ github.run_id }}-${{ github.run_attempt }}
+          restore-keys: f3-vcpkg-${{ matrix.triplet }}-
+      - name: Install host build tools
+        run: brew install autoconf autoconf-archive automake libtool pkgconf ninja
+      - name: Build shared-baseline static dependencies without Qt GUI
+        run: |
+          bash integrations/freecad_core/ios/deps.sh build/freecad-ios/deps '${{ matrix.triplet }}' > dependencies-build.log 2>&1 || { tail -100 dependencies-build.log; exit 1; }
+      - name: Record actual package ABI and archive identities
+        run: python3 integrations/freecad_core/ios/dependency_inventory.py build/freecad-ios/deps/installed '${{ matrix.triplet }}' 'build/freecad-ios/deps/inventory-${{ matrix.triplet }}.json' --verify-target
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: f3-dependencies-${{ matrix.triplet }}-evidence
+          path: |
+            dependencies-build.log
+            build/freecad-ios/deps/packages-*.txt
+            build/freecad-ios/deps/inventory-*.json
+            build/freecad-ios/deps/vcpkg/buildtrees/**/*.log
+            build/freecad-ios/deps/installed/vcpkg/status
+            build/freecad-ios/deps/installed/${{ matrix.triplet }}/share/**/copyright
+          retention-days: 7
+      - uses: actions/cache/save@v4
+        if: always()
+        with:
+          path: build/freecad-ios/binary-cache
+          key: ${{ steps.deps-cache.outputs.cache-primary-key }}
+  static-desktop:
+    if: ${{ inputs.stage == 'all' || inputs.stage == 'static-desktop' }}
+    uses: ./.github/workflows/mechanical-static.yml
+    with:
+      runner_labels: ${{ inputs.runner_labels }}
+  occt:
+    if: ${{ inputs.stage == 'all' || inputs.stage == 'occt' }}
+    runs-on: ${{ fromJSON(inputs.runner_labels) }}
+    timeout-minutes: 90
+    strategy:
+      fail-fast: false
+      matrix:
+        sdk: [iphonesimulator, iphoneos]
+    steps:
+      - uses: actions/checkout@v4
+      - name: Record Apple toolchain
+        run: |
+          test "$(uname -m)" = arm64
+          xcodebuild -version
+          xcrun --sdk '${{ matrix.sdk }}' --show-sdk-version
+      - name: OCCT source and closure regressions
+        run: python3 -m unittest discover -s integrations/freecad_core/ios -v
+      - name: Build static geometry and STEP toolkit closure
+        run: |
+          python3 integrations/freecad_core/ios/build_occt.py --sdk '${{ matrix.sdk }}' --jobs 3 > occt-build.log 2>&1 || { tail -100 occt-build.log; exit 1; }
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: f3-occt-${{ matrix.sdk }}-evidence
+          path: |
+            occt-build.log
+            build/freecad-ios/occt/${{ matrix.sdk }}/*.json
+            build/freecad-ios/occt/${{ matrix.sdk }}/*.txt
+            build/freecad-ios/occt/${{ matrix.sdk }}/build/CMakeCache.txt
+            build/freecad-ios/occt/${{ matrix.sdk }}/build/compile_commands.json
+            build/freecad-ios/occt/${{ matrix.sdk }}/stage/share/occt/*LICENSE*
+            build/freecad-ios/occt/${{ matrix.sdk }}/stage/share/occt/*EXCEPTION*
+          retention-days: 7
+  ios:
+    # Expensive end-to-end investigation is explicit, separate from the smaller
+    # independent development checks selected by "all".
+    if: ${{ inputs.stage == 'ios' }}
+    runs-on: ${{ fromJSON(inputs.runner_labels) }}
+    timeout-minutes: 180
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - sdk: iphonesimulator
+            triplet: arm64-ios-simulator
+          - sdk: iphoneos
+            triplet: arm64-ios
+    env:
+      VCPKG_BINARY_SOURCES: clear;files,${{ github.workspace }}/build/freecad-ios/binary-cache,readwrite
+      CCACHE_DIR: ${{ github.workspace }}/build/freecad-ios/ccache-ios
+      CCACHE_BASEDIR: ${{ github.workspace }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install host build tools
+        run: |
+          brew install autoconf autoconf-archive automake libtool pkgconf ninja cmake ccache swig bison flex
+          echo "$(brew --prefix bison)/bin" >> "$GITHUB_PATH"
+          echo "$(brew --prefix flex)/bin" >> "$GITHUB_PATH"
+      - uses: actions/cache/restore@v4
+        id: deps-cache
+        with:
+          path: build/freecad-ios/binary-cache
+          key: f3-vcpkg-${{ matrix.triplet }}-${{ hashFiles('integrations/freecad_core/ios/inputs.json', 'integrations/freecad_core/ios/vcpkg.json', 'integrations/freecad_core/ios/triplets/*') }}-${{ github.run_id }}-${{ github.run_attempt }}
+          restore-keys: f3-vcpkg-${{ matrix.triplet }}-
+      - uses: actions/cache@v4
+        with:
+          path: |
+            build/freecad-ios/python/Python-3.13.7
+            build/freecad-ios/python/Python-3.13.7.tar.xz
+            build/freecad-ios/python/host
+          key: f3-cpython-host-3.13.7-${{ runner.os }}-${{ runner.arch }}-v1
+      - uses: actions/cache/restore@v4
+        id: compiler-cache
+        with:
+          path: ${{ env.CCACHE_DIR }}
+          key: f3-ios-objects-${{ matrix.sdk }}-${{ github.run_id }}-${{ github.run_attempt }}
+          restore-keys: f3-ios-objects-${{ matrix.sdk }}-
+      - name: Source and runtime boundary regressions
+        run: python3 -m unittest discover -s integrations/freecad_core/ios -v
+      - name: Build and inventory target dependencies
+        run: |
+          bash integrations/freecad_core/ios/deps.sh build/freecad-ios/deps '${{ matrix.triplet }}' > dependencies-build.log 2>&1 || { tail -100 dependencies-build.log; exit 1; }
+          python3 integrations/freecad_core/ios/dependency_inventory.py build/freecad-ios/deps/installed '${{ matrix.triplet }}' 'build/freecad-ios/deps/inventory-${{ matrix.triplet }}.json' --verify-target
+      - name: Build target Python against the same dependency archives
+        run: |
+          python3 integrations/freecad_core/ios/build_python.py --sdk '${{ matrix.sdk }}' --deps 'build/freecad-ios/deps/installed/${{ matrix.triplet }}' --jobs 3 > python-build.log 2>&1 || { tail -100 python-build.log; exit 1; }
+          bash integrations/freecad_core/ios/probe.sh build/freecad-ios/python '${{ matrix.sdk }}' 'build/freecad-ios/deps/installed/${{ matrix.triplet }}'
+      - name: Build and inventory static OCCT
+        run: |
+          python3 integrations/freecad_core/ios/build_occt.py --sdk '${{ matrix.sdk }}' --jobs 3 > occt-build.log 2>&1 || { tail -100 occt-build.log; exit 1; }
+      - name: Configure and build static FreeCAD for target SDK
+        run: |
+          python3 integrations/freecad_core/ios/cross.py --sdk '${{ matrix.sdk }}' --jobs 3 > freecad-ios-build.log 2>&1 || { tail -120 freecad-ios-build.log; exit 1; }
+      - name: Stage reviewed runtime
+        run: |
+          python3 integrations/freecad_core/ios/stage_runtime.py \
+            --source build/freecad-ios/source-ios/FreeCAD \
+            --build 'build/freecad-ios/freecad-${{ matrix.sdk }}' \
+            --python-stage 'build/freecad-ios/python/${{ matrix.sdk }}/stage' \
+            --host-python build/freecad-ios/python/host/python.exe \
+            --output 'build/freecad-ios/runtime-${{ matrix.sdk }}' \
+            --dependency-notices 'build/freecad-ios/deps/installed/${{ matrix.triplet }}/share' \
+            --dependency-notices 'build/freecad-ios/occt/${{ matrix.sdk }}/stage/share/occt'
+      - name: Validate SDK link and run F1 fixtures on simulator target
+        run: python3 integrations/freecad_core/ios/run_ios.py --runtime 'build/freecad-ios/runtime-${{ matrix.sdk }}' --sdk '${{ matrix.sdk }}' --output build/freecad-ios/ios-evidence
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: f3-ios-${{ matrix.sdk }}-evidence
+          path: |
+            dependencies-build.log
+            python-build.log
+            occt-build.log
+            freecad-ios-build.log
+            build/freecad-ios/deps/inventory-*.json
+            build/freecad-ios/python/${{ matrix.sdk }}/*.json
+            build/freecad-ios/python/${{ matrix.sdk }}/config.log
+            build/freecad-ios/occt/${{ matrix.sdk }}/*.json
+            build/freecad-ios/occt/${{ matrix.sdk }}/build/CMakeCache.txt
+            build/freecad-ios/freecad-${{ matrix.sdk }}/*.json
+            build/freecad-ios/freecad-${{ matrix.sdk }}/CMakeCache.txt
+            build/freecad-ios/freecad-${{ matrix.sdk }}/.cmake/api/v1/reply/
+            build/freecad-ios/runtime-${{ matrix.sdk }}/runtime-manifest.json
+            build/freecad-ios/runtime-${{ matrix.sdk }}/bin/*.json
+            build/freecad-ios/runtime-${{ matrix.sdk }}/notices/
+            build/freecad-ios/ios-evidence/
+          retention-days: 7
+      - uses: actions/cache/save@v4
+        if: always()
+        with:
+          path: build/freecad-ios/binary-cache
+          key: ${{ steps.deps-cache.outputs.cache-primary-key }}
+      - uses: actions/cache/save@v4
+        if: always()
+        with:
+          path: ${{ env.CCACHE_DIR }}
+          key: ${{ steps.compiler-cache.outputs.cache-primary-key }}

@@ -1,0 +1,456 @@
+version: 2.1
+# Manual only (owner's decision 2026-10-24): every workflow is gated on the `run` pipeline
+# parameter, so pushes create no jobs. Trigger through the CircleCI API with
+# {"parameters": {"run": "<workflow>"}}: native-check, native-ipa, native-sim, ui-screens or corvprobe.
+# The free plan runs every macOS job on m4pro.medium (6 cores, 28 GB); the scripts default to
+# every core (sysctl hw.ncpu).
+parameters:
+  run:
+    type: string
+    default: ""
+
+commands:
+  # Homebrew bottles for the probe's macOS-side configure, KiCad 10.0.6 with the patch series
+  # checked against the gate 1 inventory, the probe configure (compile commands and generated
+  # sources; no desktop build) and the measured closures from the inventory profiles, in
+  # measure.sh's format.
+  kicad-prepare:
+    steps:
+      - run:
+          name: Host
+          command: |
+            sw_vers; xcodebuild -version; sysctl -n machdep.cpu.brand_string hw.ncpu hw.memsize; df -h .
+      - run:
+          name: Homebrew bottles (probe configure inputs and tools)
+          command: |
+            # Post-install hooks (font caches, certificates) can fail on the runner and make brew exit 1;
+            # the build needs only the files, so check that every formula is installed instead.
+            PKGS="cmake ninja xcodegen pkgconf python@3.13 wxwidgets boost glm zstd freetype harfbuzz fontconfig libgit2 protobuf unixodbc cairo pixman"
+            brew install $PKGS || true
+            brew list --versions $PKGS
+      - restore_cache:
+          keys: ['kicad-src-v2-{{ checksum "integrations/kicad_core/upstream.json" }}-{{ checksum "integrations/kicad_core/patches/0011-static-ngspice.patch" }}']
+      - run:
+          name: KiCad 10.0.6 source with the patch series, checked against the gate 1 inventory
+          command: |
+            [ -d build/kicad-core/kicad ] || python3 integrations/kicad_core/fetch.py --output build/kicad-core --source-only
+            # The cache is keyed on upstream.json only: a changed patch means a fresh checkout.
+            python3 integrations/kicad_core/audit.py verify --kicad build/kicad-core/kicad || {
+              rm -rf build/kicad-core/kicad
+              python3 integrations/kicad_core/fetch.py --output build/kicad-core --source-only
+              python3 integrations/kicad_core/audit.py verify --kicad build/kicad-core/kicad; }
+      - save_cache:
+          key: kicad-src-v2-{{ checksum "integrations/kicad_core/upstream.json" }}-{{ checksum "integrations/kicad_core/patches/0011-static-ngspice.patch" }}
+          paths: [build/kicad-core]
+      # KiCad's simulator: ngspice for the probe configure (mac) and the package (device).
+      - restore_cache:
+          keys: ['ngspice-v1-{{ checksum "integrations/kicad_core/upstream.json" }}-{{ checksum "integrations/kicad_core/ngspice_ios.sh" }}-{{ checksum "integrations/kicad_core/ngspice/ios_prefix.h" }}-{{ checksum "integrations/kicad_core/ngspice/static_codemodels.c" }}-{{ checksum "integrations/kicad_core/ngspice/apple_memory.c" }}']
+      - run:
+          name: ngspice for macOS and arm64 iOS (cached)
+          command: |
+            [ -f build/ngspice/build-mac/libngspice.a ] || bash integrations/kicad_core/ngspice_ios.sh build/ngspice mac
+            [ -f build/ngspice/build-device/libngspice.a ] || bash integrations/kicad_core/ngspice_ios.sh build/ngspice device
+      - save_cache:
+          key: ngspice-v1-{{ checksum "integrations/kicad_core/upstream.json" }}-{{ checksum "integrations/kicad_core/ngspice_ios.sh" }}-{{ checksum "integrations/kicad_core/ngspice/ios_prefix.h" }}-{{ checksum "integrations/kicad_core/ngspice/static_codemodels.c" }}-{{ checksum "integrations/kicad_core/ngspice/apple_memory.c" }}
+          paths: [build/ngspice]
+      - run:
+          name: Probe configure and measured closures
+          command: |
+            cmake -G Ninja -S integrations/kicad_core/probe -B build/kicad-probe -DNGSPICE_BUILD="$PWD/build/ngspice" \
+              -DKICAD_SOURCE="$PWD/build/kicad-core/kicad" -DCMAKE_BUILD_TYPE=Release > build/configure.log 2>&1 \
+              || { tail -40 build/configure.log; exit 1; }
+            python3 - "$PWD" \<<'EOF'
+            import json, sys
+            repo = sys.argv[1].lstrip("/")
+            profiles = json.load(open("integrations/kicad_core/audit/sources.json"))["profiles"]
+            def unit(path):
+                head, _, rest = path.partition("/")
+                return {"kicad": rest, "generated": path, "corvcad": f"{repo}/{rest}"}[head]
+            for profile, name in (("schematic", "probe_headless"), ("session", "session"), ("board", "pcb_probe_headless"), ("native", "native")):
+                if profile not in profiles:  # not yet measured; measure.sh writes it
+                    continue
+                with open(f"build/kicad-probe/{name}.closure.txt", "w") as out:
+                    out.write("\n".join(sorted(unit(p) for p in profiles[profile]["closure"])) + "\n")
+                print(name, len(profiles[profile]["closure"]), "units")
+            EOF
+
+jobs:
+  # Gate 5 desktop proof: the full candidate build and every measured closure (measure.sh),
+  # including the native one (the session plus the board checks, as the app links them); that
+  # closure linked as objects (native_link.sh); its DRC and zone fill compared with kicad-cli
+  # 10.0.6 references made on Windows (session/board_reference.json) on KiCad's demo boards;
+  # and the source half of the gate 1 inventory recaptured from this build for review.
+  native-check:
+    macos:
+      xcode: "26.4.1"
+    resource_class: m4pro.medium
+    environment:
+      HOMEBREW_NO_AUTO_UPDATE: 1
+      HOMEBREW_NO_INSTALL_CLEANUP: 1
+    steps:
+      - checkout
+      - kicad-prepare
+      - run:
+          name: Build every candidate and measure the closures (measure.sh)
+          no_output_timeout: 120m
+          command: |
+            start=$(date +%s)
+            bash integrations/kicad_core/probe/measure.sh build/kicad-probe | tee build/measure.txt || true
+            echo "measure seconds: $(( $(date +%s) - start ))" | tee -a build/measure.txt
+            # Unresolved symbols of a failed link, with what referenced them.
+            for f in build/kicad-probe/*.unresolved.txt; do [ -s "$f" ] && { echo "== $f"; cat "$f"; }; done
+            grep -E -A4 'Undefined symbols' build/kicad-probe/native.link.log | head -60 || true
+            # Compile errors in CorvCAD's own sources (measure.sh keeps going past failures).
+            grep -E -A30 '^FAILED: .*((session|probe|board)_main|headless)' build/kicad-probe/compile.log | grep -E 'FAILED|error' | head -40 || true
+            [ -f build/kicad-probe/native.closure.txt ]
+      - run:
+          name: Recapture the inventory's sources (closures, profiles, hashes)
+          command: |
+            python3 - \<<'EOF'
+            import json, sys
+            from pathlib import Path
+            sys.path.insert(0, "integrations/kicad_core")
+            import audit
+            sources = audit.capture_sources(audit.SourceTree(Path("build/kicad-core/kicad")), Path("build/kicad-probe").resolve())
+            Path("build/audit-sources.json").write_text(json.dumps(sources, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
+            print({k: len(v["closure"]) for k, v in sources["profiles"].items()}, len(sources["files"]), "files")
+            EOF
+      - store_artifacts:
+          path: build/audit-sources.json
+      - store_artifacts:
+          path: build/measure.txt
+      - store_artifacts:
+          path: build/kicad-probe/native.closure.txt
+      - store_artifacts:
+          path: build/kicad-probe/failed_sources.txt
+      - run:
+          name: Link the native closure as objects (as the app force-loads it)
+          command: bash integrations/kicad_core/probe/native_link.sh build/kicad-probe
+      - run:
+          name: KiCad 10.0.6 demo boards
+          command: |
+            git clone -q --filter=blob:none --depth 1 --branch 10.0.6 --sparse https://gitlab.com/kicad/code/kicad.git build/kicad-demos
+            git -C build/kicad-demos sparse-checkout set demos/ecc83 demos/interf_u demos/complex_hierarchy demos/video \
+              demos/stickhub demos/cm5_minima demos/royalblue54L_feather demos/jetson-agx-thor-baseboard
+      - run:
+          name: Native DRC and zone fill against kicad-cli
+          no_output_timeout: 30m
+          command: |
+            export KICAD_CONFIG_HOME="$PWD/build/kicad-config"
+            D=build/kicad-demos/demos
+            python3 integrations/kicad_core/session/board_check.py compare integrations/kicad_core/session/board_reference.json \
+              build/kicad-probe/corvcad_kicad_native $D/ecc83/ecc83-pp.kicad_pcb $D/interf_u/interf_u.kicad_pcb \
+              $D/complex_hierarchy/complex_hierarchy.kicad_pcb $D/video/video.kicad_pcb $D/stickhub/StickHub.kicad_pcb \
+              $D/cm5_minima/CM5_MINIMA_3.kicad_pcb $D/royalblue54L_feather/RoyalBlue54L-Feather.kicad_pcb \
+              $D/jetson-agx-thor-baseboard/jetson-agx-thor-baseboard.kicad_pcb | tee build/board_check.txt
+      - run:
+          name: Native Update PCB from Schematic (ecc83 without U1, kicad-cli's netlist)
+          command: |
+            export KICAD_CONFIG_HOME="$PWD/build/kicad-config"
+            python3 integrations/kicad_core/session/board_check.py update build/kicad-probe/corvcad_kicad_native \
+              build/kicad-demos/demos/ecc83/ecc83-pp.kicad_pcb integrations/kicad_core/session/ecc83-pp.net U1 \
+              | tee build/board_update.txt
+            build/kicad-probe/corvcad_kicad_native symbol build/kicad-demos/demos/ecc83/ecc83-pp.kicad_pro ecc83-pp:R
+            python3 integrations/kicad_core/session/board_check.py route build/kicad-probe/corvcad_kicad_native \
+              build/kicad-demos/demos/ecc83/ecc83-pp.kicad_pcb
+            python3 integrations/kicad_core/session/board_check.py route build/kicad-probe/corvcad_kicad_native \
+              build/kicad-demos/demos/stickhub/StickHub.kicad_pcb /U1D+
+            for b in ecc83/ecc83-pp video/video; do
+              build/kicad-probe/corvcad_kicad_native session build/kicad-demos/demos/$b.kicad_pcb "$(mktemp -d)"
+            done
+            python3 integrations/kicad_core/session/board_check.py ratsnest build/kicad-probe/corvcad_kicad_native \
+              build/kicad-demos/demos/ecc83/ecc83-pp.kicad_pcb 14
+      - store_artifacts:
+          path: build/board_check.txt
+      - store_artifacts:
+          path: build/kicad-probe/native.link.log
+      - store_artifacts:
+          path: build/kicad-probe/native.compile.log
+
+  # NATIVE_KICAD edition, arm64 device only, from scratch: KiCad 10.0.6 with the patch series,
+  # wxWidgets and the vcpkg dependencies for iphoneos, the measured session and board closures
+  # compiled for iOS, the app with the gate 4 diagnostics hook, and an unsigned IPA. The iOS
+  # libraries are compiled once and cached.
+  native-ipa:
+    macos:
+      xcode: "26.4.1"
+    resource_class: m4pro.medium
+    environment:
+      HOMEBREW_NO_AUTO_UPDATE: 1
+      HOMEBREW_NO_INSTALL_CLEANUP: 1
+    steps:
+      - checkout
+      - kicad-prepare
+      - restore_cache:
+          keys: ['wx-device-v1-{{ checksum "integrations/kicad_core/upstream.json" }}-{{ checksum "integrations/kicad_core/wx_ios.sh" }}']
+      - run:
+          name: wxWidgets for iphoneos (cached)
+          command: |
+            [ -x build/wx-ios/build-device/wx-config ] || bash integrations/kicad_core/wx_ios.sh build/wx-ios device
+      - save_cache:
+          key: wx-device-v1-{{ checksum "integrations/kicad_core/upstream.json" }}-{{ checksum "integrations/kicad_core/wx_ios.sh" }}
+          paths: [build/wx-ios]
+      - restore_cache:
+          keys: ['vcpkg-arm64-ios-v1-{{ checksum "integrations/kicad_core/upstream.json" }}-{{ checksum "integrations/kicad_core/triplets/arm64-ios.cmake" }}']
+      - run:
+          name: vcpkg dependencies for arm64-ios (cached)
+          no_output_timeout: 60m
+          command: |
+            [ -d build/ios-deps/installed/arm64-ios/lib ] || bash integrations/kicad_core/ios_deps.sh build/ios-deps arm64-ios
+      - save_cache:
+          key: vcpkg-arm64-ios-v1-{{ checksum "integrations/kicad_core/upstream.json" }}-{{ checksum "integrations/kicad_core/triplets/arm64-ios.cmake" }}
+          paths: [build/ios-deps/installed]
+      - run:
+          name: Compile the session and board closures for arm64 iOS
+          no_output_timeout: 60m
+          command: |
+            IOS_TARGET=device bash integrations/kicad_core/probe/ios_sweep.sh build/kicad-probe \
+              build/wx-ios/build-device "$(sysctl -n hw.ncpu)" build/ios-deps/installed/arm64-ios
+            [ ! -f build/kicad-probe/ios_sweep-device/failed.txt ] || { cat build/kicad-probe/ios_sweep-device/first_errors.txt; exit 1; }
+      - restore_cache:
+          keys: ['kicad-libraries-v1-{{ checksum "integrations/kicad_core/upstream.json" }}']
+      - run:
+          name: KiCad 10.0.6 symbol and footprint libraries, packed (cached)
+          command: |
+            [ -f build/kicad-core/footprints-packed/index.json ] && [ -f build/kicad-core/symbols-packed/index.json ] && [ -f build/kicad-core/symbols-packed/Simulation_SPICE.sp ] \
+              || python3 integrations/kicad_core/fetch.py --output build/kicad-core --libraries-only
+            du -sh build/kicad-core/symbols-packed build/kicad-core/footprints-packed
+      - save_cache:
+          key: kicad-libraries-v1-{{ checksum "integrations/kicad_core/upstream.json" }}
+          paths: [build/kicad-core/symbols-packed, build/kicad-core/footprints-packed]
+      - run:
+          name: Package and build the unsigned NATIVE_KICAD IPA (with the gate 4 diagnostics hook)
+          command: |
+            TARGETS=device bash integrations/kicad_core/probe/ios_package.sh build/kicad-probe build/wx-ios build/ios-deps/installed
+            (cd app && xcodegen generate -q)
+            xcodebuild build -project app/CorvCAD.xcodeproj -scheme CorvCAD -configuration Release \
+              -destination 'generic/platform=iOS' -derivedDataPath build/DerivedData \
+              NATIVE_KICAD=YES KICAD_PACKAGE="$PWD/build/kicad-probe/package" CODE_SIGNING_ALLOWED=NO \
+              'SWIFT_ACTIVE_COMPILATION_CONDITIONS=$(inherited) CORVCAD_DIAGNOSTICS' > build/xcodebuild.log 2>&1 \
+              || { grep -E 'error:' build/xcodebuild.log | head -40; tail -20 build/xcodebuild.log; exit 1; }
+            mkdir -p build/out/Payload
+            cp -R build/DerivedData/Build/Products/Release-iphoneos/CorvCAD.app build/out/Payload/
+            REV=$(git rev-parse --short=12 HEAD)
+            (cd build/out && zip -qr "CorvCAD-KiCad-$REV-diagnostics-unsigned.ipa" Payload && rm -rf Payload)
+            ls -l build/out
+      - store_artifacts:
+          path: build/out
+      - store_artifacts:
+          path: build/xcodebuild.log
+
+  # NATIVE_KICAD edition in an arm64 iPad simulator: the closures, wx and the vcpkg libraries
+  # for arm64-apple-ios-simulator (cached), the app with KiCad's libraries, and
+  # NativeKiCadTests by touch on KiCad's ecc83 demo: routing with KiCad's router (walk around,
+  # then B.Cu through a via), library symbols and the footprint chooser, KiCad's DRC.
+  # Screenshots are stored as artifacts.
+  native-sim:
+    macos:
+      xcode: "26.4.1"
+    resource_class: m4pro.medium
+    environment:
+      HOMEBREW_NO_AUTO_UPDATE: 1
+      HOMEBREW_NO_INSTALL_CLEANUP: 1
+      SIM_ARCH: arm64
+    steps:
+      - checkout
+      - kicad-prepare
+      - restore_cache:
+          keys: ['wx-sim-arm64-v1-{{ checksum "integrations/kicad_core/upstream.json" }}-{{ checksum "integrations/kicad_core/wx_ios.sh" }}']
+      - run:
+          name: wxWidgets for the arm64 simulator (cached)
+          command: |
+            [ -x build/wx-ios/build-sim/wx-config ] || bash integrations/kicad_core/wx_ios.sh build/wx-ios sim
+      - save_cache:
+          key: wx-sim-arm64-v1-{{ checksum "integrations/kicad_core/upstream.json" }}-{{ checksum "integrations/kicad_core/wx_ios.sh" }}
+          paths: [build/wx-ios]
+      - run:
+          name: ngspice for the arm64 simulator
+          command: bash integrations/kicad_core/ngspice_ios.sh build/ngspice sim
+      - restore_cache:
+          keys: ['vcpkg-arm64-ios-simulator-v1-{{ checksum "integrations/kicad_core/upstream.json" }}-{{ checksum "integrations/kicad_core/triplets/arm64-ios-simulator.cmake" }}']
+      - run:
+          name: vcpkg dependencies for arm64-ios-simulator (cached)
+          no_output_timeout: 60m
+          command: |
+            [ -d build/ios-deps/installed/arm64-ios-simulator/lib ] || bash integrations/kicad_core/ios_deps.sh build/ios-deps arm64-ios-simulator
+      - save_cache:
+          key: vcpkg-arm64-ios-simulator-v1-{{ checksum "integrations/kicad_core/upstream.json" }}-{{ checksum "integrations/kicad_core/triplets/arm64-ios-simulator.cmake" }}
+          paths: [build/ios-deps/installed]
+      - run:
+          name: Compile the session and board closures for the arm64 simulator
+          no_output_timeout: 60m
+          command: |
+            IOS_TARGET=sim bash integrations/kicad_core/probe/ios_sweep.sh build/kicad-probe \
+              build/wx-ios/build-sim "$(sysctl -n hw.ncpu)" build/ios-deps/installed/arm64-ios-simulator
+            [ ! -f build/kicad-probe/ios_sweep/failed.txt ] || { cat build/kicad-probe/ios_sweep/first_errors.txt; exit 1; }
+      - restore_cache:
+          keys: ['kicad-libraries-v1-{{ checksum "integrations/kicad_core/upstream.json" }}']
+      - run:
+          name: KiCad 10.0.6 symbol and footprint libraries, packed (cached)
+          command: |
+            [ -f build/kicad-core/footprints-packed/index.json ] && [ -f build/kicad-core/symbols-packed/index.json ] && [ -f build/kicad-core/symbols-packed/Simulation_SPICE.sp ] \
+              || python3 integrations/kicad_core/fetch.py --output build/kicad-core --libraries-only
+      - save_cache:
+          key: kicad-libraries-v1-{{ checksum "integrations/kicad_core/upstream.json" }}
+          paths: [build/kicad-core/symbols-packed, build/kicad-core/footprints-packed]
+      - run:
+          name: Package and build the NATIVE_KICAD app and tests for the simulator
+          command: |
+            TARGETS=sim bash integrations/kicad_core/probe/ios_package.sh build/kicad-probe build/wx-ios build/ios-deps/installed
+            (cd app && xcodegen generate -q)
+            SIM=$(xcrun simctl list devices available | grep -m1 'iPad Pro 11' | grep -oE '[0-9A-F-]{36}')
+            echo "simulator $SIM"; echo "export SIM=$SIM" >> "$BASH_ENV"
+            xcodebuild build-for-testing -project app/CorvCAD.xcodeproj -scheme CorvCAD -destination "id=$SIM" \
+              -derivedDataPath build/DerivedData NATIVE_KICAD=YES KICAD_PACKAGE="$PWD/build/kicad-probe/package" \
+              ENABLE_DEBUG_DYLIB=NO ENABLE_TESTABILITY=NO \
+              > build/ui-build.log 2>&1 || { grep -E 'error:' build/ui-build.log | head -40; tail -20 build/ui-build.log; exit 1; }
+            # A debug build's app code is a dylib (or, testable, an executable linked with
+            # -export_dynamic) that exports every symbol, so -dead_strip cannot drop the closure's
+            # unreached 3D-cache references as Release does; UI tests need neither.
+      - run:
+          name: KiCad's router, library symbols and DRC by touch (NativeKiCadTests)
+          no_output_timeout: 30m
+          command: |
+            mkdir -p build/screens
+            xcrun simctl boot "$SIM" || true; xcrun simctl bootstatus "$SIM" -b > /dev/null
+            xcrun simctl install "$SIM" build/DerivedData/Build/Products/Debug-iphonesimulator/CorvCAD.app
+            DATA=$(xcrun simctl get_app_container "$SIM" org.corvcad.CorvCAD data)
+            git clone -q --filter=blob:none --depth 1 --branch 10.0.6 --sparse https://gitlab.com/kicad/code/kicad.git build/kicad-demos
+            git -C build/kicad-demos sparse-checkout set demos/ecc83 demos/simulation/rectifier qa/data/pcbnew/plugins/eagle/Adafruit-AHT20-PCB
+            mkdir -p "$DATA/Documents/Import" && cp build/kicad-demos/qa/data/pcbnew/plugins/eagle/Adafruit-AHT20-PCB/*.{sch,brd} "$DATA/Documents/Import/"
+            for project in ecc83-pp ecc83-unrouted; do
+              mkdir -p "$DATA/Documents/Projects/$project" && cp -R build/kicad-demos/demos/ecc83/. "$DATA/Documents/Projects/$project/"
+            done
+            # sim-rectifier: KiCad's rectifier demo with a generated board (ngspice/fixture_board.py).
+            P="$DATA/Documents/Projects/sim-rectifier"; mkdir -p "$P"; cp -R build/kicad-demos/demos/simulation/rectifier/. "$P/"
+            mv "$P/rectifier.kicad_pro" "$P/sim-rectifier.kicad_pro"; mv "$P/rectifier.kicad_sch" "$P/sim-rectifier.kicad_sch"
+            cp engine/tests/fixtures/sim-rectifier/sim-rectifier.kicad_pcb "$P/"
+            # Stop a run in the arm64 simulator through the session, then run again.
+            PROGRAM=native IOS_TARGET=sim bash integrations/kicad_core/probe/ios_link.sh build/kicad-probe build/wx-ios/build-sim \
+              build/ios-deps/installed/arm64-ios-simulator "$SIM"
+            cp -R "$P" build/sim-stop-project
+            build/kicad-probe/corvcad_kicad_native_ios.sim sim-stop "$PWD/build/sim-stop-project/sim-rectifier.kicad_pro" ".tran 1m 100 0 100n" ".tran 1u 10m" \
+              | tee build/screens/sim-stop.txt
+            grep -q '^stop: 1' build/screens/sim-stop.txt
+            grep -q '^run 1: TRAN' build/screens/sim-stop.txt
+            # ecc83-unrouted: the board without its tracks and vias (board_check.py's s-expression
+            # blocks); project files are named after their folder.
+            for f in "$DATA/Documents/Projects/ecc83-unrouted"/ecc83-pp.*; do mv "$f" "${f/ecc83-pp./ecc83-unrouted.}"; done
+            # erc-roundtrip: a project with ERC findings (ecc83 is ERC-clean in KiCad 10).
+            mkdir -p "$DATA/Documents/Projects/erc-roundtrip"
+            for e in kicad_pro kicad_sch kicad_pcb; do cp engine/tests/fixtures/roundtrip/RoundTrip.$e "$DATA/Documents/Projects/erc-roundtrip/erc-roundtrip.$e"; done
+            python3 - "$DATA/Documents/Projects/ecc83-unrouted/ecc83-unrouted.kicad_pcb" \<<'EOF'
+            import sys
+            from pathlib import Path
+            sys.path.insert(0, "integrations/kicad_core/session")
+            from board_check import blocks
+            board = Path(sys.argv[1]); text = board.read_text(encoding="utf-8")
+            for item in list(blocks(text, "segment")) + list(blocks(text, "via")) + list(blocks(text, "arc")):
+                text = text.replace(item, "")
+            board.write_text(text, encoding="utf-8")
+            EOF
+            TEST_RUNNER_SNAPSHOT_DIR="$PWD/build/screens" xcodebuild test-without-building \
+              -project app/CorvCAD.xcodeproj -scheme CorvCAD -destination "id=$SIM" -derivedDataPath build/DerivedData \
+              -only-testing:CorvCADUITests/NativeKiCadTests > build/ui-test-native.log 2>&1 \
+              || { grep -E 'error|failed|XCTAssert|Skipped' build/ui-test-native.log | head -40; exit 1; }
+            grep -E 'Test Case .* (passed|skipped)' build/ui-test-native.log
+            # The schematic as the session saved it, with the placed LM358 (definition and symbol).
+            # The test run reinstalls the app, so its data container moved.
+            DATA=$(xcrun simctl get_app_container "$SIM" org.corvcad.CorvCAD data)
+            ls "$DATA/Documents/Projects/ecc83-pp"
+            cp "$DATA/Documents/Projects/ecc83-pp/ecc83-pp.kicad_sch" build/screens/ecc83-pp-saved.kicad_sch
+            grep -n -E 'LM358|lib_symbols' build/screens/ecc83-pp-saved.kicad_sch | head -20
+            ! grep -q 'skipped' build/ui-test-native.log || { echo "a native test was skipped: not the NATIVE_KICAD edition?"; exit 1; }
+            ls -l build/screens
+      - store_artifacts:
+          path: build/screens
+      - store_artifacts:
+          path: build/ui-test-native.log
+      - store_artifacts:
+          path: build/ui-build.log
+
+  # Default-edition UI screenshots in an iPad simulator: the KiCad DRC inspector from its debug
+  # fixture, portrait and landscape, on the touch-authored RoundTrip project (copied into the
+  # app's Documents first). PNGs are stored as artifacts.
+  ui-screens:
+    macos:
+      xcode: "26.4.1"
+    resource_class: m4pro.medium
+    environment:
+      HOMEBREW_NO_AUTO_UPDATE: 1
+    steps:
+      - checkout
+      - run:
+          name: Build for testing (iPad simulator)
+          command: |
+            brew install xcodegen || true
+            (cd app && xcodegen generate -q)
+            SIM=$(xcrun simctl list devices available | grep -m1 'iPad Pro 11' | grep -oE '[0-9A-F-]{36}')
+            echo "simulator $SIM"; echo "export SIM=$SIM" >> "$BASH_ENV"
+            mkdir -p build/screens
+            xcodebuild build-for-testing -project app/CorvCAD.xcodeproj -scheme CorvCAD -destination "id=$SIM" \
+              -derivedDataPath build/DerivedData > build/ui-build.log 2>&1 \
+              || { grep -E 'error:' build/ui-build.log | head -30; exit 1; }
+      - run:
+          name: Seed the RoundTrip project and capture the DRC inspector
+          command: |
+            xcrun simctl boot "$SIM" || true; xcrun simctl bootstatus "$SIM" -b > /dev/null
+            xcrun simctl install "$SIM" build/DerivedData/Build/Products/Debug-iphonesimulator/CorvCAD.app
+            DATA=$(xcrun simctl get_app_container "$SIM" org.corvcad.CorvCAD data)
+            mkdir -p "$DATA/Documents/Projects/RoundTrip" && cp -R engine/tests/fixtures/roundtrip/. "$DATA/Documents/Projects/RoundTrip/"
+            # KiCad's ecc83 demo has a zone, so the refill action shows.
+            git clone -q --filter=blob:none --depth 1 --branch 10.0.6 --sparse https://gitlab.com/kicad/code/kicad.git build/kicad-demos
+            git -C build/kicad-demos sparse-checkout set demos/ecc83
+            mkdir -p "$DATA/Documents/Projects/ecc83-pp" && cp -R build/kicad-demos/demos/ecc83/. "$DATA/Documents/Projects/ecc83-pp/"
+            for project in RoundTrip ecc83-pp; do
+              TEST_RUNNER_SNAPSHOT_DIR="$PWD/build/screens" TEST_RUNNER_SNAPSHOT_PROJECT=$project xcodebuild test-without-building \
+                -project app/CorvCAD.xcodeproj -scheme CorvCAD -destination "id=$SIM" -derivedDataPath build/DerivedData \
+                -only-testing:CorvCADUITests/ScreenshotTests/testCaptureBoardCheck > build/ui-test-$project.log 2>&1 \
+                || { grep -E 'error|failed|XCTAssert' build/ui-test-$project.log | head -30; exit 1; }
+            done
+            ls -l build/screens
+      - store_artifacts:
+          path: build/screens
+      - store_artifacts:
+          path: build/ui-test-ecc83-pp.log
+
+  # The LiveContainer measurement tweak (tools/corvprobe), arm64 iOS, ad-hoc signed.
+  corvprobe:
+    macos:
+      xcode: "26.4.1"
+    resource_class: m4pro.medium
+    steps:
+      - checkout
+      - run:
+          name: Build CorvProbe.dylib
+          command: |
+            mkdir -p build/corvprobe
+            xcrun --sdk iphoneos clang -arch arm64 -miphoneos-version-min=17.0 -dynamiclib -fobjc-arc \
+              -Wall -Werror -framework Foundation -framework UIKit -framework OSLog -install_name @rpath/CorvProbe.dylib \
+              -o build/corvprobe/CorvProbe.dylib tools/corvprobe/CorvProbe.m
+            codesign -f -s - build/corvprobe/CorvProbe.dylib
+            file build/corvprobe/CorvProbe.dylib; otool -L build/corvprobe/CorvProbe.dylib
+      - store_artifacts:
+          path: build/corvprobe
+
+workflows:
+  native-check:
+    when:
+      equal: [native-check, << pipeline.parameters.run >>]
+    jobs: [native-check]
+  native-ipa:
+    when:
+      equal: [native-ipa, << pipeline.parameters.run >>]
+    jobs: [native-ipa]
+  corvprobe:
+    when:
+      equal: [corvprobe, << pipeline.parameters.run >>]
+    jobs: [corvprobe]
+  native-sim:
+    when:
+      equal: [native-sim, << pipeline.parameters.run >>]
+    jobs: [native-sim]
+  ui-screens:
+    when:
+      equal: [ui-screens, << pipeline.parameters.run >>]
+    jobs: [ui-screens]

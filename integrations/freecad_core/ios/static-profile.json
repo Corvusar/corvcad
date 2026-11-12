@@ -1,0 +1,85 @@
+{
+  "schema": 1,
+  "status": "Experimental static profile; native validation in progress",
+  "desktop_profile_sha256_lf": "f32cae5326abb071cce1ea7bb82c0075de1a837d1b66b4688300b169d3a3cc7c",
+  "patch": {
+    "path": "patches/0001-static-module-libraries.patch",
+    "sha256": "beea436ed660d11f52a2896700085ec8fd38fa33b5b7b6567ae95843e5d37f82",
+    "files": {
+      "CMakeLists.txt": {
+        "before_sha256_lf": "c3a29ccfe554677d6cc935de3d5dfdeaa075f6d0d066aa82418f807a522ce2b8",
+        "after_sha256_lf": "fbbde309ed79444fb5d4d8193076bd7bc5847865240c1f47e156e59b1325ca9d"
+      },
+      "cMake/FreeCadMacros.cmake": {
+        "before_sha256_lf": "c75fc67744cada9804012027a082e84cc49d696fac1cc2811d340d09bda893f1",
+        "after_sha256_lf": "97ba28f3ffc95358eb27eaa614b417bd15ab0a0f0c9e5df8df4ae9923aa84003"
+      },
+      "src/App/CMakeLists.txt": {
+        "before_sha256_lf": "f455a025182919c100fef43a4f0092ff9fa12f0defc19aa3e2af8ee85a3eb6b9",
+        "after_sha256_lf": "9a2980dcfd57512f5ffab48b86e9e9117f66d9c937c6fd8eb198483044c1ad59"
+      },
+      "src/Base/CMakeLists.txt": {
+        "before_sha256_lf": "8d15afd66ba4ff2d6c113c9754f997fa28f437abb5ef1348162e683aea56bab9",
+        "after_sha256_lf": "fcc922e5a78872c8017865abc7d5819f4a9f5363458e597e336857e3d40700d5"
+      },
+      "src/Main/CMakeLists.txt": {
+        "before_sha256_lf": "7223b77cdef5bfb70bee630749f83e83b573a6d102ea77917fc3eedbf1325d82",
+        "after_sha256_lf": "d2c61c70142e171b9db71bf28abc039750aad16a382772bcb9b16f0ad899af8d"
+      },
+      "src/Main/MainCmd.cpp": {
+        "before_sha256_lf": "5ee7fcc78080cfb4899bf783e162d38cbdc3409f921e603a8620c57889589987",
+        "after_sha256_lf": "35383b509a9963417589f669ccdb9279f87c042a018ad54bac216c48d80743af"
+      },
+      "src/Mod/Import/App/CMakeLists.txt": {
+        "before_sha256_lf": "e2a540dfb5510d5fa4c9dde8552e0f4cc0c24d41ba7148be98effc7932152155",
+        "after_sha256_lf": "366a6a312aafada5e1a3edaea66e09336fd8c8d8c523796b2ec52d43dd479f5f"
+      },
+      "src/Mod/Material/App/CMakeLists.txt": {
+        "before_sha256_lf": "d67e9cf97e3b57b090faf03e919c75b65276f28ea57fd033e2a36e48d7e2d91d",
+        "after_sha256_lf": "5f04e97027465a2a9dda9a1e178abd65ee2ee85d90dc328de45ca19886ad9a6b"
+      },
+      "src/Mod/Mesh/App/CMakeLists.txt": {
+        "before_sha256_lf": "01a5341c551eee5ed198f0f01dbe806bdcdd1d4f0afcfecb060734cea5254e5b",
+        "after_sha256_lf": "66fdbaf5b3c3c660c008f0b5b3688c2b95d3fe6d1ea93accee4695be2ff5da45"
+      },
+      "src/Mod/Part/App/CMakeLists.txt": {
+        "before_sha256_lf": "cc5856187b3f31855d655c4687ba8e215fac7ab9826fc845da43ea9b8fdd336b",
+        "after_sha256_lf": "026c1c005b0f6074433208dcb70842cd3bfc2fc973b1867b8054890fded8fb58"
+      },
+      "src/Mod/PartDesign/App/CMakeLists.txt": {
+        "before_sha256_lf": "0b7a52fae686cc0205b6dc07ca294cfc16e7dacb34aa1fe79d55df4925e67213",
+        "after_sha256_lf": "6d0577da4f994c948dc8e872bf39e5ad9e8f612dbb9a41a6889075c7fa89b927"
+      },
+      "src/Mod/Sketcher/App/CMakeLists.txt": {
+        "before_sha256_lf": "36eb7dcfce94cde094ee7b5c1d8b7d402368e762ed510d144f9f639450e43966",
+        "after_sha256_lf": "78845537ad3ff46c500334d86be0c51611329d5dcf4419d5f2510637395ad7e9"
+      },
+      "src/Mod/Spreadsheet/App/CMakeLists.txt": {
+        "before_sha256_lf": "76014fbfdaec830eac6c77725a83ca8b858eef085a8075b05665b1961768cd86",
+        "after_sha256_lf": "fdce48d5646f5536348a09a9c20e69d6af5f33993d755859a9dd5ed67935ef24"
+      }
+    }
+  },
+  "module_targets": [
+    "Materials",
+    "Part",
+    "Mesh",
+    "Sketcher",
+    "PartDesign",
+    "Spreadsheet",
+    "Import"
+  ],
+  "python_modules": [
+    "Materials",
+    "Part",
+    "Mesh",
+    "Sketcher",
+    "_PartDesign",
+    "Spreadsheet",
+    "Import"
+  ],
+  "disabled_additional_modules": [
+    "BUILD_MEASURE"
+  ],
+  "registry_sha256_lf": "882e284069a112d23c20255fb61f78650e63dd6b7b3ce7f7118be6327a9e9f2b"
+}

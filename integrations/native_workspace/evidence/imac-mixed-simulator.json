@@ -1,0 +1,261 @@
+{
+  "schema": 1,
+  "date": "2026-10-29",
+  "source_revision": "1d2956522f6ca4884a0dbf579ba6175692c51095",
+  "status": "Fresh KiCad core, actual combined native link and both initialization orders passed",
+  "scope": "Combined native C ABI smoke test; no app or physical-device acceptance",
+  "sdk": "iphonesimulator",
+  "architecture": "x86_64",
+  "core": {
+    "compiled_units": 631,
+    "actual_source_header_inputs": 4544,
+    "archive": {
+      "sha256": "44bd9aabf903e07a5c67395d8491e0a81c698c215bef05b213361f9775c5a4b6"
+    },
+    "receipt_sha256": "dda83db72daf25b44aaa7d43404bf53a5303c6b039215717c6889d94b8b022ac"
+  },
+  "link": {
+    "receipt_sha256": "e87a6ad7a30f11c60c7c4154549bb5f5a00d54fce4c90cd1a7c88af000a82871",
+    "binary": {
+      "bytes": 118931032,
+      "sha256": "5176b8295ed8b61f00fae6275837467e42662675952e5b473ccda8f34c6a94d7"
+    },
+    "strong_symbol_conflicts": 0,
+    "dynamic_system_links": [
+      "/usr/lib/libsqlite3.dylib",
+      "/usr/lib/libiconv.2.dylib",
+      "/usr/lib/libobjc.A.dylib",
+      "/System/Library/Frameworks/Foundation.framework/Foundation",
+      "/System/Library/Frameworks/UIKit.framework/UIKit",
+      "/System/Library/Frameworks/CoreServices.framework/CoreServices",
+      "/System/Library/Frameworks/IOKit.framework/Versions/A/IOKit",
+      "/System/Library/Frameworks/CoreFoundation.framework/CoreFoundation",
+      "/System/Library/Frameworks/UniformTypeIdentifiers.framework/UniformTypeIdentifiers",
+      "/usr/lib/libSystem.B.dylib",
+      "/System/Library/Frameworks/MobileCoreServices.framework/MobileCoreServices",
+      "/System/Library/Frameworks/CFNetwork.framework/CFNetwork",
+      "/System/Library/Frameworks/AudioToolbox.framework/AudioToolbox",
+      "/System/Library/Frameworks/CoreGraphics.framework/CoreGraphics",
+      "/System/Library/Frameworks/OpenGLES.framework/OpenGLES",
+      "/System/Library/Frameworks/QuartzCore.framework/QuartzCore",
+      "/System/Library/Frameworks/GLKit.framework/GLKit",
+      "/System/Library/Frameworks/CoreText.framework/CoreText",
+      "/System/Library/Frameworks/WebKit.framework/WebKit",
+      "/System/Library/Frameworks/Security.framework/Security",
+      "/usr/lib/libc++.1.dylib"
+    ],
+    "verified_inputs": {
+      "dependency_receipt_sha256": "6da7495f80a6a9de11798fe9f07650842d677e6a452ccbe0d575dc21a699b365",
+      "kicad_receipt_sha256": "dda83db72daf25b44aaa7d43404bf53a5303c6b039215717c6889d94b8b022ac",
+      "wx_receipt_sha256": "02c415d8895a3b985f0d245362b25997c3b39bdb1a43d71a1b188bb761470157",
+      "freecad_manifest_sha256": "737bee19061ebf50dea7dcdca4f08149773ce312fc579a038c839aec51a4b443",
+      "freecad_source": {
+        "schema": 1,
+        "source_commit": "4fd3bf320d9566a27e60069fc8387448aaa3a094",
+        "profile_sha256_lf": "ec5fa674e5c13fb424986e96f128456804f12634b4ebb463ca0a0c44a68e6ab0",
+        "static_profile_sha256_lf": "6d8d82d3485db6c1472e8d5bf622a885d1cc7693ef509c6583b2a15adf3d7f5f",
+        "source_files": {
+          "cMake/FreeCAD_Helpers/CheckInterModuleDependencies.cmake": "38cc5c51c843892f9917056f6b0fecba71d316ac413f9e3fd55dabfa40155455",
+          "cMake/FreeCAD_Helpers/SetupQt.cmake": "eee5398a459ae52a4dfa8207561de6af9f0849790a71cd1063095a4cd9a72be7",
+          "src/Mod/Part/parttests/TestPartMirror.py": "91d7ce2b38187b0487912ff7c866a1911687c7263240e4f457005533210df047",
+          "src/Mod/PartDesign/PartDesignTests/TestBoolean.py": "25741b7ebb30d372b5c84efc9e45d97ef31f9c804459b2d5c83ee32ad4890e09",
+          "src/Mod/PartDesign/CMakeLists.txt": "449bd20c2196254c6afeb875e19aeaa8fa794187306fbd54fe0a95ac7e51c8e6",
+          "src/Mod/PartDesign/InvoluteGearFeature.py": "37ebbf1a0fd69b86f2e30a179b6af371cb4b2df4f0b9318ece423bc74435105f",
+          "src/Mod/Sketcher/ProfileLib/RegularPolygon.py": "8c5ff9213080d9c8822ec1550af7c716424c0c1919479fbee44d6a64cf39c66d",
+          "CMakeLists.txt": "fbbde309ed79444fb5d4d8193076bd7bc5847865240c1f47e156e59b1325ca9d",
+          "cMake/FreeCadMacros.cmake": "97ba28f3ffc95358eb27eaa614b417bd15ab0a0f0c9e5df8df4ae9923aa84003",
+          "src/App/CMakeLists.txt": "9a2980dcfd57512f5ffab48b86e9e9117f66d9c937c6fd8eb198483044c1ad59",
+          "src/Base/CMakeLists.txt": "fcc922e5a78872c8017865abc7d5819f4a9f5363458e597e336857e3d40700d5",
+          "src/Main/CMakeLists.txt": "95107886e8db3bd1f4b9baa2512c6050a6f892ee2f1852509d592e345d43bdb6",
+          "src/Main/MainCmd.cpp": "35383b509a9963417589f669ccdb9279f87c042a018ad54bac216c48d80743af",
+          "src/Mod/Import/App/CMakeLists.txt": "366a6a312aafada5e1a3edaea66e09336fd8c8d8c523796b2ec52d43dd479f5f",
+          "src/Mod/Material/App/CMakeLists.txt": "5f04e97027465a2a9dda9a1e178abd65ee2ee85d90dc328de45ca19886ad9a6b",
+          "src/Mod/Mesh/App/CMakeLists.txt": "66fdbaf5b3c3c660c008f0b5b3688c2b95d3fe6d1ea93accee4695be2ff5da45",
+          "src/Mod/Part/App/CMakeLists.txt": "026c1c005b0f6074433208dcb70842cd3bfc2fc973b1867b8054890fded8fb58",
+          "src/Mod/PartDesign/App/CMakeLists.txt": "6d0577da4f994c948dc8e872bf39e5ad9e8f612dbb9a41a6889075c7fa89b927",
+          "src/Mod/Sketcher/App/CMakeLists.txt": "78845537ad3ff46c500334d86be0c51611329d5dcf4419d5f2510637395ad7e9",
+          "src/Mod/Spreadsheet/App/CMakeLists.txt": "fdce48d5646f5536348a09a9c20e69d6af5f33993d755859a9dd5ed67935ef24",
+          "cMake/FreeCAD_Helpers/SetupPython.cmake": "0087edc2416306aacf811760f0dd4a4c5fda89ffb15d1ee380675544c7d469f6",
+          "src/FCConfig.h": "0216dd5f47f9e0d7c5b864d7ea86c54d6fafbef71d33b649bb19de1b59766934",
+          "src/Base/Interpreter.cpp": "fabd43cc09982ce0b7f5b093ed64d5f7ce83df6e359b406e916b42643c48c9ce",
+          "src/Mod/Mesh/App/WildMagic4/Wm4System.cpp": "609af4d14d621cee14df8a64d4809149fb8a6d7fcccc54840535fdac7ad7f63c"
+        },
+        "status": "iOS source patch state verified; native validation not established"
+      },
+      "wx_header_compatibility": {
+        "compiled_build": "build/native-workspace/wx-sim-003/build",
+        "linked_build": "build/native-workspace/wx-sim-003/build",
+        "identical_actual_compiler_inputs": {
+          "wx-build/lib/wx/include/x86_64-apple-darwin-osx_iphone-unicode-static-3.3/wx/setup.h": {
+            "sha256": "a2a83c56f18c404fe26a4e5ead57185600089c198cc82a11a267cd276cfef8fb",
+            "sha256_lf": "a2a83c56f18c404fe26a4e5ead57185600089c198cc82a11a267cd276cfef8fb"
+          }
+        }
+      }
+    }
+  },
+  "simulator": {
+    "receipt_sha256": "427ad1a76cb52ad47d97ea203bf5782465456074a36f65734fad8a2e5a7e95f9",
+    "runtime_version": "26.2",
+    "runtime_build": "23C54",
+    "runtime_file_count": 1722,
+    "cases": {
+      "kicad-first": {
+        "passed": true,
+        "schematic_backend": "kicad-10.0.6-native",
+        "board_backend": "kicad-10.0.6-native",
+        "capabilities": 251,
+        "operations": {
+          "both_native_engines": true,
+          "interleaved_transactions": true,
+          "mechanical_save_reopen": true,
+          "netlist_erc_drc_refill": true,
+          "pcb_board_setup_edit_reopen": true,
+          "rejected_mechanical_edit": true,
+          "schematic_save_copy_reopen": true,
+          "source_bytes_preserved": true,
+          "step_stl": true,
+          "undo_redo": true
+        },
+        "board_edit": {
+          "after_mm": 0.025,
+          "before_mm": 0,
+          "board": {
+            "bytes": 7631,
+            "sha256": "bc4f353896cecde2c66406b6c32915c2a3335cdc229b4465989b3858502cc080"
+          },
+          "board_file": "RoundTrip.kicad_pcb",
+          "copy": "board-copy",
+          "preserved_uuid_count": 24,
+          "project": {
+            "bytes": 16454,
+            "sha256": "5cae15ef48960e4b481366459dc188b8fe7d0a32caa6c25fb1f5694a3d9bc688"
+          },
+          "project_file": "RoundTrip.kicad_pro",
+          "rule": "min_clearance",
+          "serialized_uuid_count": 34,
+          "setup_after_sha256": "0e34ab8e0c12b7198820ef0d30795d8863a9a4a4ba4732b779c8bf822cab933f",
+          "setup_before_sha256": "2678cf1888fe6facafc94d6d155fb53c9b8e156c181c246be103f52b08e9767a"
+        },
+        "exports": {
+          "enclosure.FCStd": {
+            "bytes": 37884,
+            "sha256": "2aac39b13aacfddc8bb918a34e1e7aa7991d4c24c7b70fed09e77a9222c4f1f9"
+          },
+          "lid.step": {
+            "bytes": 6973,
+            "sha256": "21dd71894867ef495b34ef442f56bc536676fb4f69430aea48a5cb519ab2c040"
+          },
+          "lid.stl": {
+            "bytes": 684,
+            "sha256": "4c8ef461e33af9b40ebf9d5ce3f0eaf1acdf9b28c987c67c0149ec896167977a"
+          },
+          "tray.step": {
+            "bytes": 18253,
+            "sha256": "ecd4f3884e452ef6e0916a2dc319d72852b6745434688ad5f258ab31f421dc40"
+          },
+          "tray.stl": {
+            "bytes": 102684,
+            "sha256": "888747829e5e8af0d442c2d3364a53eab6c163fbb668548cdea64689a68c18e9"
+          }
+        },
+        "triangle_counts": {
+          "lid": 12,
+          "tray": 2052
+        }
+      },
+      "freecad-first": {
+        "passed": true,
+        "schematic_backend": "kicad-10.0.6-native",
+        "board_backend": "kicad-10.0.6-native",
+        "capabilities": 251,
+        "operations": {
+          "both_native_engines": true,
+          "interleaved_transactions": true,
+          "mechanical_save_reopen": true,
+          "netlist_erc_drc_refill": true,
+          "pcb_board_setup_edit_reopen": true,
+          "rejected_mechanical_edit": true,
+          "schematic_save_copy_reopen": true,
+          "source_bytes_preserved": true,
+          "step_stl": true,
+          "undo_redo": true
+        },
+        "board_edit": {
+          "after_mm": 0.025,
+          "before_mm": 0,
+          "board": {
+            "bytes": 7631,
+            "sha256": "c1282628d2d7d02fcad12847c0a33acffc436466dd2fb6140a2b9397b1933395"
+          },
+          "board_file": "RoundTrip.kicad_pcb",
+          "copy": "board-copy",
+          "preserved_uuid_count": 24,
+          "project": {
+            "bytes": 16454,
+            "sha256": "5cae15ef48960e4b481366459dc188b8fe7d0a32caa6c25fb1f5694a3d9bc688"
+          },
+          "project_file": "RoundTrip.kicad_pro",
+          "rule": "min_clearance",
+          "serialized_uuid_count": 34,
+          "setup_after_sha256": "0e34ab8e0c12b7198820ef0d30795d8863a9a4a4ba4732b779c8bf822cab933f",
+          "setup_before_sha256": "2678cf1888fe6facafc94d6d155fb53c9b8e156c181c246be103f52b08e9767a"
+        },
+        "exports": {
+          "enclosure.FCStd": {
+            "bytes": 37873,
+            "sha256": "491a96cbf5e3966864f0490530c849a50ccb75f99aef7026c710b9f6a6e8c8c2"
+          },
+          "lid.step": {
+            "bytes": 6973,
+            "sha256": "7c543681936c44fc5d6864688bfd5e5ef2062419cd5c0e51ac0a4e8fb1783471"
+          },
+          "lid.stl": {
+            "bytes": 684,
+            "sha256": "4c8ef461e33af9b40ebf9d5ce3f0eaf1acdf9b28c987c67c0149ec896167977a"
+          },
+          "tray.step": {
+            "bytes": 18253,
+            "sha256": "3b2f04dc51d84f2327e17b921415d7adb0be628e76d07c2ee1dc7666dfca6276"
+          },
+          "tray.stl": {
+            "bytes": 102684,
+            "sha256": "888747829e5e8af0d442c2d3364a53eab6c163fbb668548cdea64689a68c18e9"
+          }
+        },
+        "triangle_counts": {
+          "lid": 12,
+          "tray": 2052
+        }
+      }
+    },
+    "cleanup": {
+      "shutdown": {
+        "returncode": 0,
+        "stdout": "",
+        "stderr": ""
+      },
+      "delete": {
+        "returncode": 0,
+        "stdout": "",
+        "stderr": ""
+      }
+    }
+  },
+  "hashes_reverified_after_completion": true,
+  "runtime_unchanged": true,
+  "source_unchanged": true,
+  "fixture_unchanged": true,
+  "binary_unchanged": true,
+  "simulator_deleted": true,
+  "app_checks_run": false,
+  "arm64_checks_run": false,
+  "physical_device_execution": false,
+  "combined_app_guard_retained": true,
+  "limitations": [
+    "No combined app or physical-device acceptance",
+    "Simultaneous schematic models sharing one PROJECT are outside this regression",
+    "Unknown-field preservation is not established by the empty fixture project file"
+  ],
+  "next": "Combined app integration and arm64/default/single-engine checks; physical F5 remains separate"
+}

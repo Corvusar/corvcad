@@ -1,0 +1,33 @@
+CorvCAD patch series for KiCad 10.0.6 (caf7377), on top of 0003: drop unused libgit2 and
+curl includes from model files.
+
+Applied by integrations/kicad_core/fetch.py. No behaviour change.
+
+1. common/project.cpp includes <git2.h> but calls nothing from libgit2 (its git query goes
+   through KIGIT::PROJECT_GIT_UTILS).
+2. common/http_lib/http_lib_connection.cpp includes <curl/curl.h> but only uses
+   KICAD_CURL_EASY.
+diff --git a/common/http_lib/http_lib_connection.cpp b/common/http_lib/http_lib_connection.cpp
+index 01962d04..03d69661 100644
+--- a/common/http_lib/http_lib_connection.cpp
++++ b/common/http_lib/http_lib_connection.cpp
+@@ -28,7 +28,6 @@
+ #include <wx/base64.h>
+ 
+ #include <kicad_curl/kicad_curl_easy.h>
+-#include <curl/curl.h>
+ 
+ #include <http_lib/http_lib_connection.h>
+ #include <lib_id.h>
+diff --git a/common/project.cpp b/common/project.cpp
+index 730cddbd..765b0255 100644
+--- a/common/project.cpp
++++ b/common/project.cpp
+@@ -38,7 +38,6 @@
+ #include <lockfile.h>
+ #include <macros.h>
+ #include <git/project_git_utils.h>
+-#include <git2.h>
+ #include <project.h>
+ 
+ #include <footprint_library_adapter.h>

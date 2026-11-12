@@ -1,0 +1,278 @@
+Format: https://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
+Upstream-Name: qttools-everywhere-src
+Source: https://download.qt.io/official_releases/qt/*/submodules/
+
+Files: *
+Copyright: 2016-2021 The Qt Company Ltd.
+License: GPL-3 with Qt-1.0 exception
+
+Files: debian/*
+Copyright: 2021-2022 Patrick Franz <deltaone@debian.org>,
+           2021 Lu YaNing <dluyaning@gmail.com>
+License: LGPL-3 or GPL-2
+
+Files: src/*.qdoc
+       *.qdoc.sample
+       src/qdoc/doc/examples/samples.qdocinc
+Copyright: 2016-2021 The Qt Company Ltd.
+License: GFDL-NIV-1.3
+
+Files: src/designer/src/lib/uilib/*
+       src/assistant/help/*
+       src/assistant/qhelpgenerator/collectionconfigreader.*
+       src/assistant/qhelpgenerator/helpgenerator.*
+       src/assistant/qhelpgenerator/qhelpdatainterface*
+       src/assistant/qhelpgenerator/qhelpprojectdata*
+       src/assistant/shared/*
+       src/assistant/assistant/helpdocsettings*
+       src/qdoc/clangcodeparser.*
+       src/shared/deviceskin/*
+       src/shared/findwidget/*
+       src/shared/fontpanel/*
+       src/shared/qtgradienteditor/*
+       src/shared/qtpropertybrowser/*
+       src/shared/qttoolbardialog/*
+Copyright: 2016-2020 The Qt Company Ltd.
+License: LGPL-3 or GPL-2
+
+Files: src/linguist/lupdate/main.cpp
+       tests/auto/cmake/test_translation_api/myi18nobject.cpp
+       tests/auto/cmake/test_translation_api/some_dir/some_include.h
+       tests/auto/cmake/linguist/test_add_translation_macro/myi18nobject.cpp
+       tests/auto/cmake/linguist/test_add_translation_macro/some_dir/some_include.h
+       tests/auto/cmake/linguist/test_create_translation_macro/myi18nobject.cpp
+       tests/auto/cmake/linguist/test_create_translation_macro/some_dir/some_include.h
+       tests/auto/linguist/lupdate/testdata/good/tr_function_alias/main.cpp
+Copyright: 2016 Klarälvdalens Datakonsult AB, a KDAB Group company, info@kdab.com
+           2016-2021 The Qt Company Ltd.
+License: GPL-3 with Qt-1.0 exception
+
+Files: src/qtplugininfo/qtplugininfo.cpp
+Copyright: 2016 Klarälvdalens Datakonsult AB, a KDAB Group company, info@kdab.com
+           2016 Intel Corporation
+License: GPL-3 with Qt-1.0 exception
+
+Files: src/qdbus/qdbusviewer/logviewer.*
+Copyright: 2016 Tasuku Suzuki <stasuku@gmail.com>
+License: GPL-3 with Qt-1.0 exception
+
+Files: src/linguist/lupdate/python.cpp
+Copyright: 2002-2007 Detlev Offenbach <detlev@die-offenbachs.de>
+           2021 The Qt Company Ltd.
+License: GPL-3 with Qt-1.0 exception
+
+Files: tests/auto/cmake/test_uiplugin_module/my_designer_plugin.cpp
+       tests/auto/cmake/test_uiplugin_via_designer/my_designer_plugin.cpp
+Copyright: 2016 Stephen Kelly <steveire@gmail.com>
+License: GPL-3 with Qt-1.0 exception
+
+Files: src/qdoc/docbookgenerator.*
+       src/qdoc/xmlgenerator.*
+Copyright: 2019 Thibaut Cuvelier
+           2021 The Qt Company Ltd.
+License: GPL-3 with Qt-1.0 exception
+
+Files: tests/auto/linguist/lconvert/data/*.po
+Copyright: 2001, 2003 Free Software Foundation, Inc.
+           2002, 2003, 2004 Thomas Diehl, Stephan Johach, Thomas Reitelbach
+License: GPL-2+
+
+Files: examples/*
+       src/assistant/assistant/doc/snippets/*
+       src/assistant/help/doc/snippets/*
+       src/designer/src/designer/doc/snippets/*
+       src/linguist/linguist/doc/snippets/*
+       src/shared/corecon/*
+       tests/auto/qdoc/generatedoutput/testdata/qml/componentset/*.qml
+Copyright: 2016-2017 The Qt Company Ltd.
+License: BSD-3-clause
+
+Files: src/assistant/qlitehtml/src/3rdparty/litehtml/*
+Copyright: 2020-2022 Primate Labs Inc.
+License: BSD-3-clause
+
+Files: src/assistant/qlitehtml/src/3rdparty/litehtml/src/strtod.cpp
+Copyright: 1988-1993 The Regents of the University of California
+           1994 Sun Microsystems, Inc.
+License: NTP
+
+Files: src/linguist/Qt6LinguistToolsMacros.cmake
+Copyright: 2020 The Qt Company Ltd.
+           2005-2011 Kitware, Inc.
+License: BSD-3-clause
+
+Files: examples/*.qdoc
+       tests/auto/qdoc/generatedoutput/testdata/qml/componentset/examples.qdoc
+       tests/auto/qdoc/generatedoutput/testdata/outputfromqdocfiles/qdoctests-outputfromqdocfiles.qdoc
+       tests/auto/qdoc/generatedoutput/testdata/scopedenum/scopedenum.qdoc
+Copyright: 2016-2020 The Qt Company Ltd.
+License: GFDL-NIV-1.3
+
+Files: src/assistant/qlitehtml/src/3rdparty/litehtml/src/gumbo/*
+Copyright: 2010-2011 Google Inc. All Rights Reserved.
+License: Apache-2.0
+
+Files: tests/auto/qdoc/catch/catch.hpp
+Copyright: Copyright (c) 2022 Two Blue Cubes Ltd.
+License: Boost-1.0
+
+License: BSD-3-clause
+ You may use this file under the terms of the BSD license as follows:
+ .
+ "Redistribution and use in source and binary forms, with or without
+ modification, are permitted provided that the following conditions are
+ met:
+   * Redistributions of source code must retain the above copyright
+     notice, this list of conditions and the following disclaimer.
+   * Redistributions in binary form must reproduce the above copyright
+     notice, this list of conditions and the following disclaimer in
+     the documentation and/or other materials provided with the
+     distribution.
+   * Neither the name of The Qt Company Ltd and its Subsidiary(-ies) nor the
+     names of its contributors may be used to endorse or promote products
+     derived from this software without specific prior written permission.
+ .
+ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+ "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+ LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
+ A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
+ OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+ SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
+ LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+ DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
+ THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+ (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE."
+
+License: GPL-2
+ This program is free software; you can redistribute it and/or modify
+ it under the terms of the GNU General Public License version 2 as
+ published by the Free Software Foundation.
+ .
+ This program is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ GNU General Public License for more details.
+ .
+ On Debian systems, the complete text of the GNU General Public
+ License version 2 can be found in /usr/share/common-licenses/GPL-2.
+
+License: GPL-2+
+ This program is free software; you can redistribute it and/or modify
+ it under the terms of the GNU General Public License as published by
+ the Free Software Foundation; either version 2 of the License, or
+ (at your option) any later version.
+ .
+ This program is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ GNU General Public License for more details.
+ .
+ On Debian systems, the complete text of the GNU General Public
+ License version 2 can be found in /usr/share/common-licenses/GPL-2.
+
+License: GPL-3 with Qt-1.0 exception
+ This program is free software: you can redistribute it and/or modify
+ it under the terms of the GNU General Public License version 3 as
+ published by the Free Software Foundation.
+ .
+ This program is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ GNU General Public License for more details.
+ .
+ On Debian systems, the complete text of the GNU General Public
+ License version 3 can be found in /usr/share/common-licenses/GPL-3.
+ .
+ The Qt Company GPL Exception 1.0
+ Exception 1:
+ .
+ As a special exception you may create a larger work which contains the
+ output of this application and distribute that work under terms of your
+ choice, so long as the work is not otherwise derived from or based on
+ this application and so long as the work does not in itself generate
+ output that contains the output from this application in its original
+ or modified form.
+ .
+ Exception 2:
+ .
+ As a special exception, you have permission to combine this application
+ with Plugins licensed under the terms of your choice, to produce an
+ executable, and to copy and distribute the resulting executable under
+ the terms of your choice. However, the executable must be accompanied
+ by a prominent notice offering all users of the executable the entire
+ source code to this application, excluding the source code of the
+ independent modules, but including any changes you have made to this
+ application, under the terms of this license.
+
+License: LGPL-3
+ This program is free software: you can redistribute it and/or modify
+ it under the terms of the GNU Lesser General Public License version 3
+ as published by the Free Software Foundation.
+ .
+ This program is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ GNU Lesser General Public License for more details.
+ .
+ On Debian systems, the complete text of the GNU Lesser General Public
+ License version 3 can be found in /usr/share/common-licenses/LGPL-3.
+
+License: GFDL-NIV-1.3
+ Permission is granted to copy, distribute and/or modify this document
+ under the terms of the GNU Free Documentation License, Version 1.3
+ or any later version published by the Free Software Foundation;
+ with no Invariant Sections, no Front-Cover Texts, and no Back-Cover Texts.
+ .
+ On Debian systems, the complete text of the GNU Free Documentation
+ License version 1.3 can be found in /usr/share/common-licenses/GFDL-1.3.
+
+License: Apache-2.0
+  Licensed under the Apache License, Version 2.0 (the "License");
+ you may not use this file except in compliance with the License.
+ You may obtain a copy of the License at
+ .
+     http://www.apache.org/licenses/LICENSE-2.0
+ .
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and
+ limitations under the License.
+ .
+ On Debian systems, the complete text of the Apache License 2.0 can
+ be found in "/usr/share/common-licenses/Apache-2.0"
+
+License: Boost-1.0
+ Boost Software License - Version 1.0 - August 17th, 2003
+ .
+ Permission is hereby granted, free of charge, to any person or organization
+ obtaining a copy of the software and accompanying documentation covered by
+ this license (the "Software") to use, reproduce, display, distribute,
+ execute, and transmit the Software, and to prepare derivative works of the
+ Software, and to permit third-parties to whom the Software is furnished to
+ do so, all subject to the following:
+ .
+ The copyright notices in the Software and this entire statement, including
+ the above license grant, this restriction and the following disclaimer,
+ must be included in all copies of the Software, in whole or in part, and
+ all derivative works of the Software, unless such copies or derivative
+ works are solely in the form of machine-executable object code generated by
+ a source language processor.
+ .
+ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ FITNESS FOR A PARTICULAR PURPOSE, TITLE AND NON-INFRINGEMENT. IN NO EVENT
+ SHALL THE COPYRIGHT HOLDERS OR ANYONE DISTRIBUTING THE SOFTWARE BE LIABLE
+ FOR ANY DAMAGES OR OTHER LIABILITY, WHETHER IN CONTRACT, TORT OR OTHERWISE,
+ ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+ DEALINGS IN THE SOFTWARE.
+
+License: NTP
+ Permission to use, copy, modify, and distribute this
+ software and its documentation for any purpose and without
+ fee is hereby granted, provided that the above copyright
+ notice appear in all copies.  The University of California
+ makes no representations about the suitability of this
+ software for any purpose.  It is provided "as is" without
+ express or implied warranty.

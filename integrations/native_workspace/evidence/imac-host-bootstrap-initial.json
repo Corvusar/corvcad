@@ -1,0 +1,33 @@
+{
+  "schema": 1,
+  "date": "2026-10-28",
+  "target": {
+    "sdk": "iphonesimulator",
+    "architecture": "x86_64",
+    "triplet": "x64-ios-simulator",
+    "host_triplet": "x64-osx"
+  },
+  "failed_port": "protobuf:x64-osx",
+  "source_revision": "73a25ef",
+  "physical_device_validation": false,
+  "configuration": "Debug",
+  "status": "failed host-tool bootstrap; no accepted target dependency receipt",
+  "combined_native_accepted": false,
+  "initial_build_log_sha256": "66c46d6d43ce5a4e2cf2faf20307647a061b44d051f9c7493c4c3eb65822072d",
+  "correction": {
+    "failed_cache_preserved": true,
+    "retry": "Dispatched separately; this receipt does not establish success",
+    "test": "Real CMake-generated command regression verifies imported -I order for both host overlays",
+    "scope": "Host-only triplet overlays set CMAKE_NO_SYSTEM_FROM_IMPORTED=ON; target iOS recipes unchanged",
+    "retry_root": "build/native-workspace/deps-host-isolated",
+    "source_revision": "c8fcebb"
+  },
+  "cause": "Imported dependency headers were emitted as -isystem, behind Apple Clang implicit Homebrew -I headers",
+  "vcpkg_commit": "9e593bb18ea69cc5095e012465dcd675a822ed0d",
+  "observed": {
+    "pinned_library_namespace": "lts_20260107",
+    "header_inline_namespace": "lts_20260817",
+    "error": "Undefined Abseil symbols while linking host protoc tools",
+    "headers": "/usr/local/include/absl"
+  }
+}

@@ -1,0 +1,1892 @@
+CorvCAD patch series for KiCad 10.0.6 (caf7377): keep the schematic model free of editor code.
+
+Applied by integrations/kicad_core/fetch.py. Each change keeps the desktop editor working
+(the full probe still links and matches kicad-cli); split per item before sending upstream.
+
+1. Schematic items: check the frame type with IsType( FRAME_SCH ) and read the current sheet
+   from the item's own SCHEMATIC instead of casting to SCH_EDIT_FRAME (bus entry, junction,
+   line, label, pin, symbol, sheet message panels).
+2. SCHEMATIC_HOLDER gains HeldSchematic(), AddItemToSelection(), RemoveItemFromSelection()
+   and RecalculateConnectivity(); SCHEMATIC::CleanUp(), EESCHEMA_HELPERS::LoadSchematic()
+   and ERC_TESTER::RunTests() use them instead of SCH_SELECTION_TOOL / SCH_EDIT_FRAME.
+3. LoadSchematic() no longer creates (and leaks) a frame-less TOOL_MANAGER; SCH_COMMIT
+   accepts a null tool manager.
+4. Hypertext: items call the virtual SCH_BASE_FRAME::HypertextCommand(), and
+   SCH_NAVIGATE_TOOL::g_BackLink is an inline header constant.
+5. Editor-only code moves next to its editors: ERC_TREE_MODEL::GetValue() to dialog_erc.cpp,
+   SCH_FIELD::OnScintillaCharAdded() to dialog_field_properties.cpp,
+   SCH_TEXT::ShowSyntaxHelp() to dialog_text_properties.cpp, STATUSBAR_WARNING_REPORTER to
+   widgets/kistatusbar.cpp. SCH_PLOTTER loses its SCH_EDIT_FRAME constructor.
+6. Field validation rules move to common/field_validation.cpp (no wx validator), used by
+   FIELD_VALIDATOR and SCH_SYMBOL::SetRefProp() (which now logs instead of a message box).
+7. LEGACY_SYMBOL_LIBS::LoadAllLibraries() takes an optional PROGRESS_REPORTER instead of
+   opening APP_PROGRESS_DIALOG; PROJECT_SCH::LegacySchLibs() reports load errors via wxLog.
+8. SCH_IO_DATABASE creates its settings dialog through a factory the eeschema module sets.
+diff --git a/common/CMakeLists.txt b/common/CMakeLists.txt
+index 64054c1e..2c431548 100644
+--- a/common/CMakeLists.txt
++++ b/common/CMakeLists.txt
+@@ -799,6 +799,7 @@ set( COMMON_SRCS
+     textentry_tricks.cpp
+     undo_redo_container.cpp
+     validators.cpp
++    field_validation.cpp
+     drawing_sheet/ds_painter.cpp
+     view/wx_view_controls.cpp
+     )
+diff --git a/common/field_validation.cpp b/common/field_validation.cpp
+new file mode 100644
+index 00000000..1df4c690
+--- /dev/null
++++ b/common/field_validation.cpp
+@@ -0,0 +1,161 @@
++/*
++ * This program source code file is part of KiCad, a free EDA CAD application.
++ *
++ * Copyright (C) 2013 Wayne Stambaugh <stambaughw@gmail.com>
++ * Copyright The KiCad Developers, see AUTHORS.txt for contributors.
++ * Copyright (C) 2018 CERN
++ *
++ * This program is free software; you can redistribute it and/or
++ * modify it under the terms of the GNU General Public License
++ * as published by the Free Software Foundation; either version 2
++ * of the License, or (at your option) any later version.
++ *
++ * This program is distributed in the hope that it will be useful,
++ * but WITHOUT ANY WARRANTY; without even the implied warranty of
++ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
++ * GNU General Public License for more details.
++ *
++ * You should have received a copy of the GNU General Public License
++ * along with this program; if not, you may find one here:
++ * http://www.gnu.org/licenses/old-licenses/gpl-2.0.html
++ * or you may search the http://www.gnu.org website for the version 2 license,
++ * or you may write to the Free Software Foundation, Inc.,
++ * 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA
++ */
++
++#include <field_validation.h>
++#include <refdes_utils.h>
++
++#include <wx/arrstr.h>
++#include <wx/intl.h>
++
++
++wxString GetFieldCharExcludes( FIELD_T aFieldId )
++{
++    // Fields cannot contain carriage returns, line feeds, or tabs.
++    wxString excludes( wxT( "\r\n\t" ) );
++
++    // The reference and sheet name fields cannot contain spaces.
++    if( aFieldId == FIELD_T::REFERENCE )
++        excludes += wxT( " " );
++    else if( aFieldId == FIELD_T::SHEET_NAME )
++        excludes += wxT( "/" );
++
++    return excludes;
++}
++
++
++bool IsFieldValueRequired( FIELD_T aFieldId )
++{
++    // The reference, sheetname and sheetfilename fields cannot be empty.
++    return aFieldId == FIELD_T::REFERENCE || aFieldId == FIELD_T::SHEET_NAME
++           || aFieldId == FIELD_T::SHEET_FILENAME;
++}
++
++
++wxString GetFieldValidationErrorMessage( FIELD_T aFieldId, const wxString& aValue )
++{
++    wxString msg;
++
++    if( IsFieldValueRequired( aFieldId ) && aValue.empty() )
++    {
++        switch( aFieldId )
++        {
++        case FIELD_T::SHEET_NAME:     msg = _( "A sheet must have a name." );               break;
++        case FIELD_T::SHEET_FILENAME: msg = _( "A sheet must have a file specified." );     break;
++        default:                      msg = _( "The value of the field cannot be empty." ); break;
++        }
++    }
++
++    if( msg.empty() )
++    {
++        wxArrayString badCharsFound;
++
++        for( const wxUniChar excludeChar : GetFieldCharExcludes( aFieldId ) )
++        {
++            if( aValue.Find( excludeChar ) != wxNOT_FOUND )
++            {
++                if( excludeChar == '\r' )
++                    badCharsFound.Add( _( "carriage return" ) );
++                else if( excludeChar == '\n' )
++                    badCharsFound.Add( _( "line feed" ) );
++                else if( excludeChar == '\t' )
++                    badCharsFound.Add( _( "tab" ) );
++                else if( excludeChar == ' ' )
++                    badCharsFound.Add( _( "space" ) );
++                else
++                    badCharsFound.Add( wxString::Format( wxT( "'%c'" ), excludeChar ) );
++            }
++        }
++
++        if( !badCharsFound.IsEmpty() )
++        {
++            wxString badChars;
++
++            for( size_t i = 0; i < badCharsFound.GetCount(); i++ )
++            {
++                if( !badChars.IsEmpty() )
++                {
++                    if( badCharsFound.GetCount() == 2 )
++                    {
++                        badChars += _( " or " );
++                    }
++                    else
++                    {
++                        if( i < badCharsFound.GetCount() - 2 )
++                            badChars += _( ", or " );
++                        else
++                            badChars += wxT( ", " );
++                    }
++                }
++
++                badChars += badCharsFound.Item( i );
++            }
++
++            switch( aFieldId )
++            {
++            case FIELD_T::REFERENCE:
++                msg.Printf( _( "The reference designator cannot contain %s character(s)." ), badChars );
++                break;
++
++            case FIELD_T::VALUE:
++                msg.Printf( _( "The value field cannot contain %s character(s)." ), badChars );
++                break;
++
++            case FIELD_T::FOOTPRINT:
++                msg.Printf( _( "The footprint field cannot contain %s character(s)." ), badChars );
++                break;
++
++            case FIELD_T::DATASHEET:
++                msg.Printf( _( "The datasheet field cannot contain %s character(s)." ), badChars );
++                break;
++
++            case FIELD_T::SHEET_NAME:
++                msg.Printf( _( "The sheet name cannot contain %s character(s)." ), badChars );
++                break;
++
++            case FIELD_T::SHEET_FILENAME:
++                msg.Printf( _( "The sheet filename cannot contain %s character(s)." ), badChars );
++                break;
++
++            default:
++                msg.Printf( _( "The field cannot contain %s character(s)." ), badChars );
++                break;
++            };
++        }
++    }
++
++    if( msg.empty() )
++    {
++        if( aFieldId == FIELD_T::REFERENCE && aValue.Contains( wxT( "${" ) ) )
++        {
++            msg.Printf( _( "The reference designator cannot contain text variable references" ) );
++        }
++        else if( aFieldId == FIELD_T::REFERENCE && UTIL::GetRefDesPrefix( aValue ).IsEmpty() )
++        {
++            msg.Printf( _( "References must start with a letter." ) );
++        }
++    }
++
++    return msg;
++}
+diff --git a/common/reporter.cpp b/common/reporter.cpp
+index c39e7970..e5f8f678 100644
+--- a/common/reporter.cpp
++++ b/common/reporter.cpp
+@@ -30,14 +30,12 @@
+ #include <reporter.h>
+ #include <font/fontconfig.h>
+ #include <string_utils.h>
+-#include <widgets/kistatusbar.h>
+ #include <widgets/wx_infobar.h>
+ #include <wx/crt.h>
+ #include <wx/log.h>
+ #include <wx/textctrl.h>
+ #include <wx/statusbr.h>
+ #include <wx/tokenzr.h>
+-#include <wx/weakref.h>
+ 
+ 
+ /**
+@@ -50,30 +48,6 @@ static const wxChar traceReporter[] = wxT( "KICAD_REPORTER" );
+ static std::mutex g_logReporterMutex;
+ 
+ 
+-class STATUSBAR_WARNING_REPORTER_IMPL
+-{
+-public:
+-    STATUSBAR_WARNING_REPORTER_IMPL( KISTATUSBAR* aStatusBar, const wxString& aSource ) :
+-            m_statusBar( aStatusBar ),
+-            m_source( aSource )
+-    {
+-    }
+-
+-    KISTATUSBAR* GetStatusBar() const
+-    {
+-        KISTATUSBAR* statusBar = m_statusBar.get();
+-
+-        if( statusBar && !statusBar->IsBeingDeleted() )
+-            return statusBar;
+-
+-        return nullptr;
+-    }
+-
+-    wxWeakRef<KISTATUSBAR> m_statusBar;
+-    wxString               m_source;
+-};
+-
+-
+ REPORTER& REPORTER::Report( const char* aText, SEVERITY aSeverity )
+ {
+     Report( From_UTF8( aText ) );
+@@ -378,47 +352,3 @@ REPORTER& STATUSBAR_REPORTER::Report( const wxString& aText, SEVERITY aSeverity
+ 
+     return *this;
+ }
+-
+-
+-STATUSBAR_WARNING_REPORTER::STATUSBAR_WARNING_REPORTER( KISTATUSBAR* aStatusBar,
+-                                                        const wxString& aSource ) :
+-        m_impl( std::make_shared<STATUSBAR_WARNING_REPORTER_IMPL>( aStatusBar, aSource ) )
+-{
+-}
+-
+-
+-STATUSBAR_WARNING_REPORTER::~STATUSBAR_WARNING_REPORTER() = default;
+-
+-
+-REPORTER& STATUSBAR_WARNING_REPORTER::Report( const wxString& aText, SEVERITY aSeverity )
+-{
+-    REPORTER::Report( aText, aSeverity );
+-
+-    KISTATUSBAR* statusBar = m_impl ? m_impl->GetStatusBar() : nullptr;
+-
+-    if( !statusBar || aText.IsEmpty() )
+-        return *this;
+-
+-    std::vector<LOAD_MESSAGE> messages;
+-    wxStringTokenizer tokenizer( aText, wxS( "\n" ), wxTOKEN_STRTOK );
+-    SEVERITY severity = aSeverity == RPT_SEVERITY_UNDEFINED ? RPT_SEVERITY_WARNING : aSeverity;
+-
+-    while( tokenizer.HasMoreTokens() )
+-    {
+-        LOAD_MESSAGE message;
+-        message.message = tokenizer.GetNextToken();
+-        message.severity = severity;
+-        messages.emplace_back( std::move( message ) );
+-    }
+-
+-    if( messages.empty() )
+-    {
+-        LOAD_MESSAGE message;
+-        message.message = aText;
+-        message.severity = severity;
+-        messages.emplace_back( std::move( message ) );
+-    }
+-
+-    statusBar->AddWarningMessages( m_impl->m_source, messages );
+-    return *this;
+-}
+diff --git a/common/validators.cpp b/common/validators.cpp
+index eb0adad1..3082e8b6 100644
+--- a/common/validators.cpp
++++ b/common/validators.cpp
+@@ -237,31 +237,13 @@ FIELD_VALIDATOR::FIELD_VALIDATOR( FIELD_T aFieldId, wxString* aValue ) :
+         wxTextValidator( wxFILTER_EXCLUDE_CHAR_LIST, aValue ),
+         m_fieldId( aFieldId )
+ {
+-    // Fields cannot contain carriage returns, line feeds, or tabs.
+-    wxString excludes( wxT( "\r\n\t" ) );
+-
+-    // The reference and sheet name fields cannot contain spaces.
+-    if( aFieldId == FIELD_T::REFERENCE )
+-    {
+-        excludes += wxT( " " );
+-    }
+-    else if( m_fieldId == FIELD_T::SHEET_NAME )
+-    {
+-        excludes += wxT( "/" );
+-    }
+-
+     long style = GetStyle();
+ 
+-    // The reference, sheetname and sheetfilename fields cannot be empty.
+-    if( aFieldId == FIELD_T::REFERENCE
+-        || aFieldId == FIELD_T::SHEET_NAME
+-        || aFieldId == FIELD_T::SHEET_FILENAME )
+-    {
++    if( IsFieldValueRequired( aFieldId ) )
+         style |= wxFILTER_EMPTY;
+-    }
+ 
+     SetStyle( style );
+-    SetCharExcludes( excludes );
++    SetCharExcludes( GetFieldCharExcludes( aFieldId ) );
+ }
+ 
+ 
+@@ -289,115 +271,6 @@ bool FIELD_VALIDATOR::Validate( wxWindow* aParent )
+ }
+ 
+ 
+-wxString GetFieldValidationErrorMessage( FIELD_T aFieldId, const wxString& aValue )
+-{
+-    FIELD_VALIDATOR validator( aFieldId );
+-    wxString        msg;
+-
+-    if( validator.HasFlag( wxFILTER_EMPTY ) && aValue.empty() )
+-    {
+-        switch( aFieldId )
+-        {
+-        case FIELD_T::SHEET_NAME:     msg = _( "A sheet must have a name." );               break;
+-        case FIELD_T::SHEET_FILENAME: msg = _( "A sheet must have a file specified." );     break;
+-        default:                      msg = _( "The value of the field cannot be empty." ); break;
+-        }
+-    }
+-
+-    if( msg.empty() && validator.HasFlag( wxFILTER_EXCLUDE_CHAR_LIST ) )
+-    {
+-        wxArrayString badCharsFound;
+-
+-        for( const wxUniCharRef& excludeChar : validator.GetCharExcludes() )
+-        {
+-            if( aValue.Find( excludeChar ) != wxNOT_FOUND )
+-            {
+-                if( excludeChar == '\r' )
+-                    badCharsFound.Add( _( "carriage return" ) );
+-                else if( excludeChar == '\n' )
+-                    badCharsFound.Add( _( "line feed" ) );
+-                else if( excludeChar == '\t' )
+-                    badCharsFound.Add( _( "tab" ) );
+-                else if( excludeChar == ' ' )
+-                    badCharsFound.Add( _( "space" ) );
+-                else
+-                    badCharsFound.Add( wxString::Format( wxT( "'%c'" ), excludeChar ) );
+-            }
+-        }
+-
+-        if( !badCharsFound.IsEmpty() )
+-        {
+-            wxString badChars;
+-
+-            for( size_t i = 0; i < badCharsFound.GetCount(); i++ )
+-            {
+-                if( !badChars.IsEmpty() )
+-                {
+-                    if( badCharsFound.GetCount() == 2 )
+-                    {
+-                        badChars += _( " or " );
+-                    }
+-                    else
+-                    {
+-                        if( i < badCharsFound.GetCount() - 2 )
+-                            badChars += _( ", or " );
+-                        else
+-                            badChars += wxT( ", " );
+-                    }
+-                }
+-
+-                badChars += badCharsFound.Item( i );
+-            }
+-
+-            switch( aFieldId )
+-            {
+-            case FIELD_T::REFERENCE:
+-                msg.Printf( _( "The reference designator cannot contain %s character(s)." ), badChars );
+-                break;
+-
+-            case FIELD_T::VALUE:
+-                msg.Printf( _( "The value field cannot contain %s character(s)." ), badChars );
+-                break;
+-
+-            case FIELD_T::FOOTPRINT:
+-                msg.Printf( _( "The footprint field cannot contain %s character(s)." ), badChars );
+-                break;
+-
+-            case FIELD_T::DATASHEET:
+-                msg.Printf( _( "The datasheet field cannot contain %s character(s)." ), badChars );
+-                break;
+-
+-            case FIELD_T::SHEET_NAME:
+-                msg.Printf( _( "The sheet name cannot contain %s character(s)." ), badChars );
+-                break;
+-
+-            case FIELD_T::SHEET_FILENAME:
+-                msg.Printf( _( "The sheet filename cannot contain %s character(s)." ), badChars );
+-                break;
+-
+-            default:
+-                msg.Printf( _( "The field cannot contain %s character(s)." ), badChars );
+-                break;
+-            };
+-        }
+-    }
+-
+-    if( msg.empty() )
+-    {
+-        if( aFieldId == FIELD_T::REFERENCE && aValue.Contains( wxT( "${" ) ) )
+-        {
+-            msg.Printf( _( "The reference designator cannot contain text variable references" ) );
+-        }
+-        else if( aFieldId == FIELD_T::REFERENCE && UTIL::GetRefDesPrefix( aValue ).IsEmpty() )
+-        {
+-            msg.Printf( _( "References must start with a letter." ) );
+-        }
+-    }
+-
+-    return msg;
+-}
+-
+-
+ bool FIELD_VALIDATOR::DoValidate( const wxString& aValue, wxWindow* aParent )
+ {
+     wxString msg = GetFieldValidationErrorMessage( m_fieldId, aValue );
+diff --git a/common/widgets/kistatusbar.cpp b/common/widgets/kistatusbar.cpp
+index 0269f006..066bd290 100644
+--- a/common/widgets/kistatusbar.cpp
++++ b/common/widgets/kistatusbar.cpp
+@@ -27,6 +27,7 @@
+ #include <wx/gauge.h>
+ #include <wx/stattext.h>
+ #include <wx/tokenzr.h>
++#include <wx/weakref.h>
+ #include <fmt/format.h>
+ #include <array>
+ #include <ranges>
+@@ -651,3 +652,73 @@ void KISTATUSBAR::SetStatusWidths( int aSize, const int* aWidths )
+     for( int i = 0; ( i < aSize ) && ( i < static_cast<int>( m_fieldWidths.size() ) ); i++ )
+         m_fieldWidths[i] = *( aWidths + i );
+ }
++
++
++// STATUSBAR_WARNING_REPORTER (reporter.h) lives beside the status bar it writes to, so
++// reporter.cpp stays free of editor widgets.
++class STATUSBAR_WARNING_REPORTER_IMPL
++{
++public:
++    STATUSBAR_WARNING_REPORTER_IMPL( KISTATUSBAR* aStatusBar, const wxString& aSource ) :
++            m_statusBar( aStatusBar ),
++            m_source( aSource )
++    {
++    }
++
++    KISTATUSBAR* GetStatusBar() const
++    {
++        KISTATUSBAR* statusBar = m_statusBar.get();
++
++        if( statusBar && !statusBar->IsBeingDeleted() )
++            return statusBar;
++
++        return nullptr;
++    }
++
++    wxWeakRef<KISTATUSBAR> m_statusBar;
++    wxString               m_source;
++};
++
++
++STATUSBAR_WARNING_REPORTER::STATUSBAR_WARNING_REPORTER( KISTATUSBAR* aStatusBar,
++                                                        const wxString& aSource ) :
++        m_impl( std::make_shared<STATUSBAR_WARNING_REPORTER_IMPL>( aStatusBar, aSource ) )
++{
++}
++
++
++STATUSBAR_WARNING_REPORTER::~STATUSBAR_WARNING_REPORTER() = default;
++
++
++REPORTER& STATUSBAR_WARNING_REPORTER::Report( const wxString& aText, SEVERITY aSeverity )
++{
++    REPORTER::Report( aText, aSeverity );
++
++    KISTATUSBAR* statusBar = m_impl ? m_impl->GetStatusBar() : nullptr;
++
++    if( !statusBar || aText.IsEmpty() )
++        return *this;
++
++    std::vector<LOAD_MESSAGE> messages;
++    wxStringTokenizer tokenizer( aText, wxS( "\n" ), wxTOKEN_STRTOK );
++    SEVERITY severity = aSeverity == RPT_SEVERITY_UNDEFINED ? RPT_SEVERITY_WARNING : aSeverity;
++
++    while( tokenizer.HasMoreTokens() )
++    {
++        LOAD_MESSAGE message;
++        message.message = tokenizer.GetNextToken();
++        message.severity = severity;
++        messages.emplace_back( std::move( message ) );
++    }
++
++    if( messages.empty() )
++    {
++        LOAD_MESSAGE message;
++        message.message = aText;
++        message.severity = severity;
++        messages.emplace_back( std::move( message ) );
++    }
++
++    statusBar->AddWarningMessages( m_impl->m_source, messages );
++    return *this;
++}
+diff --git a/eeschema/dialogs/dialog_erc.cpp b/eeschema/dialogs/dialog_erc.cpp
+index 6150f678..8482bbd5 100644
+--- a/eeschema/dialogs/dialog_erc.cpp
++++ b/eeschema/dialogs/dialog_erc.cpp
+@@ -81,6 +81,116 @@ static bool       g_lastERCRun = false;
+ static std::vector<std::pair<wxString, int>> g_lastERCIgnored;
+ 
+ 
++/**
++ * Override of RC_TREE_MODEL::GetValue which returns item descriptions in a specific
++ * SCH_SHEET_PATH context, if a context is available on the given SCH_MARKER or ERC_ITEM
++ * targets.
++ */
++void ERC_TREE_MODEL::GetValue( wxVariant& aVariant, wxDataViewItem const& aItem,
++                               unsigned int aCol ) const
++{
++    SCH_EDIT_FRAME*           schEditFrame = static_cast<SCH_EDIT_FRAME*>( m_editFrame );
++    const RC_TREE_NODE*       node = ToNode( aItem );
++    std::shared_ptr<ERC_ITEM> ercItem = std::static_pointer_cast<ERC_ITEM>( node->m_RcItem );
++    MARKER_BASE*              marker = ercItem->GetParent();
++    wxString                  msg;
++
++    auto getItemDesc =
++            [&]( EDA_ITEM* aCurrItem, SCH_SHEET_PATH& aSheet )
++            {
++                SCH_SHEET_PATH curSheet = schEditFrame->GetCurrentSheet();
++                wxString       desc;
++
++                if( aSheet != curSheet )
++                {
++                    // Use the schematic-level setter to avoid the view side effects of
++                    // SCH_EDIT_FRAME::SetCurrentSheet, which recreates the drawing sheet
++                    // proxy with potentially stale page number state.
++                    schEditFrame->Schematic().SetCurrentSheet( aSheet );
++                    aSheet.UpdateAllScreenReferences();
++                    {
++                        desc = aCurrItem->GetItemDescription( m_editFrame, true );
++                    }
++                    schEditFrame->Schematic().SetCurrentSheet( curSheet );
++                    curSheet.UpdateAllScreenReferences();
++                }
++                else
++                {
++                    desc = aCurrItem->GetItemDescription( m_editFrame, true );
++                }
++
++                return desc;
++            };
++
++    switch( node->m_Type )
++    {
++    case RC_TREE_NODE::MARKER:
++        if( marker )
++        {
++            SEVERITY severity = ercItem->GetParent()->GetSeverity();
++
++            if( severity == RPT_SEVERITY_EXCLUSION )
++            {
++                if( schEditFrame->GetSeverity( ercItem->GetErrorCode() ) == RPT_SEVERITY_WARNING )
++                    msg = _( "Excluded warning: " );
++                else
++                    msg = _( "Excluded error: " );
++            }
++            else if( severity == RPT_SEVERITY_WARNING )
++            {
++                msg = _( "Warning: " );
++            }
++            else
++            {
++                msg = _( "Error: " );
++            }
++        }
++
++        msg += ercItem->GetErrorMessage( true );
++        break;
++
++    case RC_TREE_NODE::MAIN_ITEM:
++        if( marker && marker->GetMarkerType() == MARKER_BASE::MARKER_DRAWING_SHEET )
++        {
++            msg = _( "Drawing Sheet" );
++        }
++        else
++        {
++            msg = getItemDesc( schEditFrame->ResolveItem( ercItem->GetMainItemID() ),
++                               ercItem->MainItemHasSheetPath() ? ercItem->GetMainItemSheetPath()
++                                                               : schEditFrame->GetCurrentSheet() );
++        }
++
++        break;
++
++    case RC_TREE_NODE::AUX_ITEM:
++        msg = getItemDesc( schEditFrame->ResolveItem( ercItem->GetAuxItemID() ),
++                           ercItem->AuxItemHasSheetPath() ? ercItem->GetAuxItemSheetPath()
++                                                          : schEditFrame->GetCurrentSheet() );
++        break;
++
++    case RC_TREE_NODE::AUX_ITEM2:
++        msg = getItemDesc( schEditFrame->ResolveItem( ercItem->GetAuxItem2ID() ),
++                           schEditFrame->GetCurrentSheet() );
++        break;
++
++    case RC_TREE_NODE::AUX_ITEM3:
++        msg = getItemDesc( schEditFrame->ResolveItem( ercItem->GetAuxItem3ID() ),
++                           schEditFrame->GetCurrentSheet() );
++        break;
++
++    case RC_TREE_NODE::COMMENT:
++        if( marker )
++            msg = marker->GetComment();
++
++        break;
++    }
++
++    msg.Replace( wxS( "\n" ), wxS( " " ) );
++    aVariant = msg;
++}
++
++
+ DIALOG_ERC::DIALOG_ERC( SCH_EDIT_FRAME* parent ) :
+         DIALOG_ERC_BASE( parent ),
+         PROGRESS_REPORTER_BASE( 1 ),
+diff --git a/eeschema/dialogs/dialog_field_properties.cpp b/eeschema/dialogs/dialog_field_properties.cpp
+index 82cd8d97..229f12c5 100644
+--- a/eeschema/dialogs/dialog_field_properties.cpp
++++ b/eeschema/dialogs/dialog_field_properties.cpp
+@@ -44,6 +44,12 @@
+ #include <dialog_field_properties.h>
+ #include <sch_text.h>
+ #include <scintilla_tricks.h>
++#include <reporter.h>
++#include <sch_label.h>
++#include <sch_reference_list.h>
++#include <sch_sheet.h>
++#include <sim/sim_lib_mgr.h>
++#include <wx/stc/stc.h>
+ #include <wildcards_and_files_ext.h>
+ 
+ 
+@@ -765,3 +771,136 @@ void DIALOG_FIELD_PROPERTIES::UpdateField( SCH_COMMIT* aCommit, SCH_FIELD* aFiel
+     if( editFrame && needUpdateHierNav )
+         editFrame->UpdateLabelsHierarchyNavigator();
+ }
++
++
++// Text variable autocompletion for field editors. Defined beside its editors so the
++// schematic model does not link Scintilla.
++void SCH_FIELD::OnScintillaCharAdded( SCINTILLA_TRICKS* aScintillaTricks, wxStyledTextEvent& aEvent ) const
++{
++    SCH_ITEM*  parent = dynamic_cast<SCH_ITEM*>( GetParent() );
++    SCHEMATIC* schematic = parent ? parent->Schematic() : nullptr;
++
++    if( !schematic )
++        return;
++
++    wxStyledTextCtrl* scintilla = aScintillaTricks->Scintilla();
++    int               key = aEvent.GetKey();
++
++    wxArrayString autocompleteTokens;
++    int           pos = scintilla->GetCurrentPos();
++    int           start = scintilla->WordStartPosition( pos, true );
++    wxString      partial;
++
++    // Multi-line fields are not allowed. So remove '\n' if entered.
++    if( key == '\n' )
++    {
++        wxString text = scintilla->GetText();
++        int      currpos = scintilla->GetCurrentPos();
++        text.Replace( wxS( "\n" ), wxS( "" ) );
++        scintilla->SetText( text );
++        scintilla->GotoPos( currpos - 1 );
++        return;
++    }
++
++    auto textVarRef =
++            [&]( int pt )
++            {
++                return pt >= 2 && scintilla->GetCharAt( pt - 2 ) == '$' && scintilla->GetCharAt( pt - 1 ) == '{';
++            };
++
++    // Check for cross-reference
++    if( start > 1 && scintilla->GetCharAt( start - 1 ) == ':' )
++    {
++        int refStart = scintilla->WordStartPosition( start - 1, true );
++
++        if( textVarRef( refStart ) )
++        {
++            partial = scintilla->GetRange( start, pos );
++
++            wxString ref = scintilla->GetRange( refStart, start - 1 );
++
++            if( ref == wxS( "OP" ) )
++            {
++                // SPICE operating points use ':' syntax for ports
++                if( SCH_SYMBOL* symbol = dynamic_cast<SCH_SYMBOL*>( parent ) )
++                {
++                    NULL_REPORTER   devnull;
++                    SCH_SHEET_PATH& sheet = schematic->CurrentSheet();
++                    wxString        variant = schematic->GetCurrentVariant();
++                    SIM_LIB_MGR     mgr( &schematic->Project() );
++
++                    std::vector<EMBEDDED_FILES*> embeddedFilesStack;
++                    embeddedFilesStack.push_back( schematic->GetEmbeddedFiles() );
++
++                    if( EMBEDDED_FILES* symbolEmbeddedFiles = symbol->GetEmbeddedFiles() )
++                    {
++                        embeddedFilesStack.push_back( symbolEmbeddedFiles );
++                        symbol->GetLibSymbolRef()->AppendParentEmbeddedFiles( embeddedFilesStack );
++                    }
++
++                    mgr.SetFilesStack( std::move( embeddedFilesStack ) );
++
++                    SIM_MODEL& model = mgr.CreateModel( &sheet, *symbol, true, 0, variant, devnull ).model;
++
++                    for( wxString pin : model.GetPinNames() )
++                    {
++                        if( pin.StartsWith( '<' ) && pin.EndsWith( '>' ) )
++                            autocompleteTokens.push_back( pin.Mid( 1, pin.Length() - 2 ) );
++                        else
++                            autocompleteTokens.push_back( pin );
++                    }
++
++                    // add the synthetic port for power measurements
++                    autocompleteTokens.push_back( wxT( "power" ) );
++                }
++            }
++            else
++            {
++                SCH_REFERENCE_LIST refs;
++                SCH_SYMBOL*        refSymbol = nullptr;
++
++                schematic->Hierarchy().GetSymbols( refs, SYMBOL_FILTER_ALL );
++
++                for( size_t jj = 0; jj < refs.GetCount(); jj++ )
++                {
++                    if( refs[jj].GetSymbol()->GetRef( &refs[jj].GetSheetPath(), true ) == ref )
++                    {
++                        refSymbol = refs[jj].GetSymbol();
++                        break;
++                    }
++                }
++
++                if( refSymbol )
++                    refSymbol->GetContextualTextVars( &autocompleteTokens );
++            }
++        }
++    }
++    else if( textVarRef( start ) )
++    {
++        partial = scintilla->GetTextRange( start, pos );
++
++        SCH_SYMBOL*     symbol = dynamic_cast<SCH_SYMBOL*>( parent );
++        SCH_SHEET*      sheet = dynamic_cast<SCH_SHEET*>( parent );
++        SCH_LABEL_BASE* label = dynamic_cast<SCH_LABEL_BASE*>( parent );
++
++        if( symbol )
++        {
++            symbol->GetContextualTextVars( &autocompleteTokens );
++
++            if( schematic->CurrentSheet().Last() )
++                schematic->CurrentSheet().Last()->GetContextualTextVars( &autocompleteTokens );
++        }
++
++        if( sheet )
++            sheet->GetContextualTextVars( &autocompleteTokens );
++
++        if( label )
++            label->GetContextualTextVars( &autocompleteTokens );
++
++        for( std::pair<wxString, wxString> entry : schematic->Project().GetTextVars() )
++            autocompleteTokens.push_back( entry.first );
++    }
++
++    aScintillaTricks->DoAutocomplete( partial, autocompleteTokens );
++    scintilla->SetFocus();
++}
+diff --git a/eeschema/dialogs/dialog_plot_schematic.cpp b/eeschema/dialogs/dialog_plot_schematic.cpp
+index 9c2b7b7c..b73ae246 100644
+--- a/eeschema/dialogs/dialog_plot_schematic.cpp
++++ b/eeschema/dialogs/dialog_plot_schematic.cpp
+@@ -353,7 +353,7 @@ void DIALOG_PLOT_SCHEMATIC::plotSchematic( bool aPlotAll )
+ 
+     getPlotOptions( &renderSettings );
+ 
+-    std::unique_ptr<SCH_PLOTTER> schPlotter = std::make_unique<SCH_PLOTTER>( m_editFrame );
++    std::unique_ptr<SCH_PLOTTER> schPlotter = std::make_unique<SCH_PLOTTER>( &m_editFrame->Schematic() );
+ 
+     SCH_PLOT_OPTS plotOpts;
+     plotOpts.m_plotDrawingSheet = m_plotDrawingSheet->GetValue();
+diff --git a/eeschema/dialogs/dialog_text_properties.cpp b/eeschema/dialogs/dialog_text_properties.cpp
+index b8dc44c3..05202d59 100644
+--- a/eeschema/dialogs/dialog_text_properties.cpp
++++ b/eeschema/dialogs/dialog_text_properties.cpp
+@@ -611,3 +611,25 @@ void DIALOG_TEXT_PROPERTIES::onMultiLineTCLostFocus( wxFocusEvent& event )
+ 
+     event.Skip();
+ }
++
++
++// Defined beside the text dialogs so schematic items do not link the HTML viewer.
++HTML_MESSAGE_BOX* SCH_TEXT::ShowSyntaxHelp( wxWindow* aParentWindow )
++{
++    wxString msg =
++#include "sch_text_help_md.h"
++            ;
++
++    HTML_MESSAGE_BOX* dlg = new HTML_MESSAGE_BOX( aParentWindow, _( "Syntax Help" ) );
++    wxSize            sz( 320, 320 );
++
++    dlg->SetMinSize( dlg->ConvertDialogToPixels( sz ) );
++    dlg->SetDialogSizeInDU( sz.x, sz.y );
++
++    wxString html_txt;
++    ConvertMarkdown2Html( wxGetTranslation( msg ), html_txt );
++    dlg->AddHTML_Text( html_txt );
++    dlg->ShowModeless();
++
++    return dlg;
++}
+diff --git a/eeschema/eeschema.cpp b/eeschema/eeschema.cpp
+index a27aba55..34d204fc 100644
+--- a/eeschema/eeschema.cpp
++++ b/eeschema/eeschema.cpp
+@@ -78,6 +78,8 @@
+ #include <toolbars_sch_editor.h>
+ #include <toolbars_symbol_editor.h>
+ 
++#include <dialog_database_lib_settings.h>
++#include <sch_io/database/sch_io_database.h>
+ #include <wx/crt.h>
+ 
+ // The main sheet of the project
+@@ -467,6 +469,12 @@ bool IFACE::OnKifaceStart( PGM_BASE* aProgram, int aCtlBits, KIWAY* aKiway )
+ 
+     start_common( aCtlBits );
+ 
++    SCH_IO_DATABASE::s_ConfigurationDialogFactory =
++            []( wxWindow* aParent, SCH_IO_DATABASE* aPlugin ) -> DIALOG_SHIM*
++            {
++                return new DIALOG_DATABASE_LIB_SETTINGS( aParent, aPlugin );
++            };
++
+     m_jobHandler = std::make_unique<EESCHEMA_JOBS_HANDLER>( aKiway );
+ 
+     if( m_start_flags & KFCTL_CLI )
+diff --git a/eeschema/eeschema_helpers.cpp b/eeschema/eeschema_helpers.cpp
+index 2e2607b7..76e5008a 100644
+--- a/eeschema/eeschema_helpers.cpp
++++ b/eeschema/eeschema_helpers.cpp
+@@ -34,7 +34,6 @@
+ #include <sch_io/sch_io_mgr.h>
+ #include <settings/settings_manager.h>
+ #include <wildcards_and_files_ext.h>
+-#include <tool/tool_manager.h>
+ #include <kiface_base.h>
+ 
+ #include <wx/app.h>
+@@ -102,7 +101,7 @@ SCHEMATIC* EESCHEMA_HELPERS::LoadSchematic( const wxString& aFileName,
+         else if( s_SchEditFrame && project == &mgr.Prj() )
+         {
+             // Project is already loaded?  Then so is the board
+-            return &s_SchEditFrame->Schematic();
++            return static_cast<SCHEMATIC_HOLDER*>( s_SchEditFrame )->HeldSchematic();
+         }
+     }
+ 
+@@ -192,13 +191,12 @@ SCHEMATIC* EESCHEMA_HELPERS::LoadSchematic( const wxString& aFileName,
+ 
+     schematic->ConnectionGraph()->Reset();
+ 
+-    TOOL_MANAGER* toolManager = new TOOL_MANAGER;
+-    toolManager->SetEnvironment( schematic, nullptr, nullptr, Kiface().KifaceSettings(), nullptr );
+-
+     if( aCalculateConnectivity )
+     {
+-        SCH_COMMIT dummyCommit( toolManager );
+-        schematic->RecalculateConnections( &dummyCommit, GLOBAL_CLEANUP, toolManager );
++        // Headless: the cleanup is recorded in a commit that is never pushed, so it needs no
++        // tool manager (a frame-less one only reported a null tool holder).
++        SCH_COMMIT dummyCommit( static_cast<TOOL_MANAGER*>( nullptr ) );
++        schematic->RecalculateConnections( &dummyCommit, GLOBAL_CLEANUP, nullptr );
+     }
+ 
+     schematic->ResolveERCExclusionsPostUpdate();
+diff --git a/eeschema/erc/erc.cpp b/eeschema/erc/erc.cpp
+index ffdbe756..1b420f5f 100644
+--- a/eeschema/erc/erc.cpp
++++ b/eeschema/erc/erc.cpp
+@@ -2127,10 +2127,8 @@ void ERC_TESTER::RunTests( DS_PROXY_VIEW_ITEM* aDrawingSheet, SCH_EDIT_FRAME* aE
+     // If we are using the new connectivity, make sure that we do a full-rebuild
+     if( aEditFrame )
+     {
+-        if( ADVANCED_CFG::GetCfg().m_IncrementalConnectivity )
+-            aEditFrame->RecalculateConnections( nullptr, GLOBAL_CLEANUP );
+-        else
+-            aEditFrame->RecalculateConnections( nullptr, NO_CLEANUP );
++        static_cast<SCHEMATIC_HOLDER*>( aEditFrame )
++                ->RecalculateConnectivity( ADVANCED_CFG::GetCfg().m_IncrementalConnectivity );
+     }
+ 
+     m_schematic->ConnectionGraph()->RunERC();
+diff --git a/eeschema/erc/erc_item.cpp b/eeschema/erc/erc_item.cpp
+index 477bccf1..c31716f7 100644
+--- a/eeschema/erc/erc_item.cpp
++++ b/eeschema/erc/erc_item.cpp
+@@ -374,116 +374,6 @@ std::shared_ptr<ERC_ITEM> ERC_ITEM::Create( int aErrorCode )
+     return nullptr;
+ }
+ 
+-/**
+- * Override of RC_TREE_MODEL::GetValue which returns item descriptions in a specific
+- * SCH_SHEET_PATH context, if a context is available on the given SCH_MARKER or ERC_ITEM
+- * targets.
+- */
+-void ERC_TREE_MODEL::GetValue( wxVariant& aVariant, wxDataViewItem const& aItem,
+-                               unsigned int aCol ) const
+-{
+-    SCH_EDIT_FRAME*           schEditFrame = static_cast<SCH_EDIT_FRAME*>( m_editFrame );
+-    const RC_TREE_NODE*       node = ToNode( aItem );
+-    std::shared_ptr<ERC_ITEM> ercItem = std::static_pointer_cast<ERC_ITEM>( node->m_RcItem );
+-    MARKER_BASE*              marker = ercItem->GetParent();
+-    wxString                  msg;
+-
+-    auto getItemDesc =
+-            [&]( EDA_ITEM* aCurrItem, SCH_SHEET_PATH& aSheet )
+-            {
+-                SCH_SHEET_PATH curSheet = schEditFrame->GetCurrentSheet();
+-                wxString       desc;
+-
+-                if( aSheet != curSheet )
+-                {
+-                    // Use the schematic-level setter to avoid the view side effects of
+-                    // SCH_EDIT_FRAME::SetCurrentSheet, which recreates the drawing sheet
+-                    // proxy with potentially stale page number state.
+-                    schEditFrame->Schematic().SetCurrentSheet( aSheet );
+-                    aSheet.UpdateAllScreenReferences();
+-                    {
+-                        desc = aCurrItem->GetItemDescription( m_editFrame, true );
+-                    }
+-                    schEditFrame->Schematic().SetCurrentSheet( curSheet );
+-                    curSheet.UpdateAllScreenReferences();
+-                }
+-                else
+-                {
+-                    desc = aCurrItem->GetItemDescription( m_editFrame, true );
+-                }
+-
+-                return desc;
+-            };
+-
+-    switch( node->m_Type )
+-    {
+-    case RC_TREE_NODE::MARKER:
+-        if( marker )
+-        {
+-            SEVERITY severity = ercItem->GetParent()->GetSeverity();
+-
+-            if( severity == RPT_SEVERITY_EXCLUSION )
+-            {
+-                if( schEditFrame->GetSeverity( ercItem->GetErrorCode() ) == RPT_SEVERITY_WARNING )
+-                    msg = _( "Excluded warning: " );
+-                else
+-                    msg = _( "Excluded error: " );
+-            }
+-            else if( severity == RPT_SEVERITY_WARNING )
+-            {
+-                msg = _( "Warning: " );
+-            }
+-            else
+-            {
+-                msg = _( "Error: " );
+-            }
+-        }
+-
+-        msg += ercItem->GetErrorMessage( true );
+-        break;
+-
+-    case RC_TREE_NODE::MAIN_ITEM:
+-        if( marker && marker->GetMarkerType() == MARKER_BASE::MARKER_DRAWING_SHEET )
+-        {
+-            msg = _( "Drawing Sheet" );
+-        }
+-        else
+-        {
+-            msg = getItemDesc( schEditFrame->ResolveItem( ercItem->GetMainItemID() ),
+-                               ercItem->MainItemHasSheetPath() ? ercItem->GetMainItemSheetPath()
+-                                                               : schEditFrame->GetCurrentSheet() );
+-        }
+-
+-        break;
+-
+-    case RC_TREE_NODE::AUX_ITEM:
+-        msg = getItemDesc( schEditFrame->ResolveItem( ercItem->GetAuxItemID() ),
+-                           ercItem->AuxItemHasSheetPath() ? ercItem->GetAuxItemSheetPath()
+-                                                          : schEditFrame->GetCurrentSheet() );
+-        break;
+-
+-    case RC_TREE_NODE::AUX_ITEM2:
+-        msg = getItemDesc( schEditFrame->ResolveItem( ercItem->GetAuxItem2ID() ),
+-                           schEditFrame->GetCurrentSheet() );
+-        break;
+-
+-    case RC_TREE_NODE::AUX_ITEM3:
+-        msg = getItemDesc( schEditFrame->ResolveItem( ercItem->GetAuxItem3ID() ),
+-                           schEditFrame->GetCurrentSheet() );
+-        break;
+-
+-    case RC_TREE_NODE::COMMENT:
+-        if( marker )
+-            msg = marker->GetComment();
+-
+-        break;
+-    }
+-
+-    msg.Replace( wxS( "\n" ), wxS( " " ) );
+-    aVariant = msg;
+-}
+-
+-
+ wxString ERC_ITEM::getItemDescription( EDA_ITEM* aItem, int aIndex,
+                                        UNITS_PROVIDER* aUnitsProvider ) const
+ {
+diff --git a/eeschema/libraries/legacy_symbol_library.cpp b/eeschema/libraries/legacy_symbol_library.cpp
+index 5f54efdc..9451a2f0 100644
+--- a/eeschema/libraries/legacy_symbol_library.cpp
++++ b/eeschema/libraries/legacy_symbol_library.cpp
+@@ -34,7 +34,7 @@
+ #include <project/project_file.h>
+ #include <project_rescue.h>
+ #include <project_sch.h>
+-#include <widgets/app_progress_dialog.h>
++#include <progress_reporter.h>
+ 
+ #include <libraries/legacy_symbol_library.h>
+ #include <sch_io/kicad_legacy/sch_io_kicad_legacy.h>
+@@ -503,7 +503,7 @@ const wxString LEGACY_SYMBOL_LIBS::CacheName( const wxString& aFullProjectFilena
+ }
+ 
+ 
+-void LEGACY_SYMBOL_LIBS::LoadAllLibraries( PROJECT* aProject, bool aShowProgress )
++void LEGACY_SYMBOL_LIBS::LoadAllLibraries( PROJECT* aProject, PROGRESS_REPORTER* aReporter )
+ {
+     wxString        filename;
+     wxString        libs_not_found;
+@@ -520,23 +520,19 @@ void LEGACY_SYMBOL_LIBS::LoadAllLibraries( PROJECT* aProject, bool aShowProgress
+     // Post symbol library table, this should be empty.  Only the cache library should get loaded.
+     if( !lib_names.empty() )
+     {
+-        APP_PROGRESS_DIALOG lib_dialog( _( "Loading Symbol Libraries" ),
+-                                        wxEmptyString,
+-                                        lib_names.GetCount(),
+-                                        nullptr,
+-                                        false,
+-                                        wxPD_APP_MODAL );
+-
+-        if( aShowProgress )
++        if( aReporter )
+         {
+-            lib_dialog.Show();
++            aReporter->SetTitle( _( "Loading Symbol Libraries" ) );
++            aReporter->SetMaxProgress( (int) lib_names.GetCount() );
+         }
+ 
+         for( unsigned i = 0; i < lib_names.GetCount();  ++i )
+         {
+-            if( aShowProgress )
++            if( aReporter )
+             {
+-                lib_dialog.Update( i, wxString::Format( _( "Loading %s..." ), lib_names[i] ) );
++                aReporter->Report( wxString::Format( _( "Loading %s..." ), lib_names[i] ) );
++                aReporter->AdvanceProgress();
++                aReporter->KeepRefreshing();
+             }
+ 
+             // lib_names[] does not store the file extension. Set it.
+diff --git a/eeschema/libraries/legacy_symbol_library.h b/eeschema/libraries/legacy_symbol_library.h
+index bf24cd63..15c2e9cd 100644
+--- a/eeschema/libraries/legacy_symbol_library.h
++++ b/eeschema/libraries/legacy_symbol_library.h
+@@ -46,6 +46,7 @@ class LINE_READER;
+ class OUTPUTFORMATTER;
+ class SCH_IO;
+ class LEGACY_SYMBOL_LIB;
++class PROGRESS_REPORTER;
+ 
+ 
+ /**
+@@ -94,7 +95,7 @@ public:
+      * @note This method is only to be used when loading legacy projects.  All further symbol
+      *       library access should be done via the symbol library table.
+      */
+-    void LoadAllLibraries( PROJECT* aProject, bool aShowProgress=true );
++    void LoadAllLibraries( PROJECT* aProject, PROGRESS_REPORTER* aReporter = nullptr );
+ 
+     static void GetLibNamesAndPaths( PROJECT* aProject, wxString* aPaths,
+                                      wxArrayString* aNames = nullptr );
+diff --git a/eeschema/printing/dialog_print.cpp b/eeschema/printing/dialog_print.cpp
+index 60d27568..5ea6516e 100644
+--- a/eeschema/printing/dialog_print.cpp
++++ b/eeschema/printing/dialog_print.cpp
+@@ -335,7 +335,7 @@ bool DIALOG_PRINT::TransferDataFromWindow()
+         tmp.SetExt( wxS( "pdf" ) );
+         plotOpts.m_outputFile = tmp.GetFullPath();
+ 
+-        SCH_PLOTTER plotter( m_parent );
++        SCH_PLOTTER plotter( &m_parent->Schematic() );
+ 
+         Pgm().m_Printing = true;
+         plotter.Plot( PLOT_FORMAT::PDF, plotOpts, &renderSettings, nullptr );
+diff --git a/eeschema/project_sch.cpp b/eeschema/project_sch.cpp
+index 7457c046..55251eb7 100644
+--- a/eeschema/project_sch.cpp
++++ b/eeschema/project_sch.cpp
+@@ -17,11 +17,10 @@
+  * with this program.  If not, see <http://www.gnu.org/licenses/>.
+  */
+ 
+-#include <confirm.h>
+-#include <dialogs/html_message_box.h>
+ #include <kiface_base.h>
+ #include <pgm_base.h>
+ #include <wx/app.h>
++#include <wx/log.h>
+ #include <core/utf8.h>
+ #include <project_sch.h>
+ #include <libraries/legacy_symbol_library.h>
+@@ -104,25 +103,16 @@ LEGACY_SYMBOL_LIBS* PROJECT_SCH::LegacySchLibs( PROJECT* aProject )
+         {
+             libs->LoadAllLibraries( aProject );
+         }
++        // Reported through wx logging, which shows a dialog in the editors and writes to
++        // stderr headless, so the project model does not link editor dialogs.
+         catch( const PARSE_ERROR& pe )
+         {
+-            wxString    lib_list = UTF8( pe.inputLine );
+-            wxWindow*   parent = Pgm().App().GetTopWindow();
+-
+-            // parent of this dialog cannot be NULL since that breaks the Kiway() chain.
+-            HTML_MESSAGE_BOX dlg( parent, _( "Not Found" ) );
+-
+-            dlg.MessageSet( _( "The following libraries were not found:" ) );
+-            dlg.ListSet( lib_list );
+-            dlg.Layout();
+-
+-            dlg.ShowModal();
++            wxLogError( _( "The following libraries were not found:" ) + wxS( "\n" )
++                        + UTF8( pe.inputLine ) );
+         }
+         catch( const IO_ERROR& ioe )
+         {
+-            wxWindow* parent = Pgm().App().GetTopWindow();
+-
+-            DisplayError( parent, ioe.What() );
++            wxLogError( ioe.What() );
+         }
+     }
+ 
+diff --git a/eeschema/sch_base_frame.cpp b/eeschema/sch_base_frame.cpp
+index 303cfcbe..8d100719 100644
+--- a/eeschema/sch_base_frame.cpp
++++ b/eeschema/sch_base_frame.cpp
+@@ -61,6 +61,7 @@
+ #include <tool/action_toolbar.h>
+ #include <tool/tool_manager.h>
+ #include <tool/tool_dispatcher.h>
++#include <tools/sch_navigate_tool.h>
+ #include <tools/sch_selection_tool.h>
+ #include <trace_helpers.h>
+ #include <view/view_controls.h>
+@@ -995,6 +996,26 @@ SCH_SELECTION_TOOL* SCH_BASE_FRAME::GetSelectionTool()
+ }
+ 
+ 
++void SCH_BASE_FRAME::AddItemToSelection( EDA_ITEM* aItem )
++{
++    if( SCH_SELECTION_TOOL* selectionTool = GetSelectionTool() )
++        selectionTool->AddItemToSel( aItem, true /*quiet mode*/ );
++}
++
++
++void SCH_BASE_FRAME::RemoveItemFromSelection( EDA_ITEM* aItem )
++{
++    if( SCH_SELECTION_TOOL* selectionTool = GetSelectionTool() )
++        selectionTool->RemoveItemFromSel( aItem, true /*quiet mode*/ );
++}
++
++
++void SCH_BASE_FRAME::HypertextCommand( const wxString& aHref )
++{
++    if( SCH_NAVIGATE_TOOL* navTool = m_toolManager->GetTool<SCH_NAVIGATE_TOOL>() )
++        navTool->HypertextCommand( aHref );
++}
++
+ void SCH_BASE_FRAME::HighlightSelectionFilter( const SCH_SELECTION_FILTER_OPTIONS& aOptions )
+ {
+     SCH_SELECTION_FILTER_EVENT evt( aOptions );
+diff --git a/eeschema/sch_base_frame.h b/eeschema/sch_base_frame.h
+index f466502b..92da1b5f 100644
+--- a/eeschema/sch_base_frame.h
++++ b/eeschema/sch_base_frame.h
+@@ -290,6 +290,12 @@ public:
+ 
+     SCH_SELECTION_TOOL* GetSelectionTool() override;
+ 
++    void AddItemToSelection( EDA_ITEM* aItem ) override;
++    void RemoveItemFromSelection( EDA_ITEM* aItem ) override;
++
++    /// Follow a hypertext link from a schematic item (text, text box or field).
++    virtual void HypertextCommand( const wxString& aHref );
++
+     void GetLibraryItemsForListDialog( wxArrayString& aHeaders, std::vector<wxArrayString>& aItemsToDisplay );
+ 
+     void HighlightSelectionFilter( const SCH_SELECTION_FILTER_OPTIONS& aOptions );
+diff --git a/eeschema/sch_bus_entry.cpp b/eeschema/sch_bus_entry.cpp
+index fc7d694b..163b6d62 100644
+--- a/eeschema/sch_bus_entry.cpp
++++ b/eeschema/sch_bus_entry.cpp
+@@ -515,7 +515,7 @@ void SCH_BUS_ENTRY_BASE::GetMsgPanelInfo( EDA_DRAW_FRAME* aFrame,
+ 
+     SCH_CONNECTION* conn = nullptr;
+ 
+-    if( !IsConnectivityDirty() && dynamic_cast<SCH_EDIT_FRAME*>( aFrame ) )
++    if( !IsConnectivityDirty() && aFrame && aFrame->IsType( FRAME_SCH ) )
+         conn = Connection();
+ 
+     if( conn )
+diff --git a/eeschema/sch_commit.cpp b/eeschema/sch_commit.cpp
+index 87358ed9..61fe4573 100644
+--- a/eeschema/sch_commit.cpp
++++ b/eeschema/sch_commit.cpp
+@@ -44,7 +44,9 @@ SCH_COMMIT::SCH_COMMIT( TOOL_MANAGER* aToolMgr ) :
+         m_toolMgr( aToolMgr ),
+         m_isLibEditor( false )
+ {
+-    SCH_BASE_FRAME* frame = static_cast<SCH_BASE_FRAME*>( m_toolMgr->GetToolHolder() );
++    // Headless callers (the CLI loader) record changes without a tool manager.
++    SCH_BASE_FRAME* frame =
++            m_toolMgr ? static_cast<SCH_BASE_FRAME*>( m_toolMgr->GetToolHolder() ) : nullptr;
+     m_isLibEditor = frame && frame->IsType( FRAME_SCH_SYMBOL_EDITOR );
+ }
+ 
+diff --git a/eeschema/sch_edit_frame.h b/eeschema/sch_edit_frame.h
+index c02a4ed8..179fbf34 100644
+--- a/eeschema/sch_edit_frame.h
++++ b/eeschema/sch_edit_frame.h
+@@ -142,6 +142,13 @@ public:
+ 
+     SCHEMATIC& Schematic() const;
+ 
++    SCHEMATIC* HeldSchematic() override { return m_schematic; }
++
++    void RecalculateConnectivity( bool aGlobalCleanup ) override
++    {
++        RecalculateConnections( nullptr, aGlobalCleanup ? GLOBAL_CLEANUP : NO_CLEANUP );
++    }
++
+     std::unique_ptr<GRID_HELPER> MakeGridHelper() override;
+ 
+     /**
+diff --git a/eeschema/sch_field.cpp b/eeschema/sch_field.cpp
+index d60b5ada..d84ac782 100644
+--- a/eeschema/sch_field.cpp
++++ b/eeschema/sch_field.cpp
+@@ -643,137 +643,6 @@ bool SCH_FIELD::Matches( const EDA_SEARCH_DATA& aSearchData, void* aAuxData ) co
+ }
+ 
+ 
+-void SCH_FIELD::OnScintillaCharAdded( SCINTILLA_TRICKS* aScintillaTricks, wxStyledTextEvent& aEvent ) const
+-{
+-    SCH_ITEM*  parent = dynamic_cast<SCH_ITEM*>( GetParent() );
+-    SCHEMATIC* schematic = parent ? parent->Schematic() : nullptr;
+-
+-    if( !schematic )
+-        return;
+-
+-    wxStyledTextCtrl* scintilla = aScintillaTricks->Scintilla();
+-    int               key = aEvent.GetKey();
+-
+-    wxArrayString autocompleteTokens;
+-    int           pos = scintilla->GetCurrentPos();
+-    int           start = scintilla->WordStartPosition( pos, true );
+-    wxString      partial;
+-
+-    // Multi-line fields are not allowed. So remove '\n' if entered.
+-    if( key == '\n' )
+-    {
+-        wxString text = scintilla->GetText();
+-        int      currpos = scintilla->GetCurrentPos();
+-        text.Replace( wxS( "\n" ), wxS( "" ) );
+-        scintilla->SetText( text );
+-        scintilla->GotoPos( currpos - 1 );
+-        return;
+-    }
+-
+-    auto textVarRef =
+-            [&]( int pt )
+-            {
+-                return pt >= 2 && scintilla->GetCharAt( pt - 2 ) == '$' && scintilla->GetCharAt( pt - 1 ) == '{';
+-            };
+-
+-    // Check for cross-reference
+-    if( start > 1 && scintilla->GetCharAt( start - 1 ) == ':' )
+-    {
+-        int refStart = scintilla->WordStartPosition( start - 1, true );
+-
+-        if( textVarRef( refStart ) )
+-        {
+-            partial = scintilla->GetRange( start, pos );
+-
+-            wxString ref = scintilla->GetRange( refStart, start - 1 );
+-
+-            if( ref == wxS( "OP" ) )
+-            {
+-                // SPICE operating points use ':' syntax for ports
+-                if( SCH_SYMBOL* symbol = dynamic_cast<SCH_SYMBOL*>( parent ) )
+-                {
+-                    NULL_REPORTER   devnull;
+-                    SCH_SHEET_PATH& sheet = schematic->CurrentSheet();
+-                    wxString        variant = schematic->GetCurrentVariant();
+-                    SIM_LIB_MGR     mgr( &schematic->Project() );
+-
+-                    std::vector<EMBEDDED_FILES*> embeddedFilesStack;
+-                    embeddedFilesStack.push_back( schematic->GetEmbeddedFiles() );
+-
+-                    if( EMBEDDED_FILES* symbolEmbeddedFiles = symbol->GetEmbeddedFiles() )
+-                    {
+-                        embeddedFilesStack.push_back( symbolEmbeddedFiles );
+-                        symbol->GetLibSymbolRef()->AppendParentEmbeddedFiles( embeddedFilesStack );
+-                    }
+-
+-                    mgr.SetFilesStack( std::move( embeddedFilesStack ) );
+-
+-                    SIM_MODEL& model = mgr.CreateModel( &sheet, *symbol, true, 0, variant, devnull ).model;
+-
+-                    for( wxString pin : model.GetPinNames() )
+-                    {
+-                        if( pin.StartsWith( '<' ) && pin.EndsWith( '>' ) )
+-                            autocompleteTokens.push_back( pin.Mid( 1, pin.Length() - 2 ) );
+-                        else
+-                            autocompleteTokens.push_back( pin );
+-                    }
+-
+-                    // add the synthetic port for power measurements
+-                    autocompleteTokens.push_back( wxT( "power" ) );
+-                }
+-            }
+-            else
+-            {
+-                SCH_REFERENCE_LIST refs;
+-                SCH_SYMBOL*        refSymbol = nullptr;
+-
+-                schematic->Hierarchy().GetSymbols( refs, SYMBOL_FILTER_ALL );
+-
+-                for( size_t jj = 0; jj < refs.GetCount(); jj++ )
+-                {
+-                    if( refs[jj].GetSymbol()->GetRef( &refs[jj].GetSheetPath(), true ) == ref )
+-                    {
+-                        refSymbol = refs[jj].GetSymbol();
+-                        break;
+-                    }
+-                }
+-
+-                if( refSymbol )
+-                    refSymbol->GetContextualTextVars( &autocompleteTokens );
+-            }
+-        }
+-    }
+-    else if( textVarRef( start ) )
+-    {
+-        partial = scintilla->GetTextRange( start, pos );
+-
+-        SCH_SYMBOL*     symbol = dynamic_cast<SCH_SYMBOL*>( parent );
+-        SCH_SHEET*      sheet = dynamic_cast<SCH_SHEET*>( parent );
+-        SCH_LABEL_BASE* label = dynamic_cast<SCH_LABEL_BASE*>( parent );
+-
+-        if( symbol )
+-        {
+-            symbol->GetContextualTextVars( &autocompleteTokens );
+-
+-            if( schematic->CurrentSheet().Last() )
+-                schematic->CurrentSheet().Last()->GetContextualTextVars( &autocompleteTokens );
+-        }
+-
+-        if( sheet )
+-            sheet->GetContextualTextVars( &autocompleteTokens );
+-
+-        if( label )
+-            label->GetContextualTextVars( &autocompleteTokens );
+-
+-        for( std::pair<wxString, wxString> entry : schematic->Project().GetTextVars() )
+-            autocompleteTokens.push_back( entry.first );
+-    }
+-
+-    aScintillaTricks->DoAutocomplete( partial, autocompleteTokens );
+-    scintilla->SetFocus();
+-}
+-
+-
+ bool SCH_FIELD::IsReplaceable() const
+ {
+     // See comments in SCH_FIELD::Replace(), below.
+@@ -1030,10 +899,7 @@ void SCH_FIELD::DoHypertextAction( EDA_DRAW_FRAME* aFrame, const VECTOR2I& aMous
+     }
+ 
+     if( !href.IsEmpty() )
+-    {
+-        SCH_NAVIGATE_TOOL* navTool = aFrame->GetToolManager()->GetTool<SCH_NAVIGATE_TOOL>();
+-        navTool->HypertextCommand( href );
+-    }
++        static_cast<SCH_BASE_FRAME*>( aFrame )->HypertextCommand( href );
+ }
+ 
+ 
+diff --git a/eeschema/sch_io/database/sch_io_database.cpp b/eeschema/sch_io/database/sch_io_database.cpp
+index 6b9cd50a..e7cc9aed 100644
+--- a/eeschema/sch_io/database/sch_io_database.cpp
++++ b/eeschema/sch_io/database/sch_io_database.cpp
+@@ -38,7 +38,6 @@
+ 
+ #include "sch_io_database.h"
+ 
+-#include <dialog_database_lib_settings.h>
+ 
+ 
+ SCH_IO_DATABASE::SCH_IO_DATABASE() :
+@@ -839,5 +838,5 @@ std::unique_ptr<LIB_SYMBOL>  SCH_IO_DATABASE::loadSymbolFromRow( const wxString&
+ 
+ DIALOG_SHIM* SCH_IO_DATABASE::CreateConfigurationDialog( wxWindow* aParent )
+ {
+-    return new DIALOG_DATABASE_LIB_SETTINGS( aParent, this );
++    return s_ConfigurationDialogFactory ? s_ConfigurationDialogFactory( aParent, this ) : nullptr;
+ }
+diff --git a/eeschema/sch_io/database/sch_io_database.h b/eeschema/sch_io/database/sch_io_database.h
+index c2126909..a6055cc3 100644
+--- a/eeschema/sch_io/database/sch_io_database.h
++++ b/eeschema/sch_io/database/sch_io_database.h
+@@ -25,6 +25,7 @@
+ #include <sch_io/sch_io.h>
+ #include <sch_io/sch_io_mgr.h>
+ #include <wildcards_and_files_ext.h>
++#include <functional>
+ #include <optional>
+ #include <unordered_set>
+ 
+@@ -89,6 +90,10 @@ public:
+ 
+     DIALOG_SHIM* CreateConfigurationDialog( wxWindow* aParent ) override;
+ 
++    /// Creates the settings dialog. The schematic editor module sets it at start-up, so the
++    /// plugin itself does not link editor dialogs; while unset, no dialog is offered.
++    static inline std::function<DIALOG_SHIM*( wxWindow*, SCH_IO_DATABASE* )> s_ConfigurationDialogFactory;
++
+     DATABASE_LIB_SETTINGS* Settings() const { return m_settings.get(); }
+ 
+     bool TestConnection( wxString* aErrorMsg = nullptr );
+diff --git a/eeschema/sch_junction.cpp b/eeschema/sch_junction.cpp
+index b324fb70..72c94547 100644
+--- a/eeschema/sch_junction.cpp
++++ b/eeschema/sch_junction.cpp
+@@ -305,7 +305,7 @@ void SCH_JUNCTION::GetMsgPanelInfo( EDA_DRAW_FRAME* aFrame, std::vector<MSG_PANE
+ 
+     SCH_CONNECTION* conn = nullptr;
+ 
+-    if( !IsConnectivityDirty() && dynamic_cast<SCH_EDIT_FRAME*>( aFrame ) )
++    if( !IsConnectivityDirty() && aFrame && aFrame->IsType( FRAME_SCH ) )
+         conn = Connection();
+ 
+     if( conn )
+diff --git a/eeschema/sch_label.cpp b/eeschema/sch_label.cpp
+index e8330b93..2d215004 100644
+--- a/eeschema/sch_label.cpp
++++ b/eeschema/sch_label.cpp
+@@ -1430,7 +1430,7 @@ void SCH_LABEL_BASE::GetMsgPanelInfo( EDA_DRAW_FRAME* aFrame, std::vector<MSG_PA
+ 
+     SCH_CONNECTION* conn = nullptr;
+ 
+-    if( !IsConnectivityDirty() && dynamic_cast<SCH_EDIT_FRAME*>( aFrame ) )
++    if( !IsConnectivityDirty() && aFrame && aFrame->IsType( FRAME_SCH ) )
+         conn = Connection();
+ 
+     if( conn )
+@@ -2394,27 +2394,6 @@ BITMAPS SCH_HIERLABEL::GetMenuImage() const
+ }
+ 
+ 
+-HTML_MESSAGE_BOX* SCH_TEXT::ShowSyntaxHelp( wxWindow* aParentWindow )
+-{
+-    wxString msg =
+-#include "sch_text_help_md.h"
+-            ;
+-
+-    HTML_MESSAGE_BOX* dlg = new HTML_MESSAGE_BOX( aParentWindow, _( "Syntax Help" ) );
+-    wxSize            sz( 320, 320 );
+-
+-    dlg->SetMinSize( dlg->ConvertDialogToPixels( sz ) );
+-    dlg->SetDialogSizeInDU( sz.x, sz.y );
+-
+-    wxString html_txt;
+-    ConvertMarkdown2Html( wxGetTranslation( msg ), html_txt );
+-    dlg->AddHTML_Text( html_txt );
+-    dlg->ShowModeless();
+-
+-    return dlg;
+-}
+-
+-
+ static struct SCH_LABEL_DESC
+ {
+     SCH_LABEL_DESC()
+diff --git a/eeschema/sch_line.cpp b/eeschema/sch_line.cpp
+index 77a26af8..5d70e3b5 100644
+--- a/eeschema/sch_line.cpp
++++ b/eeschema/sch_line.cpp
+@@ -967,7 +967,7 @@ void SCH_LINE::GetMsgPanelInfo( EDA_DRAW_FRAME* aFrame, std::vector<MSG_PANEL_IT
+ 
+     SCH_CONNECTION* conn = nullptr;
+ 
+-    if( !IsConnectivityDirty() && dynamic_cast<SCH_EDIT_FRAME*>( aFrame ) )
++    if( !IsConnectivityDirty() && aFrame && aFrame->IsType( FRAME_SCH ) )
+         conn = Connection();
+ 
+     if( conn )
+diff --git a/eeschema/sch_pin.cpp b/eeschema/sch_pin.cpp
+index 88a73e53..5ff26058 100644
+--- a/eeschema/sch_pin.cpp
++++ b/eeschema/sch_pin.cpp
+@@ -1450,8 +1450,9 @@ void SCH_PIN::GetMsgPanelInfo( EDA_DRAW_FRAME* aFrame, std::vector<MSG_PANEL_ITE
+     }
+     else if( SCH_SYMBOL* schsymbol = dynamic_cast<SCH_SYMBOL*>( symbol ) )
+     {
+-        SCH_EDIT_FRAME* schframe = dynamic_cast<SCH_EDIT_FRAME*>( aFrame );
+-        SCH_SHEET_PATH* currentSheet = schframe ? &schframe->GetCurrentSheet() : nullptr;
++        SCH_SHEET_PATH* currentSheet = aFrame && aFrame->IsType( FRAME_SCH ) && Schematic()
++                                               ? &Schematic()->CurrentSheet()
++                                               : nullptr;
+ 
+         // Don't use GetShownText(); we want to see the variable references here
+         aList.emplace_back( symbol->GetRef( currentSheet ),
+@@ -1459,7 +1460,7 @@ void SCH_PIN::GetMsgPanelInfo( EDA_DRAW_FRAME* aFrame, std::vector<MSG_PANEL_ITE
+     }
+ 
+ #if defined(DEBUG)
+-    if( !IsConnectivityDirty() && dynamic_cast<SCH_EDIT_FRAME*>( aFrame ) )
++    if( !IsConnectivityDirty() && aFrame && aFrame->IsType( FRAME_SCH ) )
+     {
+         SCH_CONNECTION* conn = Connection();
+ 
+diff --git a/eeschema/sch_plotter.cpp b/eeschema/sch_plotter.cpp
+index 045b38cb..a4a33b6a 100644
+--- a/eeschema/sch_plotter.cpp
++++ b/eeschema/sch_plotter.cpp
+@@ -54,12 +54,6 @@ SCH_PLOTTER::SCH_PLOTTER( SCHEMATIC* aSchematic ) :
+ }
+ 
+ 
+-SCH_PLOTTER::SCH_PLOTTER( SCH_EDIT_FRAME* aFrame ) :
+-        m_schematic( &aFrame->Schematic() )
+-{
+-    m_colorSettings = nullptr;
+-}
+-
+ 
+ wxFileName SCH_PLOTTER::getOutputFilenameSingle( const SCH_PLOT_OPTS& aPlotOpts,
+                                                  REPORTER* aReporter, const wxString& aExt )
+diff --git a/eeschema/sch_plotter.h b/eeschema/sch_plotter.h
+index e71105a5..3c9ff36c 100644
+--- a/eeschema/sch_plotter.h
++++ b/eeschema/sch_plotter.h
+@@ -35,7 +35,6 @@
+ #include <sch_sheet_path.h>
+ #include <plotters/plotter.h>
+ 
+-class SCH_EDIT_FRAME;
+ class PLOTTER;
+ class SCHEMATIC;
+ class SCH_SCREEN;
+@@ -99,10 +98,6 @@ struct SCH_PLOT_OPTS
+ class SCH_PLOTTER
+ {
+ public:
+-    /**
+-     * Constructor for usage with a frame having the schematic we want to print loaded.
+-     */
+-    SCH_PLOTTER( SCH_EDIT_FRAME* aFrame );
+ 
+     /**
+      * Constructor for usage with a schematic that can be headless.
+diff --git a/eeschema/sch_sheet.cpp b/eeschema/sch_sheet.cpp
+index b8ab91d8..08c96b1b 100644
+--- a/eeschema/sch_sheet.cpp
++++ b/eeschema/sch_sheet.cpp
+@@ -987,16 +987,15 @@ void SCH_SHEET::GetMsgPanelInfo( EDA_DRAW_FRAME* aFrame, std::vector<MSG_PANEL_I
+     // Don't use GetShownText(); we want to see the variable references here
+     aList.emplace_back( _( "Sheet Name" ), KIUI::EllipsizeStatusText( aFrame, GetName() ) );
+ 
+-    SCH_EDIT_FRAME* schframe = dynamic_cast<SCH_EDIT_FRAME*>( aFrame );
+     SCH_SHEET_PATH* currentSheet = nullptr;
+     wxString        currentVariant;
+ 
+-    if( schframe )
++    if( aFrame && aFrame->IsType( FRAME_SCH ) && Schematic() )
+     {
+-        SCH_SHEET_PATH path = schframe->GetCurrentSheet();
++        SCH_SHEET_PATH path = Schematic()->CurrentSheet();
+         path.push_back( this );
+-        currentSheet = &schframe->GetCurrentSheet();
+-        currentVariant = Schematic() ? Schematic()->GetCurrentVariant() : wxString();
++        currentSheet = &Schematic()->CurrentSheet();
++        currentVariant = Schematic()->GetCurrentVariant();
+ 
+         aList.emplace_back( _( "Hierarchical Path" ), path.PathHumanReadable( false, true ) );
+     }
+diff --git a/eeschema/sch_symbol.cpp b/eeschema/sch_symbol.cpp
+index 5d88ad9f..28e0fee7 100644
+--- a/eeschema/sch_symbol.cpp
++++ b/eeschema/sch_symbol.cpp
+@@ -692,10 +692,12 @@ const wxString SCH_SYMBOL::GetRef( const SCH_SHEET_PATH* sheet, bool aIncludeUni
+ 
+ void SCH_SYMBOL::SetRefProp( const wxString& aRef )
+ {
+-    FIELD_VALIDATOR validator( FIELD_T::REFERENCE );
++    wxString msg = GetFieldValidationErrorMessage( FIELD_T::REFERENCE, aRef );
+ 
+-    if( validator.DoValidate( aRef, nullptr ) )
++    if( msg.empty() )
+         SetRef( &Schematic()->CurrentSheet(), aRef );
++    else
++        wxLogWarning( msg );
+ }
+ 
+ 
+@@ -2701,8 +2703,9 @@ void SCH_SYMBOL::GetMsgPanelInfo( EDA_DRAW_FRAME* aFrame, std::vector<MSG_PANEL_
+ {
+     wxString msg;
+ 
+-    SCH_EDIT_FRAME* schframe = dynamic_cast<SCH_EDIT_FRAME*>( aFrame );
+-    SCH_SHEET_PATH* currentSheet = schframe ? &schframe->GetCurrentSheet() : nullptr;
++    SCH_SHEET_PATH* currentSheet = aFrame && aFrame->IsType( FRAME_SCH ) && Schematic()
++                                           ? &Schematic()->CurrentSheet()
++                                           : nullptr;
+     wxString        currentVariant = Schematic() ? Schematic()->GetCurrentVariant() : wxString();
+ 
+     auto addExcludes = [&]()
+diff --git a/eeschema/sch_text.cpp b/eeschema/sch_text.cpp
+index 634fcfa5..b7170f55 100644
+--- a/eeschema/sch_text.cpp
++++ b/eeschema/sch_text.cpp
+@@ -376,12 +376,12 @@ bool SCH_TEXT::HasHoveredHypertext() const
+ 
+ void SCH_TEXT::DoHypertextAction( EDA_DRAW_FRAME* aFrame, const VECTOR2I& aMousePos ) const
+ {
+-    SCH_NAVIGATE_TOOL* navTool = aFrame->GetToolManager()->GetTool<SCH_NAVIGATE_TOOL>();
++    SCH_BASE_FRAME* frame = static_cast<SCH_BASE_FRAME*>( aFrame );
+ 
+     if( HasHyperlink() )
+-        navTool->HypertextCommand( m_hyperlink );
++        frame->HypertextCommand( m_hyperlink );
+     else if( !m_activeUrl.IsEmpty() )
+-        navTool->HypertextCommand( m_activeUrl );
++        frame->HypertextCommand( m_activeUrl );
+ }
+ 
+ 
+diff --git a/eeschema/sch_textbox.cpp b/eeschema/sch_textbox.cpp
+index 01b375f1..00e5fdfc 100644
+--- a/eeschema/sch_textbox.cpp
++++ b/eeschema/sch_textbox.cpp
+@@ -349,12 +349,12 @@ bool SCH_TEXTBOX::HasHoveredHypertext() const
+ 
+ void SCH_TEXTBOX::DoHypertextAction( EDA_DRAW_FRAME* aFrame, const VECTOR2I& aMousePos ) const
+ {
+-    SCH_NAVIGATE_TOOL* navTool = aFrame->GetToolManager()->GetTool<SCH_NAVIGATE_TOOL>();
++    SCH_BASE_FRAME* frame = static_cast<SCH_BASE_FRAME*>( aFrame );
+ 
+     if( HasHyperlink() )
+-        navTool->HypertextCommand( m_hyperlink );
++        frame->HypertextCommand( m_hyperlink );
+     else if( !m_activeUrl.IsEmpty() )
+-        navTool->HypertextCommand( m_activeUrl );
++        frame->HypertextCommand( m_activeUrl );
+ }
+ 
+ 
+diff --git a/eeschema/schematic.cpp b/eeschema/schematic.cpp
+index 0ca76e93..c70c3b70 100644
+--- a/eeschema/schematic.cpp
++++ b/eeschema/schematic.cpp
+@@ -1524,7 +1524,6 @@ bool SCHEMATIC::IsComplexHierarchy() const
+ 
+ void SCHEMATIC::CleanUp( SCH_COMMIT* aCommit, SCH_SCREEN* aScreen )
+ {
+-    SCH_SELECTION_TOOL*          selectionTool = m_schematicHolder ? m_schematicHolder->GetSelectionTool() : nullptr;
+     std::vector<SCH_LINE*>       lines;
+     std::vector<SCH_JUNCTION*>   junctions;
+     std::vector<SCH_NO_CONNECT*> ncs;
+@@ -1542,8 +1541,8 @@ void SCHEMATIC::CleanUp( SCH_COMMIT* aCommit, SCH_SCREEN* aScreen )
+         {
+             aItem->SetFlags( STRUCT_DELETED );
+ 
+-            if( aItem->IsSelected() && selectionTool )
+-                selectionTool->RemoveItemFromSel( aItem, true /*quiet mode*/ );
++            if( aItem->IsSelected() && m_schematicHolder )
++                m_schematicHolder->RemoveItemFromSelection( aItem );
+ 
+             if( m_schematicHolder )
+             {
+@@ -1705,8 +1704,8 @@ void SCHEMATIC::CleanUp( SCH_COMMIT* aCommit, SCH_SCREEN* aScreen )
+ 
+                     aCommit->Added( mergedLine, aScreen );
+ 
+-                    if( selectionTool && ( firstLine->IsSelected() || secondLine->IsSelected() ) )
+-                        selectionTool->AddItemToSel( mergedLine, true /*quiet mode*/ );
++                    if( m_schematicHolder && ( firstLine->IsSelected() || secondLine->IsSelected() ) )
++                        m_schematicHolder->AddItemToSelection( mergedLine );
+ 
+                     break;
+                 }
+diff --git a/eeschema/schematic_holder.h b/eeschema/schematic_holder.h
+index 918af255..a3cae054 100644
+--- a/eeschema/schematic_holder.h
++++ b/eeschema/schematic_holder.h
+@@ -23,6 +23,7 @@ class EDA_ITEM;
+ class SCH_SCREEN;
+ class SCH_SELECTION_TOOL;
+ class SCH_GLOBALLABEL;
++class SCHEMATIC;
+ 
+ /**
+  * This is a bridge class to help the schematic be able to affect SCH_EDIT_FRAME
+@@ -42,6 +43,22 @@ public:
+ 
+     virtual SCH_SELECTION_TOOL* GetSelectionTool() { return nullptr; }
+ 
++    /// The schematic this holder edits, if any. Lets model code reach it without the frame type.
++    virtual SCHEMATIC* HeldSchematic() { return nullptr; }
++
++    /**
++     * Rebuild connectivity the way the editor does after an edit (including view updates).
++     * @param aGlobalCleanup also clean up wires and junctions on every sheet first.
++     */
++    virtual void RecalculateConnectivity( bool aGlobalCleanup ) {}
++
++    /**
++     * Keep the editor selection in step with model edits such as SCHEMATIC::CleanUp(), without
++     * the schematic linking the selection tool.
++     */
++    virtual void AddItemToSelection( EDA_ITEM* aItem ) {}
++    virtual void RemoveItemFromSelection( EDA_ITEM* aItem ) {}
++
+     virtual void RemoveFromScreen( EDA_ITEM* aItem, SCH_SCREEN* aScreen ) = 0;
+ 
+     virtual void IntersheetRefUpdate( SCH_GLOBALLABEL* aItem ) {}
+diff --git a/eeschema/tools/sch_navigate_tool.cpp b/eeschema/tools/sch_navigate_tool.cpp
+index a72df4ee..ef9a5bf2 100644
+--- a/eeschema/tools/sch_navigate_tool.cpp
++++ b/eeschema/tools/sch_navigate_tool.cpp
+@@ -30,7 +30,6 @@
+ #include "eda_doc.h"
+ 
+ 
+-wxString SCH_NAVIGATE_TOOL::g_BackLink = wxT( "HYPERTEXT_BACK" );
+ 
+ 
+ void SCH_NAVIGATE_TOOL::ResetHistory()
+diff --git a/eeschema/tools/sch_navigate_tool.h b/eeschema/tools/sch_navigate_tool.h
+index cd524f8b..195e87b0 100644
+--- a/eeschema/tools/sch_navigate_tool.h
++++ b/eeschema/tools/sch_navigate_tool.h
+@@ -74,7 +74,7 @@ public:
+     bool CanGoNext();
+ 
+ public:
+-    static wxString g_BackLink;
++    static inline wxString g_BackLink = wxT( "HYPERTEXT_BACK" );
+ 
+ private:
+     ///< Set up handlers for various events.
+diff --git a/include/field_validation.h b/include/field_validation.h
+new file mode 100644
+index 00000000..3792fa9f
+--- /dev/null
++++ b/include/field_validation.h
+@@ -0,0 +1,43 @@
++/*
++ * This program source code file is part of KiCad, a free EDA CAD application.
++ *
++ * Copyright The KiCad Developers, see AUTHORS.txt for contributors.
++ *
++ * This program is free software: you can redistribute it and/or modify it
++ * under the terms of the GNU General Public License as published by the
++ * Free Software Foundation, either version 3 of the License, or (at your
++ * option) any later version.
++ *
++ * This program is distributed in the hope that it will be useful, but
++ * WITHOUT ANY WARRANTY; without even the implied warranty of
++ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
++ * General Public License for more details.
++ *
++ * You should have received a copy of the GNU General Public License along
++ * with this program.  If not, see <http://www.gnu.org/licenses/>.
++ */
++
++#ifndef FIELD_VALIDATION_H
++#define FIELD_VALIDATION_H
++
++#include <template_fieldnames.h>
++#include <wx/string.h>
++
++/**
++ * Field value rules shared by FIELD_VALIDATOR and model code. Unlike the validator, these
++ * need no window, so schematic items can check values without linking the GUI.
++ */
++
++/// Characters a value of @a aFieldId cannot contain.
++wxString GetFieldCharExcludes( FIELD_T aFieldId );
++
++/// True when a value of @a aFieldId must not be empty.
++bool IsFieldValueRequired( FIELD_T aFieldId );
++
++/**
++ * Return the error message if @a aValue is invalid for @a aFieldId.
++ * Returns an empty string when the value is valid.
++ */
++wxString GetFieldValidationErrorMessage( FIELD_T aFieldId, const wxString& aValue );
++
++#endif  // FIELD_VALIDATION_H
+diff --git a/include/validators.h b/include/validators.h
+index 55b6dbde..40e1f95e 100644
+--- a/include/validators.h
++++ b/include/validators.h
+@@ -38,6 +38,7 @@
+ #include <wx/regex.h>
+ 
+ #include <lib_id.h>
++#include <field_validation.h>
+ #include <template_fieldnames.h>
+ 
+ 
+@@ -162,11 +163,8 @@ private:
+     FIELD_T m_fieldId;
+ };
+ 
+-/**
+- * Return the error message if @a aValue is invalid for @a aFieldId.
+- * Returns an empty string when the value is valid.
+- */
+-wxString GetFieldValidationErrorMessage( FIELD_T aFieldId, const wxString& aValue );
++// GetFieldValidationErrorMessage() and the field rules live in field_validation.h.
++
+ 
+ 
+ #endif  // #ifndef VALIDATORS_H

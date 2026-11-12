@@ -1,0 +1,6 @@
+{
+  "repository": "https://gitlab.com/kicad/libraries/kicad-packages3D-generator.git",
+  "commit": "e272fcc809d798323b3ae776611184cba5625342",
+  "license": "GPL-3.0-or-later",
+  "reference_models": "https://gitlab.com/kicad/libraries/kicad-packages3D/-/raw/10.0.0/"
+}

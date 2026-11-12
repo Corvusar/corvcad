@@ -1,0 +1,31 @@
+{
+  "schema": 1,
+  "units": "mm",
+  "coordinate_system": "KiCad XY unchanged; enclosure Z up",
+  "source": {
+    "name": "RoundTrip.kicad_pcb",
+    "sha256": "b734c040c392df1ec18f1106315721b204fed68d77948674b85113f7ee896c63",
+    "kicad_version": "10.0.7-10.0.7~ubuntu24.04.1"
+  },
+  "bounds": [
+    0.0,
+    0.0,
+    80.0,
+    60.0
+  ],
+  "board_thickness": 1.6,
+  "mounting_holes": [
+    {
+      "reference": "H1",
+      "x": 8.0,
+      "y": 52.0,
+      "diameter": 3.2
+    },
+    {
+      "reference": "H2",
+      "x": 72.0,
+      "y": 52.0,
+      "diameter": 3.2
+    }
+  ]
+}

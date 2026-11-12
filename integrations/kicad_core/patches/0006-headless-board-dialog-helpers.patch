@@ -1,0 +1,589 @@
+CorvCAD patch series for KiCad 10.0.6 (caf7377), on top of 0005: keep the board model free of
+editor dialogs and widgets.
+
+Applied by integrations/kicad_core/fetch.py. The desktop editor keeps working: each function
+moves next to the dialogs that call it, unchanged.
+
+1. PCB_TEXT::ShowSyntaxHelp() moves from pcb_text.cpp to dialogs/dialog_text_properties.cpp
+   (as patch 0001 did for SCH_TEXT). It pulled HTML_MESSAGE_BOX, DIALOG_SHIM, KIWAY's blocking
+   dialog and the local-history restore dialog into every board load.
+2. ZONE_SETTINGS::SetupLayersList() and LAYER_PROPERTIES_GRID_TABLE move from zone_settings.cpp
+   to a new zone_layer_properties_grid.cpp (listed in pcbnew/CMakeLists.txt). They pulled the
+   color swatch, WX_GRID and KIUI helpers in through BOARD_DESIGN_SETTINGS.
+diff --git a/pcbnew/pcb_text.cpp b/pcbnew/pcb_text.cpp
+--- a/pcbnew/pcb_text.cpp
++++ b/pcbnew/pcb_text.cpp
+@@ -38,7 +38,6 @@
+ #include <pcb_painter.h>
+ #include <trigo.h>
+ #include <string_utils.h>
+-#include <dialogs/html_message_box.h>
+ #include <geometry/shape_compound.h>
+ #include <geometry/geometry_utils.h>
+ #include <callback_gal.h>
+@@ -720,27 +719,6 @@
+ }
+ 
+ 
+-HTML_MESSAGE_BOX* PCB_TEXT::ShowSyntaxHelp( wxWindow* aParentWindow )
+-{
+-    wxString msg =
+-#include "pcb_text_help_md.h"
+-            ;
+-
+-    HTML_MESSAGE_BOX* dlg = new HTML_MESSAGE_BOX( aParentWindow, _( "Syntax Help" ) );
+-    wxSize            sz( 320, 320 );
+-
+-    dlg->SetMinSize( dlg->ConvertDialogToPixels( sz ) );
+-    dlg->SetDialogSizeInDU( sz.x, sz.y );
+-
+-    wxString html_txt;
+-    ConvertMarkdown2Html( wxGetTranslation( msg ), html_txt );
+-    dlg->AddHTML_Text( html_txt );
+-    dlg->ShowModeless();
+-
+-    return dlg;
+-}
+-
+-
+ static struct PCB_TEXT_DESC
+ {
+     PCB_TEXT_DESC()
+diff --git a/pcbnew/dialogs/dialog_text_properties.cpp b/pcbnew/dialogs/dialog_text_properties.cpp
+--- a/pcbnew/dialogs/dialog_text_properties.cpp
++++ b/pcbnew/dialogs/dialog_text_properties.cpp
+@@ -607,3 +607,25 @@
+ {
+     m_helpWindow = PCB_TEXT::ShowSyntaxHelp( this );
+ }
++
++
++// Editor-only help text; kept out of pcb_text.cpp so the board model links no dialogs.
++HTML_MESSAGE_BOX* PCB_TEXT::ShowSyntaxHelp( wxWindow* aParentWindow )
++{
++    wxString msg =
++#include "pcb_text_help_md.h"
++            ;
++
++    HTML_MESSAGE_BOX* dlg = new HTML_MESSAGE_BOX( aParentWindow, _( "Syntax Help" ) );
++    wxSize            sz( 320, 320 );
++
++    dlg->SetMinSize( dlg->ConvertDialogToPixels( sz ) );
++    dlg->SetDialogSizeInDU( sz.x, sz.y );
++
++    wxString html_txt;
++    ConvertMarkdown2Html( wxGetTranslation( msg ), html_txt );
++    dlg->AddHTML_Text( html_txt );
++    dlg->ShowModeless();
++
++    return dlg;
++}
+diff --git a/pcbnew/zone_settings.cpp b/pcbnew/zone_settings.cpp
+--- a/pcbnew/zone_settings.cpp
++++ b/pcbnew/zone_settings.cpp
+@@ -24,17 +24,12 @@
+  */
+ 
+ #include <zone_settings.h>
+-#include <zone_layer_properties_grid.h>
+-
+-#include <pcb_base_frame.h>
++
+ #include <board.h>
+ #include <lset.h>
+-#include <settings/color_settings.h>
+ #include <zones.h>
+ 
+ #include <zone.h>
+-#include <wx/dataview.h>
+-#include <widgets/color_swatch.h>
+ 
+ bool ZONE_LAYER_PROPERTIES::operator==( const ZONE_LAYER_PROPERTIES& aOther ) const
+ {
+@@ -299,222 +294,9 @@
+ }
+ 
+ 
+-#ifdef __WXOSX_MAC__
+-const static wxSize LAYER_BITMAP_SIZE( 28, 28 );  // wxCocoa impl unhappy if this isn't square...
+-#else
+-const static wxSize LAYER_BITMAP_SIZE( 24, 16 );
+-#endif
+-
+-const static wxSize CHECKERBOARD_SIZE( 8, 8 );
+-
+-
+ const ZONE_SETTINGS& ZONE_SETTINGS::GetDefaultSettings()
+ {
+     static ZONE_SETTINGS defaultSettings;
+ 
+     return defaultSettings;
+ }
+-
+-
+-// A helper for setting up a dialog list for specifying zone layers.  Used by all three
+-// zone settings dialogs.
+-void ZONE_SETTINGS::SetupLayersList( wxDataViewListCtrl* aList, PCB_BASE_FRAME* aFrame, LSET aLayers )
+-{
+-    BOARD* board = aFrame->GetBoard();
+-    COLOR4D backgroundColor = aFrame->GetColorSettings()->GetColor( LAYER_PCB_BACKGROUND );
+-
+-    wxDataViewColumn* checkColumn = aList->AppendToggleColumn( wxEmptyString, wxDATAVIEW_CELL_ACTIVATABLE,
+-                                                               wxCOL_WIDTH_DEFAULT, wxALIGN_CENTER );
+-
+-    wxDataViewColumn* layerColumn = aList->AppendIconTextColumn( wxEmptyString );
+-    wxDataViewColumn* layerIDColumn = aList->AppendTextColumn( wxEmptyString );
+-    layerIDColumn->SetHidden( true );
+-
+-    int textWidth = 0;
+-
+-    for( PCB_LAYER_ID layerID : aLayers.UIOrder() )
+-    {
+-        wxString layerName = board->GetLayerName( layerID );
+-
+-        // wxCOL_WIDTH_AUTOSIZE doesn't work on all platforms, so we calculate width here
+-        textWidth = std::max( textWidth, KIUI::GetTextSize( layerName, aList ).x );
+-
+-        COLOR4D layerColor = aFrame->GetColorSettings()->GetColor( layerID );
+-        auto bitmap = COLOR_SWATCH::MakeBitmap( layerColor, backgroundColor, LAYER_BITMAP_SIZE,
+-                                                CHECKERBOARD_SIZE, aList->GetBackgroundColour() );
+-        wxIcon icon;
+-        icon.CopyFromBitmap( bitmap );
+-
+-        wxVector<wxVariant> row;
+-        row.push_back( wxVariant( m_Layers.test( layerID ) ) );
+-        row.push_back( wxVariant( wxDataViewIconText( layerName, icon ) ) );
+-        row.push_back( wxVariant( wxString::Format( wxT( "%i" ), layerID ) ) );
+-        aList->AppendItem( row );
+-
+-        if( m_Layers.test( layerID ) )
+-            aList->SetToggleValue( true, (unsigned) aList->GetItemCount() - 1, 0 );
+-    }
+-
+-    int checkColSize = aList->FromDIP( 22 );
+-    int layerColSize = textWidth + LAYER_BITMAP_SIZE.x + aList->FromDIP( 15 );
+-
+-    // You'd think the fact that m_layers is a list would encourage wxWidgets not to save room
+-    // for the tree expanders... but you'd be wrong.  Force indent to 0.
+-    aList->SetIndent( 0 );
+-
+-    checkColumn->SetWidth( checkColSize );
+-    layerColumn->SetWidth( layerColSize );
+-
+-#ifdef __WXMAC__
+-    // TODO: something in wxWidgets 3.1.x pads checkbox columns with extra space.  (It used to
+-    // also be that the width of the column would get set too wide (to 30), but that's patched in
+-    // our local wxWidgets fork.)
+-    checkColSize += 50;
+-#endif
+-
+-    aList->SetMinClientSize( wxSize( checkColSize + layerColSize, aList->GetMinClientSize().y ) );
+-}
+-
+-
+-LAYER_PROPERTIES_GRID_TABLE::LAYER_PROPERTIES_GRID_TABLE( PCB_BASE_FRAME* aFrame, std::function<LSET()> getLayers ) :
+-        m_frame( aFrame ),
+-        m_getLayersFunc( getLayers )
+-{
+-    m_frame->Bind( EDA_EVT_UNITS_CHANGED, &LAYER_PROPERTIES_GRID_TABLE::onUnitsChanged, this );
+-}
+-
+-
+-LAYER_PROPERTIES_GRID_TABLE::~LAYER_PROPERTIES_GRID_TABLE()
+-{
+-    m_frame->Unbind( EDA_EVT_UNITS_CHANGED, &LAYER_PROPERTIES_GRID_TABLE::onUnitsChanged, this );
+-}
+-
+-
+-wxString LAYER_PROPERTIES_GRID_TABLE::GetValue( int aRow, int aCol )
+-{
+-    VECTOR2I offset = m_items[aRow].second.hatching_offset.value_or( VECTOR2I() );
+-
+-    switch( aCol )
+-    {
+-    case 1:  return m_frame->StringFromValue( offset.x, true );
+-    case 2:  return m_frame->StringFromValue( offset.y, true );
+-
+-    default:
+-        // we can't assert here because wxWidgets sometimes calls this without checking
+-        // the column type when trying to see if there's an overflow
+-        return wxT( "bad wxWidgets!" );
+-    }
+-}
+-
+-
+-void LAYER_PROPERTIES_GRID_TABLE::SetValue( int aRow, int aCol, const wxString& aValue )
+-{
+-    VECTOR2I offset = m_items[aRow].second.hatching_offset.value_or( VECTOR2I() );
+-
+-    switch( aCol )
+-    {
+-    case 1:  offset.x = m_frame->ValueFromString( aValue );                           break;
+-    case 2:  offset.y = m_frame->ValueFromString( aValue );                           break;
+-    default: wxFAIL_MSG( wxString::Format( wxT( "column %d isn't a long" ), aCol ) ); break;
+-    }
+-
+-    m_items[aRow].second.hatching_offset = offset;
+-}
+-
+-
+-long LAYER_PROPERTIES_GRID_TABLE::GetValueAsLong( int aRow, int aCol )
+-{
+-    switch( aCol )
+-    {
+-    case 0:  return m_items[aRow].first;
+-    default: wxFAIL_MSG( wxString::Format( wxT( "column %d isn't a long" ), aCol ) ); return -1;
+-    }
+-}
+-
+-
+-void LAYER_PROPERTIES_GRID_TABLE::SetValueAsLong( int aRow, int aCol, long aValue )
+-{
+-    switch( aCol )
+-    {
+-    case 0:  m_items[aRow].first = ToLAYER_ID( (int) aValue );                        break;
+-    default: wxFAIL_MSG( wxString::Format( wxT( "column %d isn't a long" ), aCol ) ); break;
+-    }
+-}
+-
+-
+-void LAYER_PROPERTIES_GRID_TABLE::AddItem( PCB_LAYER_ID aLayer, const ZONE_LAYER_PROPERTIES& aProps )
+-{
+-    m_items.emplace_back( std::make_pair( aLayer, aProps ) );
+-
+-    if( GetView() )
+-    {
+-        wxGridTableMessage msg( this, wxGRIDTABLE_NOTIFY_ROWS_APPENDED, 1 );
+-        GetView()->ProcessTableMessage( msg );
+-    }
+-}
+-
+-
+-bool LAYER_PROPERTIES_GRID_TABLE::AppendRows( size_t aNumRows )
+-{
+-    PCB_LAYER_ID next = UNDEFINED_LAYER;
+-
+-    auto contains =
+-            [&]( PCB_LAYER_ID candidate )
+-            {
+-                for( const auto& [l, props] : m_items )
+-                {
+-                    if( candidate == l )
+-                        return true;
+-                }
+-
+-                return false;
+-            };
+-
+-    for( PCB_LAYER_ID layer : m_getLayersFunc().UIOrder() )
+-    {
+-        if( !contains( layer ) )
+-        {
+-            next = layer;
+-            break;
+-        }
+-    }
+-
+-    if( next == UNDEFINED_LAYER )
+-        return false;
+-
+-    AddItem( next, ZONE_LAYER_PROPERTIES( { VECTOR2I( 0, 0 ) } ) );
+-
+-    return true;
+-}
+-
+-
+-bool LAYER_PROPERTIES_GRID_TABLE::DeleteRows( size_t aPos, size_t aNumRows )
+-{
+-    // aPos may be a large positive, e.g. size_t(-1), and the sum of
+-    // aPos+aNumRows may wrap here, so both ends of the range are tested.
+-    if( aPos < m_items.size() && aPos + aNumRows <= m_items.size() )
+-    {
+-        m_items.erase( m_items.begin() + (int) aPos, m_items.begin() + (int) aPos + (int) aNumRows );
+-
+-        if( GetView() )
+-        {
+-            wxGridTableMessage msg( this, wxGRIDTABLE_NOTIFY_ROWS_DELETED, (int) aPos, (int) aNumRows );
+-            GetView()->ProcessTableMessage( msg );
+-        }
+-
+-        return true;
+-    }
+-
+-    return false;
+-}
+-
+-
+-void LAYER_PROPERTIES_GRID_TABLE::onUnitsChanged( wxCommandEvent& aEvent )
+-{
+-    if( GetView() )
+-        GetView()->ForceRefresh();
+-
+-    aEvent.Skip();
+-}
+-
+-
+diff --git a/pcbnew/zone_layer_properties_grid.cpp b/pcbnew/zone_layer_properties_grid.cpp
+new file mode 100644
+--- /dev/null
++++ b/pcbnew/zone_layer_properties_grid.cpp
+@@ -0,0 +1,248 @@
++/*
++ * This program source code file is part of KiCad, a free EDA CAD application.
++ *
++ * Copyright (C) 2018 Jean-Pierre Charras, jp.charras at wanadoo.fr
++ * Copyright (C) 2012 SoftPLC Corporation, Dick Hollenbeck <dick@softplc.com>
++ * Copyright The KiCad Developers, see AUTHORS.txt for contributors.
++ *
++ * This program is free software; you can redistribute it and/or
++ * modify it under the terms of the GNU General Public License
++ * as published by the Free Software Foundation; either version 2
++ * of the License, or (at your option) any later version.
++ *
++ * This program is distributed in the hope that it will be useful,
++ * but WITHOUT ANY WARRANTY; without even the implied warranty of
++ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
++ * GNU General Public License for more details.
++ *
++ * You should have received a copy of the GNU General Public License
++ * along with this program; if not, you may find one here:
++ * http://www.gnu.org/licenses/old-licenses/gpl-2.0.html
++ * or you may search the http://www.gnu.org website for the version 2 license,
++ * or you may write to the Free Software Foundation, Inc.,
++ * 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA
++ */
++
++// Zone dialog helpers moved out of zone_settings.cpp, so the board model links no widgets.
++
++#include <zone_settings.h>
++#include <zone_layer_properties_grid.h>
++#include <pcb_base_frame.h>
++#include <board.h>
++#include <settings/color_settings.h>
++#include <widgets/color_swatch.h>
++#include <widgets/ui_common.h>
++#include <wx/dataview.h>
++
++
++#ifdef __WXOSX_MAC__
++const static wxSize LAYER_BITMAP_SIZE( 28, 28 );  // wxCocoa impl unhappy if this isn't square...
++#else
++const static wxSize LAYER_BITMAP_SIZE( 24, 16 );
++#endif
++
++const static wxSize CHECKERBOARD_SIZE( 8, 8 );
++
++
++// A helper for setting up a dialog list for specifying zone layers.  Used by all three
++// zone settings dialogs.
++void ZONE_SETTINGS::SetupLayersList( wxDataViewListCtrl* aList, PCB_BASE_FRAME* aFrame, LSET aLayers )
++{
++    BOARD* board = aFrame->GetBoard();
++    COLOR4D backgroundColor = aFrame->GetColorSettings()->GetColor( LAYER_PCB_BACKGROUND );
++
++    wxDataViewColumn* checkColumn = aList->AppendToggleColumn( wxEmptyString, wxDATAVIEW_CELL_ACTIVATABLE,
++                                                               wxCOL_WIDTH_DEFAULT, wxALIGN_CENTER );
++
++    wxDataViewColumn* layerColumn = aList->AppendIconTextColumn( wxEmptyString );
++    wxDataViewColumn* layerIDColumn = aList->AppendTextColumn( wxEmptyString );
++    layerIDColumn->SetHidden( true );
++
++    int textWidth = 0;
++
++    for( PCB_LAYER_ID layerID : aLayers.UIOrder() )
++    {
++        wxString layerName = board->GetLayerName( layerID );
++
++        // wxCOL_WIDTH_AUTOSIZE doesn't work on all platforms, so we calculate width here
++        textWidth = std::max( textWidth, KIUI::GetTextSize( layerName, aList ).x );
++
++        COLOR4D layerColor = aFrame->GetColorSettings()->GetColor( layerID );
++        auto bitmap = COLOR_SWATCH::MakeBitmap( layerColor, backgroundColor, LAYER_BITMAP_SIZE,
++                                                CHECKERBOARD_SIZE, aList->GetBackgroundColour() );
++        wxIcon icon;
++        icon.CopyFromBitmap( bitmap );
++
++        wxVector<wxVariant> row;
++        row.push_back( wxVariant( m_Layers.test( layerID ) ) );
++        row.push_back( wxVariant( wxDataViewIconText( layerName, icon ) ) );
++        row.push_back( wxVariant( wxString::Format( wxT( "%i" ), layerID ) ) );
++        aList->AppendItem( row );
++
++        if( m_Layers.test( layerID ) )
++            aList->SetToggleValue( true, (unsigned) aList->GetItemCount() - 1, 0 );
++    }
++
++    int checkColSize = aList->FromDIP( 22 );
++    int layerColSize = textWidth + LAYER_BITMAP_SIZE.x + aList->FromDIP( 15 );
++
++    // You'd think the fact that m_layers is a list would encourage wxWidgets not to save room
++    // for the tree expanders... but you'd be wrong.  Force indent to 0.
++    aList->SetIndent( 0 );
++
++    checkColumn->SetWidth( checkColSize );
++    layerColumn->SetWidth( layerColSize );
++
++#ifdef __WXMAC__
++    // TODO: something in wxWidgets 3.1.x pads checkbox columns with extra space.  (It used to
++    // also be that the width of the column would get set too wide (to 30), but that's patched in
++    // our local wxWidgets fork.)
++    checkColSize += 50;
++#endif
++
++    aList->SetMinClientSize( wxSize( checkColSize + layerColSize, aList->GetMinClientSize().y ) );
++}
++
++
++LAYER_PROPERTIES_GRID_TABLE::LAYER_PROPERTIES_GRID_TABLE( PCB_BASE_FRAME* aFrame, std::function<LSET()> getLayers ) :
++        m_frame( aFrame ),
++        m_getLayersFunc( getLayers )
++{
++    m_frame->Bind( EDA_EVT_UNITS_CHANGED, &LAYER_PROPERTIES_GRID_TABLE::onUnitsChanged, this );
++}
++
++
++LAYER_PROPERTIES_GRID_TABLE::~LAYER_PROPERTIES_GRID_TABLE()
++{
++    m_frame->Unbind( EDA_EVT_UNITS_CHANGED, &LAYER_PROPERTIES_GRID_TABLE::onUnitsChanged, this );
++}
++
++
++wxString LAYER_PROPERTIES_GRID_TABLE::GetValue( int aRow, int aCol )
++{
++    VECTOR2I offset = m_items[aRow].second.hatching_offset.value_or( VECTOR2I() );
++
++    switch( aCol )
++    {
++    case 1:  return m_frame->StringFromValue( offset.x, true );
++    case 2:  return m_frame->StringFromValue( offset.y, true );
++
++    default:
++        // we can't assert here because wxWidgets sometimes calls this without checking
++        // the column type when trying to see if there's an overflow
++        return wxT( "bad wxWidgets!" );
++    }
++}
++
++
++void LAYER_PROPERTIES_GRID_TABLE::SetValue( int aRow, int aCol, const wxString& aValue )
++{
++    VECTOR2I offset = m_items[aRow].second.hatching_offset.value_or( VECTOR2I() );
++
++    switch( aCol )
++    {
++    case 1:  offset.x = m_frame->ValueFromString( aValue );                           break;
++    case 2:  offset.y = m_frame->ValueFromString( aValue );                           break;
++    default: wxFAIL_MSG( wxString::Format( wxT( "column %d isn't a long" ), aCol ) ); break;
++    }
++
++    m_items[aRow].second.hatching_offset = offset;
++}
++
++
++long LAYER_PROPERTIES_GRID_TABLE::GetValueAsLong( int aRow, int aCol )
++{
++    switch( aCol )
++    {
++    case 0:  return m_items[aRow].first;
++    default: wxFAIL_MSG( wxString::Format( wxT( "column %d isn't a long" ), aCol ) ); return -1;
++    }
++}
++
++
++void LAYER_PROPERTIES_GRID_TABLE::SetValueAsLong( int aRow, int aCol, long aValue )
++{
++    switch( aCol )
++    {
++    case 0:  m_items[aRow].first = ToLAYER_ID( (int) aValue );                        break;
++    default: wxFAIL_MSG( wxString::Format( wxT( "column %d isn't a long" ), aCol ) ); break;
++    }
++}
++
++
++void LAYER_PROPERTIES_GRID_TABLE::AddItem( PCB_LAYER_ID aLayer, const ZONE_LAYER_PROPERTIES& aProps )
++{
++    m_items.emplace_back( std::make_pair( aLayer, aProps ) );
++
++    if( GetView() )
++    {
++        wxGridTableMessage msg( this, wxGRIDTABLE_NOTIFY_ROWS_APPENDED, 1 );
++        GetView()->ProcessTableMessage( msg );
++    }
++}
++
++
++bool LAYER_PROPERTIES_GRID_TABLE::AppendRows( size_t aNumRows )
++{
++    PCB_LAYER_ID next = UNDEFINED_LAYER;
++
++    auto contains =
++            [&]( PCB_LAYER_ID candidate )
++            {
++                for( const auto& [l, props] : m_items )
++                {
++                    if( candidate == l )
++                        return true;
++                }
++
++                return false;
++            };
++
++    for( PCB_LAYER_ID layer : m_getLayersFunc().UIOrder() )
++    {
++        if( !contains( layer ) )
++        {
++            next = layer;
++            break;
++        }
++    }
++
++    if( next == UNDEFINED_LAYER )
++        return false;
++
++    AddItem( next, ZONE_LAYER_PROPERTIES( { VECTOR2I( 0, 0 ) } ) );
++
++    return true;
++}
++
++
++bool LAYER_PROPERTIES_GRID_TABLE::DeleteRows( size_t aPos, size_t aNumRows )
++{
++    // aPos may be a large positive, e.g. size_t(-1), and the sum of
++    // aPos+aNumRows may wrap here, so both ends of the range are tested.
++    if( aPos < m_items.size() && aPos + aNumRows <= m_items.size() )
++    {
++        m_items.erase( m_items.begin() + (int) aPos, m_items.begin() + (int) aPos + (int) aNumRows );
++
++        if( GetView() )
++        {
++            wxGridTableMessage msg( this, wxGRIDTABLE_NOTIFY_ROWS_DELETED, (int) aPos, (int) aNumRows );
++            GetView()->ProcessTableMessage( msg );
++        }
++
++        return true;
++    }
++
++    return false;
++}
++
++
++void LAYER_PROPERTIES_GRID_TABLE::onUnitsChanged( wxCommandEvent& aEvent )
++{
++    if( GetView() )
++        GetView()->ForceRefresh();
++
++    aEvent.Skip();
++}
++
++
+diff --git a/pcbnew/CMakeLists.txt b/pcbnew/CMakeLists.txt
+--- a/pcbnew/CMakeLists.txt
++++ b/pcbnew/CMakeLists.txt
+@@ -51,6 +51,7 @@
+     dialogs/dialog_cleanup_tracks_and_vias.cpp
+     dialogs/dialog_cleanup_tracks_and_vias_base.cpp
+     dialogs/dialog_copper_zones.cpp
++    zone_layer_properties_grid.cpp
+     dialogs/dialog_copper_zones_base.cpp
+     dialogs/dialog_create_array.cpp
+     dialogs/dialog_create_array_base.cpp

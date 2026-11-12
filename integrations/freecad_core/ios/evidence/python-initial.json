@@ -1,0 +1,93 @@
+{
+  "schema": 1,
+  "scope": "Initial CPython static embedding only; not FreeCAD F3 acceptance",
+  "run_url": "https://github.com/Corvusar/corvcad/actions/runs/40192622311",
+  "repository_commit": "b32726ddf885f2e0badc6acd5160ff49f20e0f86",
+  "platforms": {
+    "simulator": {
+      "artifact_id": 12599030073,
+      "artifact_sha256": "fb177fa3a21710231642b77566a237fd1b2383682648c35936250749a04f92b7",
+      "build": {
+        "schema": 1,
+        "sdk": "iphonesimulator",
+        "target": "arm64-apple-ios17.0-simulator",
+        "source": {
+          "version": "3.13.7",
+          "url": "https://www.python.org/ftp/python/3.13.7/Python-3.13.7.tar.xz",
+          "sha256": "5462f9099dfd30e238def83c71d91897d8caa5ff6ebc7a50f14d4802cdaaa79a",
+          "license": "PSF-2.0 and bundled component notices in LICENSE"
+        },
+        "archive_bytes": 45995272,
+        "stdlib_bytes": 22546842,
+        "static_archives": [
+          "libpython3.13.a",
+          "Modules/_decimal/libmpdec/libmpdec.a",
+          "Modules/_hacl/libHacl_Hash_SHA2.a",
+          "Modules/expat/libexpat.a"
+        ],
+        "xcode": "Xcode 16.4\nBuild version 16F6",
+        "sdk_version": "18.5"
+      },
+      "macho_build": " 11\n      cmd LC_BUILD_VERSION\n  cmdsize 32\n platform IOSSIMULATOR\n    minos 17.0\n      sdk 18.5\n   ntools 1\n     tool LD\n  version 1167.5\n",
+      "runtime_test": true,
+      "probe": {
+        "schema": 1,
+        "passed": true,
+        "scope": "CPython and synthetic inittab module only",
+        "python": "3.13.7 (main, Oct 25 2026, 12:21:05) [Clang 17.0.0 (clang-1700.0.13.5)]",
+        "platform": "ios",
+        "extension_origins": {
+          "math": "built-in",
+          "_struct": "built-in",
+          "_datetime": "built-in",
+          "binascii": "built-in",
+          "zlib": "built-in",
+          "_json": "built-in",
+          "_pickle": "built-in",
+          "_random": "built-in",
+          "_sha2": "built-in",
+          "pyexpat": "built-in",
+          "_elementtree": "built-in",
+          "unicodedata": "built-in",
+          "array": "built-in"
+        },
+        "smoke_seconds": 0.00023620799998980146
+      },
+      "simulator": {
+        "runtime_version": "26.2",
+        "runtime_build": "23C54",
+        "device_type": "iPad Pro (12.9-inch) (3rd generation)"
+      },
+      "resident_bytes_after_probe_from_job_log": 40894464,
+      "measurement_limit": "The old size tool output includes virtual __PAGEZERO and is not executable file size. New file-size/Mach-O/RSS validation was added in cba1c04 but its runner never started due account billing. No FreeCAD geometry memory/recompute result is measured."
+    },
+    "device": {
+      "artifact_id": 12597899965,
+      "artifact_sha256": "be08461a56185a615b27bf5d4c32ff60ec12b4aa669879c7d465c1dcc726ba40",
+      "build": {
+        "schema": 1,
+        "sdk": "iphoneos",
+        "target": "arm64-apple-ios17.0",
+        "source": {
+          "version": "3.13.7",
+          "url": "https://www.python.org/ftp/python/3.13.7/Python-3.13.7.tar.xz",
+          "sha256": "5462f9099dfd30e238def83c71d91897d8caa5ff6ebc7a50f14d4802cdaaa79a",
+          "license": "PSF-2.0 and bundled component notices in LICENSE"
+        },
+        "archive_bytes": 45947424,
+        "stdlib_bytes": 22546842,
+        "static_archives": [
+          "libpython3.13.a",
+          "Modules/_decimal/libmpdec/libmpdec.a",
+          "Modules/_hacl/libHacl_Hash_SHA2.a",
+          "Modules/expat/libexpat.a"
+        ],
+        "xcode": "Xcode 16.4\nBuild version 16F6",
+        "sdk_version": "18.5"
+      },
+      "macho_build": " 11\n      cmd LC_BUILD_VERSION\n  cmdsize 32\n platform IOS\n    minos 17.0\n      sdk 18.5\n   ntools 1\n     tool LD\n  version 1167.5\n",
+      "runtime_test": false,
+      "measurement_limit": "The old size tool output includes virtual __PAGEZERO and is not executable file size. New file-size/Mach-O/RSS validation was added in cba1c04 but its runner never started due account billing. No FreeCAD geometry memory/recompute result is measured."
+    }
+  }
+}
