@@ -5,7 +5,8 @@ import SwiftUI
 struct LicensesView: View {
     let onClose: () -> Void
 
-    static let sourceURL = URL(string: "https://github.com/Corvusar/corvcad")!
+    /// Each release carries its build's complete corresponding source beside the IPA.
+    static let sourceURL = URL(string: "https://github.com/Corvusar/corvcad/releases")!
     private static let notices: [URL] = (Bundle.main.url(forResource: "notices", withExtension: nil))
         .flatMap { try? FileManager.default.contentsOfDirectory(at: $0, includingPropertiesForKeys: nil) }?
         .sorted { $0.lastPathComponent < $1.lastPathComponent } ?? []

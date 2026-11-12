@@ -5,9 +5,12 @@
 #   release_native.sh <corvcad-git-checkout> <build-dir> <kicad-checkout> <output-dir>
 # <build-dir> holds kicad-probe/ (probe build + ios_sweep-device objects), wx-ios/ (wx_ios.sh)
 # and ios-deps/ (ios_deps.sh). <kicad-checkout> is the fetch.py checkout with the patch series.
+# VERSION=<x.y.z> sets the app's version and names the IPA after it. <kicad-checkout> must hold
+# every KiCad blob (fetch.py --full-source), since the source archive is taken from it.
 set -euo pipefail
 REPO=$(cd "$1" && pwd); B=$(cd "$2" && pwd); K=$(cd "$3" && pwd); OUT=$4
-REV=$(git -C "$REPO" rev-parse --short=12 HEAD)
+REV=${VERSION:-$(git -C "$REPO" rev-parse --short=12 HEAD)}
+export TARGETS=device   # ios_package.sh: only the device slice is built for a release
 lock() { python3 -c "import json,sys; d=json.load(open(sys.argv[1])); print(d['$1']['$2'])" "$REPO/integrations/kicad_core/upstream.json"; }
 mkdir -p "$OUT/source" && OUT=$(cd "$OUT" && pwd)
 
@@ -18,7 +21,8 @@ bash "$REPO/integrations/kicad_core/probe/ios_package.sh" "$B/kicad-probe" "$B/w
 (cd "$REPO/app" && xcodegen generate -q)
 xcodebuild build -project "$REPO/app/CorvCAD.xcodeproj" -scheme CorvCAD -configuration Release \
   -destination 'generic/platform=iOS' -derivedDataPath "$OUT/DerivedData" \
-  NATIVE_KICAD=YES KICAD_PACKAGE="$B/kicad-probe/package" CODE_SIGNING_ALLOWED=NO > "$OUT/xcodebuild.log" 2>&1
+  NATIVE_KICAD=YES KICAD_PACKAGE="$B/kicad-probe/package" CODE_SIGNING_ALLOWED=NO ${VERSION:+MARKETING_VERSION=$VERSION} \
+  > "$OUT/xcodebuild.log" 2>&1 || { grep -E 'error:' "$OUT/xcodebuild.log" | sort -u | head -40; exit 1; }
 rm -rf "$OUT/Payload" && mkdir "$OUT/Payload"
 cp -R "$OUT/DerivedData/Build/Products/Release-iphoneos/CorvCAD.app" "$OUT/Payload/"
 (cd "$OUT" && rm -f "CorvCAD-KiCad-$REV-unsigned.ipa" && zip -qr "CorvCAD-KiCad-$REV-unsigned.ipa" Payload)
@@ -28,10 +32,11 @@ cp -R "$OUT/DerivedData/Build/Products/Release-iphoneos/CorvCAD.app" "$OUT/Paylo
 # recipes and downloaded source archives for every dependency.
 S=$OUT/source
 git -C "$REPO" archive --prefix="corvcad/" -o "$S/corvcad-$REV.tar.gz" HEAD
+[ -z "$(git -C "$REPO" status --porcelain --untracked-files=no)" ] || { echo "CorvCAD checkout has local changes"; exit 1; }
 git -C "$K" archive --prefix="kicad/" -o "$S/kicad-$(lock schematic_source tag).tar.gz" "$(lock schematic_source commit)"
 cp "$B/wx-ios/wx.tar.bz2" "$S/wxWidgets-$(lock wxwidgets version).tar.bz2"
 git -C "$B/ios-deps/vcpkg" archive --prefix="vcpkg/" -o "$S/vcpkg-$(lock vcpkg commit).tar.gz" "$(lock vcpkg commit)"
-tar -czf "$S/vcpkg-downloads.tar.gz" -C "$B/ios-deps/vcpkg" downloads
+tar -czf "$S/vcpkg-downloads.tar.gz" -C "$B/ios-deps/vcpkg" --exclude downloads/tools --exclude 'downloads/*.part' downloads
 # ngspice, when the build has it (the probe build's NGSPICE_BUILD): the pinned release tarball.
 NG=$(sed -n 's/^NGSPICE_BUILD:[A-Z]*=//p' "$B/kicad-probe/CMakeCache.txt")
 NGNOTE=
