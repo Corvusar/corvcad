@@ -10,11 +10,11 @@ A development-only LiveContainer tweak (`CorvProbe.m`) plus a desktop client (`g
 - **Files:** upload, list and download under the app's Documents.
 - **Logs (`/log`):** the app's own os_log entries (OSLogStore, current process) and the last 2,000 lines of its stdout and stderr. KiCad's and wxWidgets' messages go there. The tweak redirects both through a pipe at load and still passes them on to the original stderr.
 - **Screen (`/snapshot`):** a PNG of the app's key window, for checking the UI remotely.
-- **Engine runs (`/run`):** the app opens a project's schematic with its own session backend (KiCad's model in the `NATIVE_KICAD` edition) and returns KiCad's netlist, ERC report and BOM with timings, and plots it to PDF and SVG (`CC_SCH_PLOT`). It also parses a board and, with KiCad's board code, runs DRC and writes the fabrication outputs, the board plot, Board Setup and the ratsnest (`fab`, `board-plot`, `board-setup`, `ratsnest`). Written files go to `Documents/Diagnostics/` and every reply carries the app's memory footprint. This needs an IPA built with the `CORVCAD_DIAGNOSTICS` Swift condition; `.circleci/config.yml`'s `native-ipa` job builds one.
+- **Engine runs (`/run`):** the app opens a project's schematic with its own session backend (KiCad's model in the `NATIVE_KICAD` edition) and returns KiCad's netlist, ERC report and BOM with timings, and plots it to PDF and SVG (`CC_SCH_PLOT`). It also parses a board and, with KiCad's board code, runs DRC and writes the fabrication outputs, the board plot, Board Setup and the ratsnest (`fab`, `board-plot`, `board-setup`, `ratsnest`). Written files go to `Documents/Diagnostics/` and every reply carries the app's memory footprint. This needs an IPA built with the `CORVCAD_DIAGNOSTICS` Swift condition; pass `'SWIFT_ACTIVE_COMPILATION_CONDITIONS=$(inherited) CORVCAD_DIAGNOSTICS'` to `xcodebuild`.
 
 ## Build
 
-The **CorvProbe tweak** GitHub workflow (manual) builds an ad-hoc signed arm64 `CorvProbe.dylib` and pushes it to the `ci/corvprobe` branch. CircleCI's `corvprobe` workflow does the same. Locally on a Mac:
+The **CorvProbe tweak** GitHub workflow (manual) builds an ad-hoc signed arm64 `CorvProbe.dylib` and pushes it to the `ci/corvprobe` branch. Locally on a Mac:
 
 ```sh
 xcrun --sdk iphoneos clang -arch arm64 -miphoneos-version-min=17.0 -dynamiclib -fobjc-arc \

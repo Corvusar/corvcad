@@ -33,4 +33,4 @@ This is an incremental project. Describe implemented behavior precisely; do not 
 
 - Portable engine: `cmake -S engine -B build/engine -DCMAKE_BUILD_TYPE=Release`, `cmake --build build/engine`, `ctest --test-dir build/engine --output-on-failure`.
 - KiCad desktop adapter and validation: see `docs/KICAD_INTEGRATION.md`.
-- iPad app and unsigned IPA workflows: see `README.md`, `app/project.yml`, `.github/workflows/`, and `codemagic.yaml`. An unsigned IPA needs an appropriate installation/signing route. CorvCAD's current native code does not require JIT.
+- iPad app and unsigned IPA workflows: see `README.md`, `app/project.yml`, and `.github/workflows/`. An unsigned IPA needs an appropriate installation/signing route. CorvCAD's current native code does not require JIT.

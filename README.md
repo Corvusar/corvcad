@@ -161,7 +161,7 @@ Then pass `NATIVE_KICAD=YES`, `NATIVE_FREECAD=YES` or both to `xcodebuild`.
 
 ### Install on an iPad
 
-An unsigned IPA cannot be installed on an iPad as it is. Either build from source in Xcode with your own signing team, or sign the IPA yourself. The `codemagic.yaml` and GitHub workflows (all started by hand) build `CorvCAD-unsigned.ipa`. [LiveContainer](https://github.com/LiveContainer/livecontainer.github.io/blob/main/docs/installation/standalone.md) with an AltStore or SideStore certificate is one route; CorvCAD does not need JIT.
+An unsigned IPA cannot be installed on an iPad as it is. Either build from source in Xcode with your own signing team, or sign the IPA yourself. The GitHub workflow `ci.yml` (started by hand) builds `CorvCAD-unsigned.ipa`. [LiveContainer](https://github.com/LiveContainer/livecontainer.github.io/blob/main/docs/installation/standalone.md) with an AltStore or SideStore certificate is one route; CorvCAD does not need JIT.
 
 ## Repository layout
 

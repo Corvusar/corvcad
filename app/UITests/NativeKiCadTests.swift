@@ -1,6 +1,6 @@
 import XCTest
 
-/// The NATIVE_KICAD edition's KiCad features by touch, in a simulator (CircleCI native-sim).
+/// The NATIVE_KICAD edition's KiCad features by touch, in a simulator.
 /// Needs three projects in Documents/Projects, copied in by CI: ecc83-pp (KiCad's demo),
 /// ecc83-unrouted (the same with its tracks and vias removed) and erc-roundtrip (the engine's
 /// RoundTrip fixture, files named after the folder). Skipped in the compatible
