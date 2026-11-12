@@ -193,6 +193,8 @@ jobs:
             bash integrations/freecad_core/ios/deps.sh build/freecad-ios/deps arm64-ios-simulator > build/dependencies-build.log 2>&1 && break
             [ $attempt = 3 ] && { tail -100 build/dependencies-build.log; exit 1; }; echo "attempt $attempt failed"; sleep 60
           done
+          python3 integrations/freecad_core/ios/dependency_inventory.py build/freecad-ios/deps/installed arm64-ios-simulator \
+            build/freecad-ios/deps/inventory-arm64-ios-simulator.json --verify-target
           python3 integrations/freecad_core/ios/build_python.py --sdk iphonesimulator \
             --deps build/freecad-ios/deps/installed/arm64-ios-simulator --jobs 3 > build/python-build.log 2>&1 \
             || { tail -100 build/python-build.log; exit 1; }
