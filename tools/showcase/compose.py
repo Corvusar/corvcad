@@ -96,9 +96,11 @@ def font(name, size, weight=None):
     f = skia.Font(tf, size); f.setSubpixel(True); f.setEdging(skia.Font.Edging.kSubpixelAntiAlias)
     return f
 
-MONO = lambda s: font("SF Mono", s) if skia.FontMgr().matchFamilyStyle("SF Mono", skia.FontStyle()) else font("Menlo", s)
-DISPLAY = lambda s, w=skia.FontStyle.kLight_Weight: font("SF Pro Display", s, w) if skia.FontMgr().matchFamilyStyle(
-    "SF Pro Display", skia.FontStyle()) else font("Helvetica Neue", s, w)
+installed = lambda *names: next((n for n in names if skia.FontMgr().matchFamilyStyle(n, skia.FontStyle())), names[-1])
+MONO_FAMILY = installed("SF Mono", "Menlo", "Consolas")  # Consolas: rendering on Windows
+DISPLAY_FAMILY = installed("SF Pro Display", "Helvetica Neue", "Segoe UI")
+MONO = lambda s: font(MONO_FAMILY, s)
+DISPLAY = lambda s, w=skia.FontStyle.kLight_Weight: font(DISPLAY_FAMILY, s, w)
 GOLD = skia.Color4f(0.91, 0.77, 0.55, 1)
 CYAN = skia.Color4f(0.62, 0.97, 1.0, 1)
 STEEL = skia.Color4f(0.62, 0.66, 0.72, 1)
@@ -137,31 +139,42 @@ BACKGROUND = bg_surface.makeImageSnapshot()
 
 # --- Sources -------------------------------------------------------------------------------------
 class Reader:
-    """Frames of one segment at 60 fps, already cropped/zoomed and scaled to the screen size."""
-    def __init__(self, path, start, length, speed, focus):
+    """Frames of one segment at 60 fps, scaled to the screen size. A focus push-in eases from its first
+    to its second rect over the segment; `done` is how far into it the reader starts (stills).
+    The push-in is cropped here, per frame: ffmpeg's crop evaluates its size only once."""
+    def __init__(self, path, start, length, speed, focus, done=0.0):
         sx, sy, sw, sh = SCREEN
         self.size = (sw, sh)
+        self.focus, self.done, self.i = focus, done, 0
         probe = json.loads(subprocess.check_output(["ffprobe", "-v", "error", "-select_streams", "v:0", "-show_entries",
                                                      "stream=width,height", "-of", "json", str(path)]))["streams"][0]
         rotate = "transpose=2," if probe["height"] > probe["width"] else ""
-        n = max(1, round(length / speed * FPS))
-        crop = ""
+        self.n = n = max(1, round(length / speed * FPS))
+        size = f"{SIM_W}:{SIM_H}" if focus else f"{sw}:{sh}:flags=lanczos"
+        self.decoded = (SIM_W, SIM_H) if focus else (sw, sh)
         if focus:
-            (ax, ay, aw, ah), (bx, by, bw, bh) = focus
-            d = f"(t/{length:.4f})"
-            e = f"({d}*{d}*(3-2*{d}))"
-            crop = (f"crop=w='{aw}+({bw}-{aw})*{e}':h='{ah}+({bh}-{ah})*{e}':x='{ax}+({bx}-{ax})*{e}':"
-                    f"y='{ay}+({by}-{ay})*{e}':exact=1,")
-        vf = f"{rotate}scale={SIM_W}:{SIM_H},{crop}scale={sw}:{sh}:flags=lanczos,setpts=(PTS-STARTPTS)/{speed:.5f},fps={FPS}"
+            self.surface = skia.Surface(sw, sh)
+        vf = f"{rotate}scale={size},setpts=(PTS-STARTPTS)/{speed:.5f},fps={FPS}"
         self.proc = subprocess.Popen(["ffmpeg", "-loglevel", "error", "-ss", f"{max(0, start):.3f}", "-i", str(path),
                                       "-t", f"{length:.3f}", "-vf", vf, "-frames:v", str(n), "-f", "rawvideo",
                                       "-pix_fmt", "rgba", "-"], stdout=subprocess.PIPE)
         self.last = None
     def frame(self):
-        sw, sh = self.size
-        raw = self.proc.stdout.read(sw * sh * 4)
-        if len(raw) == sw * sh * 4:
-            self.last = np.frombuffer(raw, np.uint8).reshape(sh, sw, 4)
+        dw, dh = self.decoded
+        raw = self.proc.stdout.read(dw * dh * 4)
+        if len(raw) == dw * dh * 4:
+            img = np.frombuffer(raw, np.uint8).reshape(dh, dw, 4)
+            if self.focus:
+                (ax, ay, aw, ah), (bx, by, bw, bh) = self.focus
+                e = ease(self.done + (1 - self.done) * self.i / self.n)
+                src = skia.Rect.MakeXYWH(ax + (bx - ax) * e, ay + (by - ay) * e, aw + (bw - aw) * e, ah + (bh - ah) * e)
+                image = skia.Image.fromarray(np.ascontiguousarray(img), colorType=skia.kRGBA_8888_ColorType)
+                sw, sh = self.size
+                self.surface.getCanvas().drawImageRect(image, src, skia.Rect.MakeWH(sw, sh),
+                                                       skia.SamplingOptions(skia.CubicResampler.Mitchell()))
+                img = self.surface.makeImageSnapshot().toarray(colorType=skia.kRGBA_8888_ColorType)
+            self.last = img
+        self.i += 1
         return self.last
 
 def focus_rect(name, take, vports):
@@ -359,7 +372,7 @@ def main():
                 if current is not seg or stills:
                     focus = focus_rect(focus_name, take_name, vports) if focus_name else None
                     off = (t - t0) * speed if stills else 0
-                    reader = Reader(takes_dir / f"{take_name}.mp4", src_a + off, length - off, speed, focus)
+                    reader = Reader(takes_dir / f"{take_name}.mp4", src_a + off, length - off, speed, focus, off / length)
                     current = seg
                 img = reader.frame()
                 last_frame = img if img is not None else last_frame
