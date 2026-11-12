@@ -15,6 +15,9 @@ on:
       xcode:
         description: Xcode version to select (falls back to the newest 26.x)
         default: "26.2"
+      editions:
+        description: Which jobs to run (kicad, freecad or both)
+        default: both
 
 permissions:
   contents: read
@@ -26,6 +29,7 @@ env:
 jobs:
   kicad:
     name: Takes A-D (KiCad edition)
+    if: inputs.editions != 'freecad'
     runs-on: ${{ inputs.runner }}
     timeout-minutes: 360
     steps:
@@ -107,7 +111,7 @@ jobs:
                   out.write("\n".join(sorted(unit(p) for p in profiles[profile]["closure"])) + "\n")
           EOF
           IOS_TARGET=sim bash integrations/kicad_core/probe/ios_sweep.sh build/kicad-probe \
-            build/wx-ios/build-sim "$(sysctl -n hw.ncpu)" build/ios-deps/installed/arm64-ios-simulator
+            build/wx-ios/build-sim "$(sysctl -n hw.ncpu)" build/ios-deps/installed/arm64-ios-simulator || true  # exits non-zero by design; failed.txt decides
           [ ! -f build/kicad-probe/ios_sweep/failed.txt ] || { cat build/kicad-probe/ios_sweep/first_errors.txt; exit 1; }
           TARGETS=sim bash integrations/kicad_core/probe/ios_package.sh build/kicad-probe build/wx-ios build/ios-deps/installed
           (cd app && xcodegen generate -q)
@@ -147,9 +151,11 @@ jobs:
           path: |
             build/takes
             build/*.log
+            build/kicad-probe/ios_sweep/first_errors.txt
 
   freecad:
     name: Takes E-H (FreeCAD edition)
+    if: inputs.editions != 'kicad'
     runs-on: ${{ inputs.runner }}
     timeout-minutes: 360
     env:
