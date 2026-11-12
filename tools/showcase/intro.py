@@ -395,7 +395,7 @@ def scene(t, i):
             origin = at_s(orb_s(born))
             p_ = origin + np.array([math.cos(angle * 6.283), math.sin(angle * 6.283)]) * (0.8 + 3.5 * speed) * age
             sx, sy = m.mapXY(*p_)
-            fade = (1 - age / 0.55) ** 1.4 * (1 - 0.7 * rise)
+            fade = max(0.0, 1 - age / 0.55) ** 1.4 * (1 - 0.7 * rise)   # age can round a hair past 0.55
             c.drawCircle(sx, sy, (1.2 + 2.4 * size) * (1 - 0.4 * rise), paint(CYAN, 0.85 * fade, blur=1.5, plus=True))
     # The orb: core, halo, starburst, anamorphic streak and lens ghosts.
     if t < IGNITE:      # sputtering before it catches

@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Cut the showcase: intro + simulator takes + captions + finale, on the music's beat grid.
 
-  compose.py <music dir> <takes dir> <intro.mp4> <out.mp4> [--from S --to S] [--stills t1,t2]
+  compose.py <music dir> <takes dir> <intro.mp4> <out.mp4> [--from S --to S] [--stills t1,t2] [--jobs N]
 
 Each segment maps a take's span between two SHOWCASE-MARKs into a window of the music; the speed
 follows from the two lengths and is shown as a "xN" badge when the footage runs faster than 1.5x.
@@ -42,7 +42,7 @@ EDL = [
     (S(31.2), S(41.2), "testA_SchematicToBoard", "sheet", "opamp",
      cap("01 — SCHEMATIC", "Parts from KiCad's libraries.", "Symbol picker · footprint chooser"), None),
     (S(41.2), S(49.2), "testA_SchematicToBoard", "opamp", "power",
-     cap("01 — SCHEMATIC", "An input buffer, in place.", "Op-amp · gain network · decoupling"), "stage"),
+     cap("01 — SCHEMATIC", "An input buffer, in place.", "Op-amp · gain network · decoupling"), None),
     (S(49.2), S(55.2), "testA_SchematicToBoard", "power", "labels",
      cap("01 — SCHEMATIC", "Wires that route themselves.", "Right angles · junctions · net labels"), "stage"),
     (S(55.2), S(61.2), "testA_SchematicToBoard", "labels", "annotated",
@@ -54,7 +54,7 @@ EDL = [
     (S(73.2), S(79.2), "testA_SchematicToBoard", "pcb", "updateReport",
      cap("02 — BOARD", "Update PCB from Schematic.", "KiCad's own netlist transfer"), None),
     (S(79.2), S(89.2), "testA_SchematicToBoard", "updateReport", "placed",
-     cap("02 — BOARD", "Placed by hand.", "Hold, move, drop"), "strip"),
+     cap("02 — BOARD", "Placed to the millimetre.", "Pick a part · X and Y · apply"), None),
     (S(89.2), S(97.2), "testA_SchematicToBoard", "placed", "routed",
      cap("02 — BOARD", "KiCad's interactive router.", "Walk-around · shove · vias"), "strip"),
     (S(97.2), S(103.2), "testA_SchematicToBoard", "routed", "end",
@@ -350,7 +350,28 @@ def finale(c, t, last_frame):
 def main():
     start = float(opt("--from", 0)); stop = float(opt("--to", DUR))
     stills = [float(v) for v in opt("--stills").split(",")] if opt("--stills") else None
-    times = stills or [i / FPS for i in range(int(start * FPS), int(stop * FPS))]
+    times = stills or [i / FPS for i in range(round(start * FPS), round(stop * FPS))]
+    jobs = int(opt("--jobs", 1))
+    if jobs > 1 and not stills:
+        # Parts cut at segment starts (never between the last take and the finale, which fades
+        # from that take's last frame), rendered side by side, then joined under the music.
+        cuts = [INTRO_END] + [s[0] for s in EDL[1:]]
+        edges = sorted({min(cuts, key=lambda c_: abs(c_ - DUR * k / jobs)) for k in range(1, jobs)})
+        spans = list(zip([0.0] + edges, edges + [DUR]))
+        parts = [out_path.with_name(f"{out_path.stem}.part{k}.mp4") for k in range(len(spans))]
+        procs = [subprocess.Popen([sys.executable, __file__, str(music_dir), str(takes_dir), str(intro_path), str(part),
+                                   "--from", f"{a:.4f}", "--to", f"{b:.4f}"]) for part, (a, b) in zip(parts, spans)]
+        if any(p.wait() for p in procs):
+            sys.exit("a part failed")
+        listing = out_path.with_suffix(".parts.txt")
+        listing.write_text("".join(f"file '{p.resolve().as_posix()}'\n" for p in parts))
+        subprocess.run(["ffmpeg", "-y", "-loglevel", "error", "-f", "concat", "-safe", "0", "-i", str(listing),
+                        "-i", str(music_dir / "Discovery.mp3"), "-map", "0:v", "-map", "1:a", "-c:v", "copy",
+                        "-c:a", "aac", "-b:a", "320k", "-t", f"{DUR:.3f}", "-movflags", "+faststart", str(out_path)], check=True)
+        for p in parts + [listing]:
+            p.unlink()
+        print("done", out_path)
+        return
     takes = {}
     def take(name):
         if name not in takes:
@@ -401,7 +422,7 @@ def main():
                     before = EDL[EDL.index(seg) - 1] if EDL.index(seg) else None
                     zoomed = before is not None and before[2] == take_name and before[6] == focus_name
                     focus = ((target if zoomed else (0, 0, SIM_W, SIM_H)), target) if target else None
-                    off = (t - t0) * speed if stills else 0
+                    off = (t - t0) * speed   # mid-segment for a still or a part that starts inside it
                     reader = Reader(takes_dir / f"{take_name}.mp4", src_a + off, length - off, speed, focus, off / length,
                                     push=min(1.0, 2.0 / (t1 - t0)))  # the push-in takes one bar
                     current = seg
