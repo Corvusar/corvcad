@@ -2,7 +2,8 @@
 
 <p align="center">
   <strong>From the first wire to the box that holds it.</strong><br>
-  A touch-first workspace for iPad that carries an electronic design from schematic, to circuit board, to enclosure.
+  A touch-first workspace for iPad that carries an electronic design from schematic, to circuit board, to enclosure.<br>
+  A <a href="https://corvusar.com">Corvusar</a> project.
 </p>
 
 <p align="center">
