@@ -264,6 +264,11 @@ and an unsigned Release arm64 combined app link passed on 2026-10-29 with only s
 libraries and the FreeCAD runtime, KiCad libraries and notices bundled
 ([arm64 evidence](../integrations/native_workspace/evidence/imac-combined-app-arm64.json)).
 ~~That app has not run on a device.~~ **UPDATE 2026-11-14:** a combined diagnostics IPA (`f9b86a6`, built on the iMac) ran on a physical iPad Air (M2) on 2026-10-31; see the [combined probe pass](KICAD_CORE_PORT.md).
+**UPDATE 2026-11-14:** `.github/workflows/combined.yml` now runs this recipe on GitHub's arm64
+runners, with KiCad's simulator (ngspice) compiled in instead of the stand-in. Its first run
+(43593815096, version 0.2.0, about 2 h 15 min) produced an unsigned Release IPA and its complete
+corresponding source (`release_native.sh`); `release.yml` builds it as the `combined` edition.
+That IPA has not run on a device.
 
 1. One reproducible union recipe, checked target package features/ABI hashes,
    actual source/header closure, archive hashes and complete notices.
