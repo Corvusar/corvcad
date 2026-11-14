@@ -14,4 +14,4 @@ Issues in KiCad, FreeCAD, Open CASCADE, ngspice or another bundled component bel
 
 ## Supported versions
 
-There are no releases yet. Fixes land on `main`.
+Fixes land on `main` and in the next release; earlier releases are not patched.

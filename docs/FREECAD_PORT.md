@@ -1,6 +1,6 @@
 # FreeCAD engine port: research and gates
 
-Researched 2026-10-24; desktop proof added 2026-10-25 by Codex. This is an experimental port record, not a shipped feature. The isolated [F1 tooling](../integrations/freecad_core/README.md) now generates and validates a parametric enclosure in stock FreeCAD 1.1.4 on Windows and Linux. The pinned source has also been fetched and verified outside the tracked tree, and the isolated F2 headless source slice now passes both model proofs, upstream suites and reviewed input-lock comparisons on Linux and macOS. FreeCAD is not linked into the engine or app. The owner decided on 2026-10-24 that the mechanical side of CorvCAD (enclosure, bores, cutouts, lid, STEP) belongs to a FreeCAD engine port, the way the electronics side is moving to KiCad's own model ([KiCad core port](KICAD_CORE_PORT.md)). The current dependency-free C++ enclosure mesh stays as the fallback until a gate below replaces it.
+Researched 2026-10-24; desktop proof added 2026-10-25 by Codex. ~~This is an experimental port record, not a shipped feature.~~ **UPDATE 2026-11-14:** the port ships as the `NATIVE_FREECAD` edition (F4 accepted 2026-10-28, iPad STEP gate 2026-10-31, unsigned IPA in [release v0.1.0](https://github.com/Corvusar/corvcad/releases/tag/v0.1.0)); this page is its record. The isolated [F1 tooling](../integrations/freecad_core/README.md) now generates and validates a parametric enclosure in stock FreeCAD 1.1.4 on Windows and Linux. The pinned source has also been fetched and verified outside the tracked tree, and the isolated F2 headless source slice now passes both model proofs, upstream suites and reviewed input-lock comparisons on Linux and macOS. ~~FreeCAD is not linked into the engine or app.~~ (**UPDATE 2026-11-14:** it is linked into the `NATIVE_FREECAD` app edition; the portable engine and default edition stay FreeCAD-free.) The owner decided on 2026-10-24 that the mechanical side of CorvCAD (enclosure, bores, cutouts, lid, STEP) belongs to a FreeCAD engine port, the way the electronics side is moving to KiCad's own model ([KiCad core port](KICAD_CORE_PORT.md)). The current dependency-free C++ enclosure mesh stays as the fallback until a gate below replaces it.
 
 ## Why FreeCAD, and what "port" means here
 
@@ -146,13 +146,16 @@ implemented in source. Desktop regressions and both native C ABI fixtures pass
 on the Intel iPad simulator, including exact exports, persistence and history.
 Portrait/landscape native UI tests, the default-edition undo regression and the
 arm64 device app compile/link pass. **F4 accepted 2026-10-28** for the optional
-FreeCAD edition. Physical iPad validation and user-facing STEP remain F5;
+FreeCAD edition. ~~Physical iPad validation and user-facing STEP remain F5;~~
+**UPDATE 2026-11-14:** on 2026-10-31 STEP exported on a physical iPad Air (M2) reimported as
+valid exact solids in desktop FreeCAD 1.1.4 (`integrations/freecad_core/device/evidence/ipad-step-gate-20261031.json`),
+and Fabricate offers STEP in this edition; slicer review of F5 remains;
 combined KiCad/FreeCAD dependencies are tracked separately. See the
 [F4 implementation and validation handoff](history/FREECAD_F4_HANDOFF.md).
 
 ## Licensing
 
-FreeCAD is LGPL-2.1-or-later. Qt is LGPL-3.0 and OCCT is LGPL-2.1 with an exception. Statically linking LGPL code into an iOS app requires that users can relink: ship the object files or the complete corresponding source and build scripts, plus notices. LGPL-3.0 also asks for installation information. A sideloaded unsigned IPA that users can rebuild and re-sign is the intended route; this needs a proper review before any distribution. CorvCAD's own code stays MIT. If combined in the GPL-3.0 KiCad edition, all of these licences are compatible with GPL-3.0. Per the distribution decision recorded in the [KiCad port packaging section](KICAD_CORE_PORT.md), nothing is distributed until the owner's go.
+FreeCAD is LGPL-2.1-or-later. Qt is LGPL-3.0 and OCCT is LGPL-2.1 with an exception. Statically linking LGPL code into an iOS app requires that users can relink: ship the object files or the complete corresponding source and build scripts, plus notices. LGPL-3.0 also asks for installation information. A sideloaded unsigned IPA that users can rebuild and re-sign is the intended route; this needs a proper review before any distribution. CorvCAD's own code stays MIT. If combined in the GPL-3.0 KiCad edition, all of these licences are compatible with GPL-3.0. ~~Per the distribution decision recorded in the [KiCad port packaging section](KICAD_CORE_PORT.md), nothing is distributed until the owner's go.~~ **UPDATE 2026-11-14:** with the owner's go, [release v0.1.0](https://github.com/Corvusar/corvcad/releases/tag/v0.1.0) distributes the edition's unsigned IPA with its complete corresponding source (FreeCAD, CPython, OCCT, vcpkg and every dependency's source archive) and build scripts, so users can rebuild and relink.
 
 ## Open questions for the gates
 

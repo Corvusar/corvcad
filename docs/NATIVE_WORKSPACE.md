@@ -3,7 +3,7 @@
 The combined KiCad/FreeCAD edition is in development. The default edition and
 the separately accepted native editions remain the working configurations.
 `NATIVE_KICAD=YES NATIVE_FREECAD=YES` builds a combined app; its x86_64
-simulator UI tests pass and the unsigned arm64 app links (below). Device execution and physical iPad results are open. F4 acceptance does not
+simulator UI tests pass and the unsigned arm64 app links (below). ~~Device execution and physical iPad results are open.~~ **UPDATE 2026-11-14:** a combined diagnostics IPA ran on a physical iPad Air (M2) on 2026-10-31 (KiCad parity through the diagnostics hook and the FreeCAD STEP gate); the touch UI on a device and a release build are open. F4 acceptance does not
 establish combined-engine acceptance or physical iPad validation.
 
 ## Measured starting point
@@ -263,7 +263,7 @@ this source and same-project editing through the app UI. The arm64 union
 and an unsigned Release arm64 combined app link passed on 2026-10-29 with only system
 libraries and the FreeCAD runtime, KiCad libraries and notices bundled
 ([arm64 evidence](../integrations/native_workspace/evidence/imac-combined-app-arm64.json)).
-That app has not run on a device.
+~~That app has not run on a device.~~ **UPDATE 2026-11-14:** a combined diagnostics IPA (`f9b86a6`, built on the iMac) ran on a physical iPad Air (M2) on 2026-10-31; see the [combined probe pass](KICAD_CORE_PORT.md).
 
 1. One reproducible union recipe, checked target package features/ABI hashes,
    actual source/header closure, archive hashes and complete notices.

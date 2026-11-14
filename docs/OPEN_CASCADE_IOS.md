@@ -32,7 +32,7 @@ Record the upstream revision examined, the choice and its rationale, and focused
 
 ## First implementation gate
 
-On a Mac CI runner, build pinned OCCT for iOS arm64 and simulator arm64; link it into a minimal app or test target. Construct a tray with one real through-bore and a separate lid, tessellate both, write STEP and STL to the app's document area, and reopen those outputs on desktop. Measure binary size and cold operation time. Run the same smoke operation on a physical iPad before showing STEP export in CorvCAD's UI. Then replace the present desktop-only tray exporter behind a shared exact-model API instead of maintaining two divergent enclosure implementations.
+On a Mac CI runner, build pinned OCCT for iOS arm64 and simulator arm64; link it into a minimal app or test target. Construct a tray with one real through-bore and a separate lid, tessellate both, write STEP and STL to the app's document area, and reopen those outputs on desktop. Measure binary size and cold operation time. Run the same smoke operation on a physical iPad before showing STEP export in CorvCAD's UI. (**UPDATE 2026-11-14:** done through the FreeCAD edition, whose STEP passed on an iPad Air (M2) on 2026-10-31; see [the FreeCAD port](FREECAD_PORT.md).) Then replace the present desktop-only tray exporter behind a shared exact-model API instead of maintaining two divergent enclosure implementations.
 
 This is a **next step**, not a completed test. This Windows checkout cannot compile an iOS OCCT binary or confirm on-device behavior.
 

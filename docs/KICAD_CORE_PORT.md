@@ -78,7 +78,7 @@ Host: Intel iMac, macOS 26.3.1, Apple clang from Xcode 26.2, Homebrew wxWidgets 
 - **In-process DRC (2026-10-21).** The board probe now runs `DRC_ENGINE` the way `kicad-cli`'s `JobExportDrc` does: the engine and project rules from `LoadBoard`, the footprint library adapter, a drawing-sheet proxy, and errors and warnings. It writes `DRC_REPORT`'s JSON as `probe-drc.json`. `kicad-cli` collects markers through `BOARD_COMMIT`, which needs a `TOOL_MANAGER`; the probe adds them to the board after the run instead. Schematic parity and zone refill are off in both, as `kicad-cli pcb drc` defaults. `compare_pcb.sh` compares the violations and unconnected items (type, severity, item UUIDs and positions) with `kicad-cli pcb drc --format json`.
   - **Static registration.** Each DRC test provider registers itself through a static object that nothing references, so a static-archive link drops it: only 2 of 28 providers were linked at first, and DRC silently found fewer violations (199 of 578 on the Jetson board). KiCad links every pcbnew object into its kiface. `measure.sh` now passes the provider objects to the linker directly. Any library build of the board slice for the app must do the same, for example with `-force_load` or an explicit reference to each provider.
   - **Results.** The lists are identical to `kicad-cli`'s on every board above: complex_hierarchy 0, ecc83-pp 2, interf_u 3, jetson-agx-thor-baseboard 578, and a CorvCAD-authored board 0. DRC takes 0.06–0.6 s on the small boards and 24 s on the Jetson board (Release, x86_64 iMac). The board closure grows to 1,112 translation units.
-  - In the iOS simulator the DRC lists are identical too (see "Decoupling the board slice" below). It has not run on a physical iPad.
+  - In the iOS simulator the DRC lists are identical too (see "Decoupling the board slice" below). ~~It has not run on a physical iPad.~~ **UPDATE 2026-11-14:** board DRC matched `kicad-cli` on a physical iPad Air (M2) in gate 4 (2026-10-24) and the combined probe pass (2026-10-31), below.
 - **Decoupling the board slice (done on desktop, 2026-10-21).** `measure.sh` also links `corvcad_kicad_pcb_probe_headless`. It puts the board replacements (`headless/pcbnew/`, built with pcbnew's include roots) first, then the common replacements.
   - **The editor hook.** Nearly all of the 458 editor translation units came through `LoadBoard`. `pcbnew_scripting_helpers.cpp` keeps the running `PCB_EDIT_FRAME` in a static and calls it from a dozen scripting helpers. `headless/pcbnew/pcbnew_scripting_helpers.cpp` is that file without the frame: the static and every branch that used it are gone, and the rest is unchanged.
   - **Patch 0006.** It moves `PCB_TEXT::ShowSyntaxHelp()` to the text dialog, and `ZONE_SETTINGS::SetupLayersList()` with `LAYER_PROPERTIES_GRID_TABLE` to a new `zone_layer_properties_grid.cpp`.
@@ -162,9 +162,9 @@ Host: Intel iMac, macOS 26.3.1, Apple clang from Xcode 26.2, Homebrew wxWidgets 
     - The font list now holds family names only, not per-language names or per-face files. Only the desktop font picker reads it.
     - Measured: setting `CORVCAD_PROBE_FONTS` makes the probe resolve names through KiCad's own `FONT::GetFont`. On desktop and in the simulator, Helvetica, Helvetica Bold (face 1 of `Helvetica.ttc`), Times New Roman and Menlo load as outline fonts from the system font folders. The simulator no longer prints fontconfig's warning.
     - complex_hierarchy load time fell from about 237 ms to 132 ms on desktop and from about 230 ms to 83 ms in the simulator, with the netlist and ERC unchanged. The per-load font scan was most of the old time.
-    - Whether the app sandbox on a physical iPad can read `/System/Library/Fonts` is untested.
+    - ~~Whether the app sandbox on a physical iPad can read `/System/Library/Fonts` is untested.~~ **UPDATE 2026-11-14:** it can; measured in gate 4 (2026-10-24), below.
   - **Fresh reproduction (2026-10-19).** Following the documented steps from an empty `build/fresh` reproduced every result above: 30 failed sources, closures of 803, 1,085 and 322 files, 323 of 323 iOS units, 0 unresolved symbols, and the same complex_hierarchy netlist and ERC (40/40) in the simulator and on desktop. That tree was configured without a build type, so it built unoptimised: the executable was 73 MB and loading took about twice as long. The probe's CMakeLists now defaults to Release.
-  - **arm64 device build (2026-10-19).** `wx_ios.sh <dir> device`, `ios_deps.sh <dir> arm64-ios` (an overlay triplet with the same settings for `iphoneos`) and `IOS_TARGET=device` for `ios_sweep.sh` and `ios_link.sh` compile all 323 units for `arm64-apple-ios17.0`, with no source changes. They link `corvcad_kicad_probe_ios-device`: a 29.8 MB arm64 iOS executable (platform iOS, minimum 17.0) with 0 unresolved symbols. It has not run: that needs a signed app on a physical iPad.
+  - **arm64 device build (2026-10-19).** `wx_ios.sh <dir> device`, `ios_deps.sh <dir> arm64-ios` (an overlay triplet with the same settings for `iphoneos`) and `IOS_TARGET=device` for `ios_sweep.sh` and `ios_link.sh` compile all 323 units for `arm64-apple-ios17.0`, with no source changes. They link `corvcad_kicad_probe_ios-device`: a 29.8 MB arm64 iOS executable (platform iOS, minimum 17.0) with 0 unresolved symbols. ~~It has not run: that needs a signed app on a physical iPad.~~ **UPDATE 2026-11-14:** the same slice, packaged in the `NATIVE_KICAD` app, has run on a physical iPad Air (M2) since 2026-10-22 (gate 4, below).
 
   Not covered yet:
   - A physical-iPad run, including the system font lookup above.
@@ -197,7 +197,7 @@ The normal KiCad top-level build also requests Zlib, Zstd, CURL, Cairo, Pixman, 
 - **Connectivity, netlist and ERC.** After every commit, undo, redo and aborted transaction the session recalculates KiCad's connection graph through `SCHEMATIC::RecalculateConnections`, the editor's path after a commit. It runs without cleanup, because KiCad's cleanup merges wires and adds junctions outside the journal. It recalculates fully, not incrementally. API version 3 adds `cc_sch_session_netlist` (`NETLIST_EXPORTER_KICAD`) and `cc_sch_session_erc_json` (`ERC_TESTER` and `ERC_REPORT`, run as the schematic probe does, without the footprint-link check). ERC markers are cleared before and after each run. The compatible backend returns `CC_SCH_UNSUPPORTED` for both.
 - **Not yet covered:**
   - Multi-file `save` has no rollback between renames.
-  - It is an executable, not yet a library in the app, and it has not run on a physical iPad.
+  - ~~It is an executable, not yet a library in the app, and it has not run on a physical iPad.~~ **UPDATE 2026-11-14:** it is the `NATIVE_KICAD` edition's schematic backend (since 2026-10-21) and has run on a physical iPad Air (M2) (gate 4, below).
 
 `session/abi_test.c` drives a backend through the C ABI alone. It is linked once against the engine (`build/abi_test_compat`) and once against the native session (`corvcad_kicad_session`, 0 unresolved; 320 translation units, 335 with ERC). It aborts a delete, commits a move, a Value change, a wire and a label, then undoes, redoes and saves a copy. `session/check.sh` compares the results.
 
@@ -288,7 +288,7 @@ The design:
 - **Closure.** The zone filler is not in the measured board closure. `measure.sh` therefore links a fourth program, the session plus the board checks over both slices (`native.closure.txt`, audit profile `native`). `ios_sweep.sh` sweeps it and `ios_package.sh` packages it. `probe/native_link.sh` links that closure as objects, as the app force-loads it, so duplicate symbols between the schematic and board slices would show on desktop first.
 - **Check.** `session/board_check.py reference` records kicad-cli 10.0.6's DRC lists without and with a refill, and per zone and layer the filled area and vertex count of the board it saves (`--save-board`), on eight KiCad demo boards (`session/board_reference.json`, made on Windows). `compare` runs `session/board_test.c` against them. CircleCI's manual `native-check` job (removed 2026-11-12; see commit `ef8ae6c`) ran the full build, `native_link.sh`, the comparison and a recapture of the inventory's sources.
 - **Device.** The diagnostics build's `board` command also runs native DRC without and with a refill, and `tools/corvprobe/gate4.py` compares those lists with `kicad-cli`.
-- **Not in the UI.** The app does not offer DRC or zone fill until they match `kicad-cli` on the corpus and on a physical iPad.
+- ~~**Not in the UI.** The app does not offer DRC or zone fill until they match `kicad-cli` on the corpus and on a physical iPad.~~ **UPDATE 2026-11-14:** they matched on the iPad (gate 4), and the `NATIVE_KICAD` edition's board inspector offers DRC and zone refill.
 
 ## Plan for the open blockers (proposal, 2026-10-18)
 
@@ -320,15 +320,17 @@ The native `cc_sch_session` backend works as desktop and simulator executables (
 1. It checks the KiCad tree against the gate 1 inventory, packages it, and builds the unsigned arm64 IPA.
 2. It writes the corresponding-source set beside the IPA: CorvCAD at the release commit, pristine KiCad 10.0.6 (whose patches are in the CorvCAD archive), the pinned wx tarball, and vcpkg at its baseline with the dependency sources it downloaded. It adds a README with the build order and `SHA256SUMS`.
 
-The 2026-10-21 run produced a 9.5 MB IPA and about 410 MB of source archives. Publishing both together is a manual step, and nothing has been published yet. After a session edit, `ONLY=kicad_session probe/ios_sweep.sh ...` recompiles just that unit before packaging.
+The 2026-10-21 run produced a 9.5 MB IPA and about 410 MB of source archives. Since 2026-11-12 the manual `release.yml` workflow runs it (device slice only) on an arm64 GitHub runner and puts the IPA and its packed source set in a draft release; a maintainer publishes it. After a session edit, `ONLY=kicad_session probe/ios_sweep.sh ...` recompiles just that unit before packaging.
 
-**Distribution decision (the project owner, 2026-10-21).** The project is not ready to publish, and no build of either edition is distributed to anyone.
-- The private repository holds an exact copy of the work, and nothing else is published.
+**Distribution decision (the project owner, 2026-10-21).** ~~The project is not ready to publish, and no build of either edition is distributed to anyone.~~
+- ~~The private repository holds an exact copy of the work, and nothing else is published.~~
 - `release_native.sh` and its source set exist so that a release can be complete when there is one. Running it publishes nothing.
 - Publishing waits for the owner's explicit go that the app is ready for release.
 - KiCad's patched source gets its own repository once the KiCad port is entirely finished. Until then, the pinned upstream commit plus `patches/` and `headless/` in this repository define it.
 
-GPL source obligations apply when a binary is distributed, so they begin with the first release.
+**UPDATE 2026-11-14:** the repository went public on 2026-11-12 and the owner published [release v0.1.0](https://github.com/Corvusar/corvcad/releases/tag/v0.1.0) on 2026-11-14: the KiCad and FreeCAD editions' unsigned device IPAs, each with its `-source.tar`.
+
+~~GPL source obligations apply when a binary is distributed, so they begin with the first release.~~ **UPDATE 2026-11-14:** GPL source obligations began with v0.1.0; every release carries the complete corresponding source for each IPA.
 
 **First physical-iPad run (2026-10-22, reported by the owner).**
 - Setup: the `NATIVE_KICAD` IPA from `89a1134` (built with the iOS 26.2 SDK, unsigned, sideloaded) on an iPad Air 11-inch (M2) running iPadOS 27.0.1.

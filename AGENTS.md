@@ -6,7 +6,7 @@ CorvCAD is a free, open-source CAD workspace focused first on the PCB-to-enclosu
 
 The app can create a local KiCad 10 starter project with a blank schematic and rectangular board outline, then reopen it and retain enclosure controls in an app-specific sidecar. Its touch tools add a limited two-pin part, wires, labels, board footprint, mounting hole, tracks and vias. They can also add copper zones (unfilled until KiCad's zone filler runs) and silkscreen/fab lines and text, and replace the board outline. Project libraries can be imported, created and removed, and their symbols and footprints edited on a canvas with source-preserving text edits. The editor uses snap feedback and hold menus for selected direct edits. These operations are a narrow format-compatible subset, not a complete PCB or schematic editor.
 
-The portable engine also has a transaction-based schematic session and C ABI for hierarchical project-local files, undo/redo and source-preserving saves. It is explicitly a compatible fallback, not KiCad internals. KiCad 10.0.6 source and all official symbol libraries are pinned as external build inputs, but no KiCad source is linked into the app yet. Keep this distinction visible in code, UI and documentation.
+The portable engine also has a transaction-based schematic session and C ABI for hierarchical project-local files, undo/redo and source-preserving saves. It is explicitly a compatible fallback, not KiCad internals. KiCad 10.0.6 source and all official symbol libraries are pinned as external build inputs, ~~but no KiCad source is linked into the app yet~~ (**UPDATE 2026-11-14:** the default edition links none; the `NATIVE_KICAD` edition links KiCad's own code, and the `NATIVE_FREECAD` edition FreeCAD's). Keep this distinction visible in code, UI and documentation.
 
 This is an incremental project. Describe implemented behavior precisely; do not present intended integrations as shipped features. The current status and build instructions live in `README.md`, `docs/ARCHITECTURE.md`, `docs/KICAD_INTEGRATION.md`, `docs/KICAD_CORE_PORT.md`, `docs/OPEN_CASCADE_IOS.md`, and `docs/MILESTONES.md`.
 
@@ -16,7 +16,7 @@ This is an incremental project. Describe implemented behavior precisely; do not 
 - Keep the mechanical model, electronics model, import/export, and external-tool integrations behind explicit boundaries. Prefer replaceable adapters over coupling the main engine to one app or command-line tool.
 - Treat KiCad files as user data. Preserve unsupported fields when editing, do not silently discard a project, and test round trips with KiCad itself. The current parser and footprint move are limited; they are not KiCad's editing engine.
 - Treat OCCT B-rep as the intended source of truth for exact mechanical geometry. A mesh is for preview or mesh export. Do not convert an exact shape to a mesh and then claim a STEP export is exact.
-- Keep current desktop OCCT STEP support optional. Do not enable iPad STEP in UI or docs until an iPadOS OCCT build, exact tray and lid geometry, export, and device validation actually work.
+- Keep current desktop OCCT STEP support optional. Do not enable iPad STEP in UI or docs until an iPadOS OCCT build, exact tray and lid geometry, export, and device validation actually work. (**UPDATE 2026-11-14:** met in the `NATIVE_FREECAD` edition by the 2026-10-31 STEP gate; elsewhere the rule stands.)
 - Do not add FreeCAD, KiCad core, or a slicer as a required base dependency without a focused integration design, reproducible build, license review, and tests.
 
 ## Working rules

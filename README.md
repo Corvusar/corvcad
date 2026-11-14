@@ -115,7 +115,7 @@ CorvCAD is pre-release software.
 
 - **Tested on the iPad simulator.** Every edition has portrait and landscape UI tests. KiCad's outputs are compared with `kicad-cli` 10.0.6 on KiCad's own demo projects, and the 3D parts with KiCad's official models.
 - **On a physical iPad Air (M2)**, the KiCad edition's netlists, ERC and DRC matched `kicad-cli` on four demo projects. The FreeCAD session's edits, history, saving and exports passed too. A full pass of every screen on a device is still open.
-- **No signed build is distributed.** Build from source, or sign the unsigned IPA yourself (below).
+- **Unsigned builds only.** [Release v0.1.0](https://github.com/Corvusar/corvcad/releases/tag/v0.1.0) (2026-11-14) has the KiCad and FreeCAD editions' unsigned IPAs with their complete source; sign one yourself or build from source (below). No signed build is distributed.
 
 ## Getting started
 
@@ -161,7 +161,7 @@ Then pass `NATIVE_KICAD=YES`, `NATIVE_FREECAD=YES` or both to `xcodebuild`.
 
 ### Install on an iPad
 
-An unsigned IPA cannot be installed on an iPad as it is. Either build from source in Xcode with your own signing team, or sign the IPA yourself. The GitHub workflow `ci.yml` (started by hand) builds `CorvCAD-unsigned.ipa`. [LiveContainer](https://github.com/LiveContainer/livecontainer.github.io/blob/main/docs/installation/standalone.md) with an AltStore or SideStore certificate is one route; CorvCAD does not need JIT.
+An unsigned IPA cannot be installed on an iPad as it is. Either build from source in Xcode with your own signing team, or sign the IPA yourself. [Releases](https://github.com/Corvusar/corvcad/releases) carry the KiCad and FreeCAD editions' unsigned IPAs, each beside the complete corresponding source for that build; the manual `release.yml` workflow makes them as a draft for a maintainer to publish. The manual `ci.yml` builds the default edition's `CorvCAD-unsigned.ipa`. [LiveContainer](https://github.com/LiveContainer/livecontainer.github.io/blob/main/docs/installation/standalone.md) with an AltStore or SideStore certificate is one route; CorvCAD does not need JIT.
 
 ## Repository layout
 
