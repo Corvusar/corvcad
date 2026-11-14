@@ -24,6 +24,9 @@ FMT_SOURCE = "kicad/thirdparty/fmt/src/format.cc"
 APP_OWNED = {"corvcad/engine/src/schematic_route.cpp"}
 TEST_ROOTS = {"corvcad/integrations/kicad_core/session/board_test.c"}
 REQUIRED_STANDINS = {"corvcad/integrations/kicad_core/headless/simulator_stub.cpp"}
+# With KiCad's simulator in the closure (patch 0011, NGSPICE_BUILD) its own
+# spice_simulator.cpp replaces the stand-in, as in ios_package.sh.
+NGSPICE_SOURCE = "kicad/eeschema/sim/ngspice.cpp"
 DROP_DEFINES = {"__WXMAC__", "__WXOSX__", "__WXOSX_COCOA__", "WXUSINGDLL",
                 "PROTOBUF_USE_DLLS"}
 SOURCE_INCLUDE_OVERRIDES = {"pcbnew/pcbplot.cpp": HERE / "headless/ios"}
@@ -75,8 +78,18 @@ def select_commands(database, sources):
 def native_sources(profile):
     # A Debug dylib retains KIBIS references that a dead-stripped probe may omit.
     # The legacy packager explicitly adds this stand-in for that reason.
-    return sorted(((set(profile["closure"]) | set(profile["direct_objects"]))
-                   - APP_OWNED - TEST_ROOTS - {FMT_SOURCE}) | REQUIRED_STANDINS)
+    sources = set(profile["closure"]) | set(profile["direct_objects"])
+    standins = set() if NGSPICE_SOURCE in sources else REQUIRED_STANDINS
+    return sorted((sources - APP_OWNED - TEST_ROOTS - {FMT_SOURCE}) | standins)
+
+
+def ngspice_build(desktop):
+    """The probe build's NGSPICE_BUILD (an ngspice_ios.sh work directory), or None."""
+    cache = (Path(desktop) / "CMakeCache.txt").read_text()
+    for line in cache.splitlines():
+        if line.startswith("NGSPICE_BUILD:") and line.split("=", 1)[1].strip():
+            return Path(line.split("=", 1)[1].strip()).resolve()
+    return None
 
 
 def transform_command(row, *, kicad, build, generated, prefix, standin, wx_flags,
@@ -254,6 +267,9 @@ def build(args):
     if not REQUIRED_STANDINS.issubset(inventory["files"]):
         raise ValueError("Required stand-in lacks baseline source/license inventory")
     sources = {key: resolve_source(key, kicad, desktop) for key in keys}
+    ngspice = ngspice_build(desktop)
+    if (NGSPICE_SOURCE in keys) != (ngspice is not None):
+        raise ValueError("The native profile and the desktop build disagree on KiCad's simulator (NGSPICE_BUILD)")
     rules = [x for x in run([args.ninja, "-C", desktop, "-t", "rules"]).splitlines() if "_COMPILER__" in x]
     if not rules:
         raise ValueError("No compiler rules in desktop Ninja build")
@@ -279,7 +295,8 @@ def build(args):
              "cache_recipe_sha256_lf": sha(HERE / "compile_cache.py", text=True),
              "wx_flags": wx_flags,
              "paths": {"kicad": str(kicad), "desktop": str(desktop), "prefix": str(prefix),
-                       "wx_build": str(wx), "wx_source": str(args.wx_source.resolve())}}
+                       "wx_build": str(wx), "wx_source": str(args.wx_source.resolve()),
+                       **({"ngspice": str(ngspice)} if ngspice else {})}}
     claim_output(output, claim, args.resume)
     generated = output / "generated/cpp"
     for folder in (output / "objects", output / "logs", output / "depfiles", generated / "api", output / "extra"):
@@ -303,7 +320,8 @@ def build(args):
         raise ValueError("Missing generated baseline protobuf source list")
     roots = [("generated-target", generated), ("generated-baseline", desktop / "generated"),
              ("kicad", kicad), ("wx-build", wx), ("wx-source", args.wx_source.resolve()),
-             ("vcpkg", prefix), ("apple-sdk", sdk_path), ("clang-resource", resource), ("corvcad", REPO)]
+             ("vcpkg", prefix), ("apple-sdk", sdk_path), ("clang-resource", resource), ("corvcad", REPO),
+             *([("ngspice", ngspice)] if ngspice else [])]
     units = []
     for key, row in selected:
         name = hashlib.sha256(key.encode()).hexdigest()[:16] + "-" + Path(key).name
@@ -337,7 +355,7 @@ def build(args):
                                      "sha256": sha(args.dependency_receipt)},
               "baseline_audit": {"verified": True, "sources_sha256": sha(KICAD / "audit/sources.json"),
                                  "notices_sha256": sha(KICAD / "audit/notices.json")},
-              "replacement": {"omitted": sorted(omitted), "required_standins": sorted(REQUIRED_STANDINS),
+              "replacement": {"omitted": sorted(omitted), "required_standins": sorted(set(keys) & REQUIRED_STANDINS),
                               "fmt": "one union vcpkg header/library implementation",
                               "fmt_core_compatibility": "FMT_DEPRECATED_HEAVY_CORE=1"},
               "supplemental_headers": {

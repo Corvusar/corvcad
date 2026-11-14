@@ -13,11 +13,11 @@ on:
         description: Version, e.g. 0.1.0 (tag v<version>, the app's version)
         required: true
       editions:
-        description: Which editions to build (kicad, freecad or both)
-        default: both
+        description: Which editions to build (any of kicad, freecad, combined)
+        default: kicad freecad combined
       runner:
         description: macOS runner label (arm64)
-        default: macos-26
+        default: macos-15
       xcode:
         description: Xcode version to select (falls back to the newest 26.x)
         default: "26.2"
@@ -33,7 +33,7 @@ env:
 jobs:
   kicad:
     name: KiCad edition (device)
-    if: inputs.editions != 'freecad'
+    if: contains(inputs.editions, 'kicad')
     runs-on: ${{ inputs.runner }}
     timeout-minutes: 360
     steps:
@@ -131,7 +131,7 @@ jobs:
 
   freecad:
     name: FreeCAD edition (device)
-    if: inputs.editions != 'kicad'
+    if: contains(inputs.editions, 'freecad')
     runs-on: ${{ inputs.runner }}
     timeout-minutes: 360
     env:
@@ -215,9 +215,18 @@ jobs:
             build/*.log
             build/release-freecad/xcodebuild.log
 
+  combined:
+    name: Combined
+    if: contains(inputs.editions, 'combined')
+    uses: ./.github/workflows/combined.yml
+    with:
+      version: ${{ inputs.version }}
+      runner: ${{ inputs.runner }}
+      xcode: ${{ inputs.xcode }}
+
   draft:
     name: Draft release
-    needs: [kicad, freecad]
+    needs: [kicad, freecad, combined]
     if: ${{ !cancelled() && contains(needs.*.result, 'success') && !contains(needs.*.result, 'failure') && !contains(needs.*.result, 'cancelled') }}
     runs-on: ubuntu-latest
     permissions:
@@ -233,10 +242,10 @@ jobs:
           GH_REPO: ${{ github.repository }}
         run: |
           mkdir assets
-          for edition in kicad freecad; do
+          for edition in kicad freecad combined; do
             dir=artifacts/release-$edition
             [ -d "$dir" ] || continue
-            name=$( [ $edition = kicad ] && echo KiCad || echo FreeCAD )
+            case $edition in kicad) name=KiCad ;; freecad) name=FreeCAD ;; combined) name=Combined ;; esac
             cp "$dir"/*.ipa assets/
             (cd "$dir/source" && sha256sum -c SHA256SUMS)   # the source set arrived intact
             tar -cf "assets/CorvCAD-$name-$VERSION-source.tar" -C "$dir" --transform "s|^source|CorvCAD-$name-$VERSION-source|" source
@@ -249,6 +258,7 @@ jobs:
           |---|---|
           | \`CorvCAD-KiCad-$VERSION-unsigned.ipa\` | KiCad edition: KiCad 10.0.6's schematic and board engines, DRC, ERC, router, simulator, fabrication outputs |
           | \`CorvCAD-FreeCAD-$VERSION-unsigned.ipa\` | FreeCAD edition: FreeCAD 1.1.4's enclosure modeller, STEP export, generated 3D parts |
+          | \`CorvCAD-Combined-$VERSION-unsigned.ipa\` | Combined edition: both engines in one app, from one shared dependency build |
 
           Each edition is GPL-3.0-or-later as a whole. Its \`-source.tar\` holds the complete corresponding
           source for that IPA: CorvCAD at this commit, the pinned upstream sources and every dependency's

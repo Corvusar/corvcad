@@ -53,6 +53,21 @@ class RecipeTests(unittest.TestCase):
             self.assertNotIn(build.FMT_SOURCE, selected)
             self.assertFalse(set(selected) & (build.APP_OWNED | build.TEST_ROOTS))
 
+    def test_real_simulator_replaces_the_standin(self):
+        standin = next(iter(build.REQUIRED_STANDINS))
+        selected = build.native_sources({"closure": ["kicad/model.cpp", build.NGSPICE_SOURCE],
+                                         "direct_objects": []})
+        self.assertIn(build.NGSPICE_SOURCE, selected)
+        self.assertNotIn(standin, selected)
+
+    def test_ngspice_build_comes_from_the_probe_cache(self):
+        with tempfile.TemporaryDirectory() as folder:
+            cache = Path(folder) / "CMakeCache.txt"
+            cache.write_text("NGSPICE_BUILD:PATH=\nKICAD_SOURCE:PATH=/k\n")
+            self.assertIsNone(build.ngspice_build(folder))
+            cache.write_text("NGSPICE_BUILD:PATH=" + folder + "\n")
+            self.assertEqual(build.ngspice_build(folder), Path(folder).resolve())
+
     def test_device_architecture_is_not_a_simulator(self):
         self.assertEqual(build.target("iphonesimulator", "x86_64"), "x86_64-apple-ios17.0-simulator")
         self.assertEqual(build.target("iphoneos", "arm64"), "arm64-apple-ios17.0")

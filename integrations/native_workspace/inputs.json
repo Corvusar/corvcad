@@ -9,7 +9,7 @@
     "kicad": {
       "path": "integrations/kicad_core/upstream.json",
       "revision": "9e57e24",
-      "sha256_lf": "bfa53c96036ceee7765edc51c928907b940fcb626bcb30acbf28bc931d6d56da"
+      "sha256_lf": "04aec3b1da28e5210d3a811d4f8bbca8a2532e1e49f28cd90f8549a996d58957"
     },
     "freecad": {
       "path": "integrations/freecad_core/upstream.json",

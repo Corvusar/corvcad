@@ -1,0 +1,196 @@
+name: Combined edition
+
+# The combined KiCad + FreeCAD edition for the device: both engines from one shared dependency
+# closure (integrations/native_workspace; docs/NATIVE_WORKSPACE.md), then the unsigned IPA and its
+# complete corresponding source as an artifact. Manual, or called by release.yml.
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: Version, e.g. 0.2.0 (the app's version)
+        required: true
+      runner:
+        description: macOS runner label (arm64)
+        default: macos-15
+      xcode:
+        description: Xcode version to select (falls back to the newest 26.x)
+        default: "26.2"
+  workflow_call:
+    inputs:
+      version: {type: string, required: true}
+      runner: {type: string, default: macos-15}
+      xcode: {type: string, default: "26.2"}
+
+permissions:
+  contents: read
+
+env:
+  HOMEBREW_NO_AUTO_UPDATE: 1
+  HOMEBREW_NO_INSTALL_CLEANUP: 1
+  VERSION: ${{ inputs.version }}
+  CCACHE_MAXSIZE: 2G
+  JOBS: 3
+
+jobs:
+  combined:
+    name: Combined edition (device)
+    runs-on: ${{ inputs.runner }}
+    timeout-minutes: 360
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Xcode and host tools
+        run: |
+          echo "$VERSION" | grep -Eq '^[0-9]+\.[0-9]+\.[0-9]+$' || { echo "version must be x.y.z"; exit 1; }
+          X=$(ls -d /Applications/Xcode_${{ inputs.xcode }}*.app 2>/dev/null | head -1)
+          [ -n "$X" ] || X=$(ls -d /Applications/Xcode_26*.app | sort -V | tail -1)
+          sudo xcode-select -s "$X"; xcodebuild -version; uname -m; sysctl -n hw.ncpu hw.memsize
+          rm -rf ~/Library/Android; df -h .
+          brew install cmake ninja xcodegen pkgconf autoconf autoconf-archive automake libtool bison flex ccache swig \
+            wxwidgets boost glm zstd freetype harfbuzz fontconfig libgit2 protobuf unixodbc cairo pixman || true
+          echo "$(brew --prefix bison)/bin" >> "$GITHUB_PATH"; echo "$(brew --prefix flex)/bin" >> "$GITHUB_PATH"
+          echo "CCACHE_DIR=$PWD/build/freecad-ios/ccache-ios" >> "$GITHUB_ENV"
+          echo "CCACHE_BASEDIR=$PWD" >> "$GITHUB_ENV"
+          echo "VCPKG_BINARY_SOURCES=clear;files,$PWD/build/freecad-ios/binary-cache,readwrite" >> "$GITHUB_ENV"
+          echo "VCPKG_DOWNLOADS=$PWD/build/freecad-ios/vcpkg-downloads" >> "$GITHUB_ENV"
+          mkdir -p build/freecad-ios/binary-cache build/freecad-ios/ccache-ios build/freecad-ios/vcpkg-downloads
+
+      # KiCad's inputs: the release workflow's cache (patched KiCad, its libraries, ngspice, wx's
+      # tarball and source). Restored only; the steps below rebuild what a miss leaves out.
+      - uses: actions/cache/restore@v4
+        with:
+          path: |
+            build/kicad-core
+            build/ngspice
+            build/wx-ios
+            build/ios-deps
+            !build/ios-deps/vcpkg/buildtrees
+            !build/ios-deps/vcpkg/packages
+          key: release-kicad-device-${{ hashFiles('integrations/kicad_core/upstream.json', 'integrations/kicad_core/patches/*.patch', 'integrations/kicad_core/*.sh', 'integrations/kicad_core/triplets/*', 'integrations/kicad_core/fetch.py') }}
+
+      # vcpkg's binary cache with the source archives it was built from (never one without the
+      # other), seeded from the FreeCAD edition's: the union shares most of its packages.
+      - uses: actions/cache/restore@v4
+        with:
+          path: &shared-cache |
+            build/freecad-ios/binary-cache
+            build/freecad-ios/vcpkg-downloads
+            build/freecad-ios/ccache-ios
+            build/freecad-ios/python/Python-3.13.7.tar.xz
+            build/freecad-ios/python/host
+            build/freecad-ios/occt/OCCT-V7_8_1.tar.gz
+          key: combined-device-${{ github.run_id }}
+          restore-keys: |
+            combined-device-
+            release-freecad-device-
+
+      - name: KiCad source, ngspice and wx's source
+        run: |
+          rm -rf build/ios-deps   # the KiCad edition's own vcpkg prefix; the union builds its own
+          [ -d build/kicad-core/kicad ] && python3 integrations/kicad_core/audit.py verify --kicad build/kicad-core/kicad \
+            || { rm -rf build/kicad-core/kicad; python3 integrations/kicad_core/fetch.py --output build/kicad-core --source-only;
+                 python3 integrations/kicad_core/audit.py verify --kicad build/kicad-core/kicad; }
+          [ -f build/kicad-core/footprints-packed/index.json ] && [ -f build/kicad-core/symbols-packed/index.json ] \
+            && [ -f build/kicad-core/symbols-packed/Simulation_SPICE.sp ] \
+            || python3 integrations/kicad_core/fetch.py --output build/kicad-core --libraries-only
+          [ -f build/ngspice/build-mac/libngspice.a ] || bash integrations/kicad_core/ngspice_ios.sh build/ngspice mac
+          [ -f build/ngspice/build-device/libngspice.a ] || bash integrations/kicad_core/ngspice_ios.sh build/ngspice device
+          WX=$(python3 -c "import json; print(json.load(open('integrations/kicad_core/upstream.json'))['wxwidgets']['version'])")
+          [ -d build/wx-ios/wxWidgets-$WX ] && [ -f build/wx-ios/wx.tar.bz2 ] || { rm -rf build/wx-ios;
+            URL=$(python3 -c "import json; print(json.load(open('integrations/kicad_core/upstream.json'))['wxwidgets']['url'])")
+            SHA=$(python3 -c "import json; print(json.load(open('integrations/kicad_core/upstream.json'))['wxwidgets']['sha256'])")
+            mkdir -p build/wx-ios && curl -fsSL -o build/wx-ios/wx.tar.bz2 "$URL"
+            echo "$SHA  build/wx-ios/wx.tar.bz2" | shasum -a 256 -c - && tar xjf build/wx-ios/wx.tar.bz2 -C build/wx-ios; }
+          echo "WX_SOURCE=$PWD/build/wx-ios/wxWidgets-$WX" >> "$GITHUB_ENV"
+          df -h .
+
+      - name: Shared dependency prefix (deps.py)
+        run: |
+          for attempt in 1 2 3 4 5; do   # GitHub's source archives can fail with 504; vcpkg resumes
+            python3 integrations/native_workspace/deps.py --root build/native-workspace/deps --sdk iphoneos \
+              --architecture arm64 --jobs $JOBS --clean-buildtrees-after-build > build/deps.log 2>&1 && break
+            [ $attempt = 5 ] && { tail -100 build/deps.log; exit 1; }; echo "attempt $attempt failed"; tail -5 build/deps.log; sleep 60
+          done
+          W=$PWD/build/native-workspace/deps/iphoneos
+          echo "W=$W" >> "$GITHUB_ENV"
+          # The FreeCAD session builds against the same prefix: its deps/ is the workspace's.
+          [ -L build/freecad-ios/deps ] || ln -s "$W" build/freecad-ios/deps
+          du -sh "$W/installed" build/freecad-ios/binary-cache build/freecad-ios/vcpkg-downloads; df -h .
+
+      - uses: actions/cache/save@v4
+        if: always()
+        with:
+          path: *shared-cache
+          key: combined-device-${{ github.run_id }}
+
+      - name: wxWidgets against the shared prefix (wx_build.py)
+        run: |
+          python3 integrations/native_workspace/wx_build.py --source "$WX_SOURCE" --archive build/wx-ios/wx.tar.bz2 \
+            --dependency-receipt "$W/native-dependencies.json" --output build/native-workspace/wx \
+            --sdk iphoneos --architecture arm64 --jobs $JOBS --system-regex \
+            || { tail -60 build/native-workspace/wx/*.log; exit 1; }
+
+      - name: KiCad's native closure against the shared prefix (kicad_build.py)
+        run: |
+          cmake -G Ninja -S integrations/kicad_core/probe -B build/kicad-probe -DNGSPICE_BUILD="$PWD/build/ngspice" \
+            -DKICAD_SOURCE="$PWD/build/kicad-core/kicad" -DCMAKE_BUILD_TYPE=Release > build/configure.log 2>&1 \
+            || { tail -40 build/configure.log; exit 1; }
+          python3 integrations/native_workspace/kicad_build.py --kicad build/kicad-core/kicad --build build/kicad-probe \
+            --wx-build build/native-workspace/wx/build --wx-source "$WX_SOURCE" --prefix "$W/installed/arm64-ios" \
+            --dependency-receipt "$W/native-dependencies.json" --protoc "$W/installed/arm64-osx/tools/protobuf/protoc" \
+            --output build/native-workspace/kicad --sdk iphoneos --architecture arm64 --jobs $JOBS \
+            || { ls -t build/native-workspace/kicad/logs/*.log 2>/dev/null | head -3 | xargs tail -30; exit 1; }
+
+      - name: FreeCAD session, CPython and OCCT against the shared prefix
+        run: |
+          python3 integrations/freecad_core/ios/build_python.py --sdk iphoneos --deps "$W/installed/arm64-ios" \
+            --system-expat --jobs $JOBS > build/python-build.log 2>&1 || { tail -100 build/python-build.log; exit 1; }
+          python3 integrations/freecad_core/ios/build_occt.py --sdk iphoneos --jobs $JOBS > build/occt-build.log 2>&1 \
+            || { tail -100 build/occt-build.log; exit 1; }
+          python3 integrations/freecad_core/session/build.py --sdk iphoneos --jobs $JOBS > build/freecad-ios-build.log 2>&1 \
+            || { tail -120 build/freecad-ios-build.log; exit 1; }
+          python3 integrations/freecad_core/ios/stage_runtime.py \
+            --source build/freecad-ios/source-ios/FreeCAD \
+            --build build/freecad-ios/freecad-iphoneos \
+            --python-stage build/freecad-ios/python/iphoneos/stage \
+            --host-python build/freecad-ios/python/host/python.exe \
+            --output build/freecad-ios/runtime-iphoneos \
+            --dependency-notices "$W/installed/arm64-ios/share" \
+            --dependency-notices build/freecad-ios/occt/iphoneos/stage/share/occt
+          python3 integrations/freecad_core/session/package.py --sdk iphoneos --output build/freecad-ios/package/device
+          df -h .
+
+      - name: Combined link (compose.py)
+        run: |
+          python3 integrations/native_workspace/compose.py --dependency-receipt "$W/native-dependencies.json" \
+            --wx-receipt build/native-workspace/wx/wx-build.json --kicad-receipt build/native-workspace/kicad/kicad-build.json \
+            --freecad-root build/freecad-ios --freecad-package build/freecad-ios/package/device \
+            --sdk iphoneos --architecture arm64 --output build/native-workspace/link \
+            || { python3 -c "import json; d=json.load(open('build/native-workspace/link/link-recipe.json')); print(d.get('stage'), d.get('error'))";
+                 tail -40 build/native-workspace/link/*.log; exit 1; }
+
+      - name: Unsigned IPA and corresponding source
+        run: |
+          python3 integrations/kicad_core/fetch.py --output build/kicad-release --source-only --full-source
+          bash integrations/native_workspace/release_native.sh . build build/kicad-release/kicad build/release-combined
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: release-combined
+          path: |
+            build/release-combined/*.ipa
+            build/release-combined/source
+          retention-days: 30
+
+      - uses: actions/upload-artifact@v4
+        if: failure()
+        with:
+          name: release-combined-logs
+          path: |
+            build/*.log
+            build/native-workspace/wx/*.log
+            build/native-workspace/wx/wx-build.json
+            build/native-workspace/kicad/kicad-build.json
+            build/native-workspace/link/*.json
+            build/native-workspace/link/*.log
+            build/release-combined/xcodebuild.log

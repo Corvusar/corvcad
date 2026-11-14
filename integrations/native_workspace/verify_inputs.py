@@ -124,6 +124,11 @@ def verify(args):
              "generated-baseline": Path(paths["desktop"]) / "generated", "kicad": paths["kicad"],
              "wx-build": paths["wx_build"], "wx-source": paths["wx_source"], "vcpkg": prefix,
              "apple-sdk": sdk_path, "clang-resource": resource, "corvcad": REPO}
+    ngspice = native.ngspice_build(paths["desktop"])
+    if str(ngspice) != paths.get("ngspice", "None"):
+        raise ValueError("KiCad was compiled with another ngspice build")
+    if ngspice:
+        roots["ngspice"] = ngspice
     verify_files(kicad["source_inventory"], roots)
     profile = load(native.KICAD / "audit/sources.json")["profiles"]["native"]
     if sorted(unit["source"] for unit in kicad["compiled_units"]) != native.native_sources(profile):
@@ -169,6 +174,12 @@ def verify(args):
             raise ValueError("FreeCAD session source changed: " + name)
     deps = [prefix / name for name in dep["inventory"]["archives"]]
     deps += [Path(path) for path in wx["archives"]] + fc_deps
+    if ngspice:
+        # ngspice_ios.sh's static library for this SDK, as ios_package.sh links it.
+        library = ngspice / ("build-" + ("device" if sdk == "iphoneos" else "sim")) / "libngspice.a"
+        if not library.is_file():
+            raise ValueError("Missing ngspice build for this SDK: " + str(library))
+        deps.append(library)
     system += wx_system_flags(wx["link_flags"], prefix, Path(wx["build"]))
     # Retain the explicit platform frameworks in the reviewed KiCad iOS link.
     # Security is required by target networking/crypto dependencies and is not
